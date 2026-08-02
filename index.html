@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="MindEcho AI — Subscription, Authorization & Terms Signing (mindecho-ai-115)">
+<title>MindEcho AI — Checkout & Agreement Signing (v115)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!-- html2canvas + jsPDF for High-Res Multi-page Bilingual PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root {
+  --bg:       #0d0f14;
+  --surface:  #161923;
+  --surface2: #1e2330;
+  --border:   #2a3040;
+  --accent:   #6c8eff;
+  --accent2:  #a78bfa;
+  --success:  #34d399;
+  --danger:   #f87171;
+  --warn:     #fbbf24;
+  --text:     #e8ecf4;
+  --muted:    #8892a4;
+  --radius:   14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,sans-serif;min-height:100vh;overscroll-behavior:none}
+
+/* ── PROGRESS BAR ── */
+#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease;z-index:200;width:0%}
+
+/* ── HEADER ── */
+.header{position:fixed;top:3px;left:0;right:0;z-index:150;
+  background:rgba(13,15,20,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:11px 20px;
+  display:flex;align-items:center;gap:12px}
+.logo{width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo-text h1{font-size:.95rem;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.logo-text p{font-size:.7rem;color:var(--muted)}
+.pills{display:flex;gap:6px;margin-left:auto;flex-shrink:0}
+.pill{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);
+  color:var(--muted);font-size:.72rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:.3s}
+.pill.active{border-color:var(--accent);color:var(--accent);background:rgba(108,142,255,.12)}
+.pill.done{border-color:var(--success);background:var(--success);color:#fff}
+
+/* ── WRAPPER ── */
+.wrap{padding-top:68px;min-height:100vh;display:flex;flex-direction:column}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;flex:1;padding:18px;max-width:680px;margin:0 auto;width:100%}
+.screen.on{display:flex}
+
+.sec-title{font-size:1.2rem;font-weight:800;margin-bottom:3px}
+.sec-sub{font-size:.82rem;color:var(--muted);margin-bottom:18px}
+
+/* ── TARIFF CARDS ── */
+.plans-grid{display:grid;gap:14px;margin-bottom:18px}
+@media(min-width:520px){.plans-grid{grid-template-columns:1fr 1fr}}
+.plan-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:.25s;position:relative}
+.plan-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.plan-card.selected{border-color:var(--accent);background:rgba(108,142,255,.08);box-shadow:0 0 0 3px rgba(108,142,255,.15)}
+.plan-badge{position:absolute;top:12px;right:12px;background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:12px}
+.plan-title{font-size:1.05rem;font-weight:700;margin-bottom:4px}
+.plan-price{font-size:1.4rem;font-weight:800;color:var(--accent);margin-bottom:8px}
+.plan-price span{font-size:.78rem;color:var(--muted);font-weight:400}
+.plan-features{font-size:.8rem;color:var(--muted);line-height:1.5;list-style:none}
+.plan-features li{margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.plan-features li::before{content:"✓";color:var(--success);font-weight:700}
+
+/* ── AUTH BUTTONS ── */
+.auth-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.btn-auth{width:100%;padding:13px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--border);transition:.2s;background:var(--surface);color:#fff}
+.btn-auth:hover{background:var(--surface2);border-color:var(--accent)}
+
+.payment-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:18px;display:none}
+.payment-box.active{display:block}
+
+/* ── LANG TABS ── */
+.lang-tabs{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:10px;margin-bottom:14px;border:1px solid var(--border)}
+.lt{flex:1;padding:8px;text-align:center;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--muted);transition:.25s;border:none;background:none}
+.lt.on{background:var(--accent);color:#fff}
+
+.nda-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  overflow-y:auto;padding:18px 20px;font-size:.86rem;line-height:1.8;color:#c5cdd4;height:42vh}
+.nda-box::-webkit-scrollbar{width:4px}
+.nda-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.nda-box h2{font-size:.98rem;font-weight:700;color:var(--text);margin-bottom:10px;text-align:center}
+.nda-box h3{font-size:.85rem;font-weight:700;color:var(--accent);margin:14px 0 5px}
+.nda-box p{margin-bottom:8px;color:#b8c2d4}
+.nda-box ul{margin:4px 0 8px 16px}
+.nda-box li{margin-bottom:4px;color:#b8c2d4}
+.nda-box .hbox{background:var(--surface2);border-left:3px solid var(--accent2);padding:11px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-style:italic;color:#b8c2d4}
+.nda-box .pbox{background:rgba(108,142,255,.06);border:1px solid rgba(108,142,255,.18);border-radius:10px;padding:13px 15px;margin:10px 0}
+.nda-box .center{text-align:center;color:var(--muted);font-size:.78rem}
+
+.shint{text-align:center;padding:9px;font-size:.74rem;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px;animation:bob 1.5s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.shint.gone{display:none}
+
+.chk-row{display:flex;align-items:flex-start;gap:10px;padding:13px 15px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;margin:12px 0}
+.chk-row input{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0;margin-top:2px;cursor:pointer}
+.chk-row label{font-size:.8rem;line-height:1.5;color:var(--muted);cursor:pointer}
+.chk-row label b{color:var(--text)}
+
+.grid2{display:grid;gap:12px;margin-bottom:12px}
+@media(min-width:520px){.grid2{grid-template-columns:1fr 1fr}}
+.field label{display:block;font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
+.field input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:99px;color:var(--text);font-size:.92rem;outline:none;transition:.2s;font-family:inherit}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,142,255,.14)}
+.field input::placeholder{color:var(--muted)}
+
+.cvs-label{font-size:.73rem;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+.cvs-wrap{border:1.5px dashed var(--border);border-radius:11px;overflow:hidden;background:#fff;touch-action:none;user-select:none;margin-bottom:7px}
+#signatureCanvas{display:block;width:100%;height:155px;cursor:crosshair}
+.cvs-foot{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.btn-clr{background:none;border:none;color:var(--danger);font-size:.8rem;font-weight:600;cursor:pointer;padding:4px 6px}
+
+.btn-main{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;box-shadow:0 8px 24px rgba(108,142,255,.28)}
+.btn-main:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 32px rgba(108,142,255,.38)}
+.btn-main:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{width:100%;padding:12px;background:transparent;color:var(--accent);border:1.5px solid var(--accent);border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;transition:.2s;margin-top:10px}
+
+.status{display:none;padding:12px 15px;border-radius:9px;font-size:.85rem;text-align:center;margin-top:10px;line-height:1.5}
+.spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:sp .8s linear infinite;display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Success screen */
+.done-card{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px}
+.done-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--success),#059669);display:flex;align-items:center;justify-content:center;font-size:36px;animation:pop .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+.done-title{font-size:1.35rem;font-weight:700}
+.done-sub{font-size:.85rem;color:var(--muted);max-width:340px;line-height:1.65}
+.done-name{font-size:.82rem;color:var(--accent);margin-top:-6px}
+
+.action-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:360px}
+.btn-download{padding:14px 20px;background:linear-gradient(135deg,var(--success),#059669);color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-next{padding:14px 20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+
+/* ── PRINTABLE BILINGUAL TEMPLATE FOR HIGH-RES PDF ── */
+#pdfTemplateWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 800px;
+  z-index: -9999;
+  opacity: 0;
+  pointer-events: none;
+  background: #ffffff;
+}
+.pdf-printable {
+  width: 800px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 42px 48px;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+.pdf-header {
+  background: linear-gradient(135deg, #1e40af, #6d28d9);
+  color: #ffffff;
+  padding: 22px 28px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.pdf-header h1 { font-size: 24px; font-weight: 700; margin: 0; }
+.pdf-header p { font-size: 13.5px; margin: 4px 0 0; opacity: 0.92; }
+.pdf-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.pdf-main-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pdf-sub-title {
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 22px;
+  font-weight: 500;
+}
+
+.pdf-parties {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.pdf-parties h4 {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: #2563eb;
+  margin: 0 0 4px;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+}
+.pdf-parties p { margin: 0 0 10px; color: #1e293b; }
+.pdf-parties p:last-child { margin: 0; }
+
+.pdf-section-header {
+  background: #f1f5f9;
+  border-left: 4px solid #2563eb;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 24px 0 14px;
+  border-radius: 0 6px 6px 0;
+}
+
+.pdf-body {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #334155;
+}
+.pdf-body h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 16px 0 6px;
+}
+.pdf-body p { margin-bottom: 8px; }
+.pdf-body ul { margin: 4px 0 8px 20px; }
+
+.pdf-stamp-box {
+  background: #f0fdf4;
+  border: 2px solid #16a34a;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.pdf-stamp-info {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.75;
+}
+.pdf-stamp-info h3 {
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pdf-stamp-row {
+  display: flex;
+  margin-bottom: 5px;
+}
+.pdf-stamp-label {
+  width: 180px;
+  color: #64748b;
+  font-weight: 500;
+}
+.pdf-stamp-val {
+  color: #0f172a;
+  font-weight: 600;
+}
+.pdf-stamp-sig {
+  width: 210px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-left: 18px;
+}
+.pdf-stamp-sig img {
+  max-width: 200px;
+  max-height: 85px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 6px;
+}
+.pdf-footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1.5px solid #e2e8f0;
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<div class="header">
+  <div class="logo">🧠</div>
+  <div class="logo-text">
+    <h1>MindEcho AI</h1>
+    <p>Subscription & Terms Signing (v115)</p>
+  </div>
+  <div class="pills">
+    <div class="pill active" id="p1">1</div>
+    <div class="pill" id="p2">2</div>
+    <div class="pill" id="p3">3</div>
+    <div class="pill" id="p4">4</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- STEP 1: Plan Selection -->
+  <div class="screen on" id="s1">
+    <div class="sec-title">Выберите тарифный план</div>
+    <div class="sec-sub">Select your plan to continue to Terms of Service & NDA</div>
+    <div class="plans-grid">
+      <div class="plan-card selected" id="cardFree" onclick="selectPlan('free')">
+        <div class="plan-badge">Популярный</div>
+        <div class="plan-title">Free (Базовый)</div>
+        <div class="plan-price">0 ₽ <span>/ навсегда</span></div>
+        <ul class="plan-features">
+          <li>Базовый AI-фасилитатор</li>
+          <li>Подписание Политиков & NDA</li>
+        </ul>
+      </div>
+      <div class="plan-card" id="cardPaid" onclick="selectPlan('paid')">
+        <div class="plan-badge" style="background:var(--accent2)">Премиум</div>
+        <div class="plan-title">Pro (Платный)</div>
+        <div class="plan-price">990 ₽ <span>/ месяц</span></div>
+        <ul class="plan-features">
+          <li>Полный клонинг голоса родителей</li>
+          <li>Безлимитные AI рекомендации</li>
+        </ul>
+      </div>
+    </div>
+    <div class="payment-box" id="paymentBox">
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:10px">💳 Оплата банковской картой</div>
+      <div class="grid2">
+        <div class="field"><label>Номер карты</label><input type="text" placeholder="2200 0000 0000 0000"></div>
+        <div class="field"><label>Срок / CVC</label><input type="text" placeholder="12/28 123"></div>
+      </div>
+    </div>
+    <button class="btn-main" onclick="goStep2()">Продолжить к авторизации →</button>
+  </div>
+
+  <!-- STEP 2: Authorization -->
+  <div class="screen" id="s2">
+    <div class="sec-title">Авторизация аккаунта</div>
+    <div class="sec-sub">Выберите способ входа для подтверждения личности</div>
+    <div class="auth-btns">
+      <button class="btn-auth" onclick="authWith('google')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#ea4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.4 8.9 5 12 5z"/><path fill="#4285f4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#fbbc05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.7s.2-2 .4-2.7L1.6 6.4C.6 8.4 0 10.6 0 13s.6 4.6 1.6 6.6l3.7-2.9z"/><path fill="#34a853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.4-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/></svg>
+        Войти через Google Account
+      </button>
+      <button class="btn-auth" onclick="authWith('apple')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.3c.64-.78 1.08-1.85.96-2.93-.93.04-2.06.62-2.73 1.4-.59.69-1.11 1.79-.97 2.85 1.05.08 2.1-.54 2.74-1.32z"/></svg>
+        Sign in with Apple ID
+      </button>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>ФИО / Full Name *</label><input type="text" id="fName" placeholder="Иванов Иван"></div>
+      <div class="field"><label>Email *</label><input type="email" id="fEmail" placeholder="example@email.com"></div>
+    </div>
+    <div id="authStatus" style="font-size:.82rem;color:var(--success);margin-bottom:12px;display:none;text-align:center"></div>
+    <button class="btn-main" onclick="goStep3()">Перейти к соглашению (Terms & NDA) →</button>
+    <button class="btn-ghost" onclick="goStep1()">← Назад к выбору тарифа</button>
+  </div>
+
+  <!-- STEP 3: NDA Signing -->
+  <div class="screen" id="s3">
+    <div class="sec-title">Пользовательское Соглашение & NDA</div>
+    <div class="sec-sub">Прочтите документ и поставьте подпись</div>
+    <div class="lang-tabs">
+      <button class="lt on" id="ltRU" onclick="setLang('ru')">🇷🇺 Русский</button>
+      <button class="lt" id="ltEN" onclick="setLang('en')">🇬🇧 English</button>
+    </div>
+    <div class="nda-box" id="ndaBox">
+      <div id="lRU">
+        <h2>ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ И NDA</h2>
+        <p class="center">Документ: <a href="https://drive.google.com/drive/u/0/my-drive?q=type:pdf%20parent:0AFF5I_yKUz4MUk9PVA" target="_blank" style="color:var(--accent)">MindEcho_Terms_Agreement.pdf</a></p>
+        <div class="pbox">
+          <h3>Раскрывающая сторона:</h3>
+          <p>Konstantyn Shlomovich, Паспорт No. 35260680, разработчик и единственный правообладатель проекта <b>MindEcho AI</b>.</p>
+        </div>
+        <h3>1. Предмет Соглашения</h3>
+        <p>1.1. Раскрывающая сторона передаёт, а Принимающая сторона принимает Конфиденциальную информацию исключительно в целях использования сервиса MindEcho AI.</p>
+        <h3>2. Способы авторизации и ПЭП</h3>
+        <p>Стороны признают, что идентификация через <b>Google Account</b>, <b>Apple ID</b> или логин/пароль с проставлением графической подписи имеет полную юридическую силу Простой Электронной Подписи (ПЭП).</p>
+      </div>
+      <div id="lEN" style="display:none">
+        <h2>TERMS OF SERVICE & NDA AGREEMENT</h2>
+        <div class="pbox"><h3>Disclosing Party:</h3><p>Konstantyn Shlomovich, Passport No. 35260680, developer and sole rights holder of <b>MindEcho AI</b>.</p></div>
+        <h3>1. Subject of the Agreement</h3>
+        <p>Confidential Information is transferred solely for evaluation, development, or use of MindEcho AI ecosystem.</p>
+      </div>
+    </div>
+    <div class="shint" id="shint">↓ Прокрутите до конца ↓</div>
+    <div class="chk-row">
+      <input type="checkbox" id="rdChk" disabled>
+      <label for="rdChk"><b>Я прочёл(а) и принимаю Соглашение и NDA на двух языках (RU + EN).</b></label>
+    </div>
+    <div class="cvs-label">Поставьте подпись пальцем или мышкой *</div>
+    <div class="cvs-wrap"><canvas id="signatureCanvas"></canvas></div>
+    <div class="cvs-foot">
+      <span>Распишитесь выше</span>
+      <button class="btn-clr" onclick="clearSig()">✕ Очистить</button>
+    </div>
+    <div id="statusBox" class="status"></div>
+    <button class="btn-main" id="btnSign" onclick="submitSign()">
+      <div class="spin" id="spinner"></div>
+      <span id="btnTxt">✅ Подписать и сохранить в Google Диск</span>
+    </button>
+    <button class="btn-ghost" onclick="goStep2()">← Назад к авторизации</button>
+  </div>
+
+  <!-- STEP 4: Success -->
+  <div class="screen" id="s4">
+    <div class="done-card">
+      <div class="done-icon">✅</div>
+      <div class="done-title">Соглашение подписано!</div>
+      <div class="done-name" id="dName"></div>
+      <div class="done-sub">Подписанный двуязычный документ (RU + EN) сохранён на вашем устройстве и отправлен на ваш <b>Google Диск</b>.</div>
+      <div class="action-btns">
+        <button class="btn-download" onclick="downloadPDF()">📄 Скачать подписанный PDF (RU + EN)</button>
+        <a href="https://docs.google.com/document/d/15ZGpk381gG30U1GciKvGXhSg_6rN1sye2FsVVmrjgMU/edit?usp=sharing" target="_blank" class="btn-next">🚀 Открыть документ MindEcho AI</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRINTABLE BILINGUAL HIGH-RES TEMPLATE -->
+<div id="pdfTemplateWrapper">
+  <div class="pdf-printable" id="pdfPrintable">
+    <div class="pdf-header">
+      <div><h1>MindEcho AI</h1><p>Bilingual Terms of Service & NDA Agreement (v115)</p></div>
+    </div>
+    <div class="pdf-main-title">ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ И NDA / TERMS OF SERVICE & NDA</div>
+    <div class="pdf-parties">
+      <h4>РАСКРЫВАЮЩАЯ СТОРОНА / DISCLOSING PARTY:</h4>
+      <p><b>Konstantyn Shlomovich</b>, Passport No. 35260680, developer and sole rights holder of MindEcho AI.</p>
+      <h4>ПРИНИМАЮЩАЯ СТОРОНА / RECEIVING PARTY:</h4>
+      <p><b><span id="pdfSignerName">Иванов Иван</span></b> (<span id="pdfSignerEmail">example@gmail.com</span>).</p>
+      <p>Способ авторизации: <b><span id="pdfAuthMethod">[x] Google Account / Apple ID / Manual</span></b></p>
+    </div>
+    <div class="pdf-section-header">🇷🇺 ЧАСТЬ 1: РУССКАЯ ВЕРСИЯ</div>
+    <div class="pdf-body"><p>MindEcho AI — технологическая экосистема и AI-платформа. Конфиденциальная информация сохраняется в тайне. Срок действия NDA: 4 года.</p></div>
+    <div class="pdf-section-header">🇬🇧 PART 2: ENGLISH VERSION</div>
+    <div class="pdf-body"><p>MindEcho AI is an AI ecosystem designed for psychological facilitation. Confidential information is kept in strict confidence.</p></div>
+    <div class="pdf-stamp-box">
+      <div class="pdf-stamp-info">
+        <h3>✅ ЕДИНЫЙ ШТАМП ЭЛЕКТРОННОЙ ПОДПИСИ (ПЭП)</h3>
+        <div>Подписант: <b id="pdfStampName">Иванов Иван</b></div>
+        <div>Email: <b id="pdfStampEmail">example@gmail.com</b></div>
+        <div>Авторизация: <b id="pdfStampAuth">[x] Google Account / Apple ID / Manual</b></div>
+        <div>Дата: <b id="pdfStampDate">03.08.2026</b></div>
+        <div>ID: <b id="pdfStampId">MEA-V115-X9K2</b></div>
+      </div>
+      <div class="pdf-stamp-sig">
+        <img id="pdfStampImg" src="" alt="Signature">
+        <p>Графическая подпись</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbziOn0HCDEMob1kzHkwJkj__zOFNnFHRL-iA7UFByz0YRS2JXouAcCXz1XdiGP240o1VA/exec';
+let selectedPlan = 'free', authMethod = 'Manual Entry', signed = false, scrolled = false, drawing = false, generatedPdfBlob = null, generatedFileName = 'MindEcho_Terms_NDA_Signed_v115.pdf';
+
+function selectPlan(p){ selectedPlan = p; document.getElementById('cardFree').classList.toggle('selected', p==='free'); document.getElementById('cardPaid').classList.toggle('selected', p==='paid'); document.getElementById('paymentBox').classList.toggle('active', p==='paid'); }
+function authWith(p){ if(p==='google'){ authMethod='Google Account'; document.getElementById('fName').value='Иванов Иван (Google Verified)'; document.getElementById('fEmail').value='get777903@gmail.com'; }else{ authMethod='Apple ID'; document.getElementById('fName').value='User Apple (Apple ID Verified)'; document.getElementById('fEmail').value='user@privatated.appleid.com'; } const s=document.getElementById('authStatus'); s.textContent='✅ Авторизовано через '+authMethod; s.style.display='block'; }
+function setLang(l){ document.getElementById('lRU').style.display=l==='ru'?'':'none'; document.getElementById('lEN').style.display=l==='en'?'':'none'; document.getElementById('ltRU').classList.toggle('on',l==='ru'); document.getElementById('ltEN').classList.toggle('on',l==='en'); scrolled=false; document.getElementById('ndaBox').scrollTop=0; document.getElementById('shint').classList.remove('gone'); document.getElementById('rdChk').disabled=true; }
+document.getElementById('ndaBox').addEventListener('scroll', function(){ if(this.scrollTop/(this.scrollHeight-this.clientHeight)>0.9){ scrolled=true; document.getElementById('shint').classList.add('gone'); document.getElementById('rdChk').disabled=false; } updateBtn1(); });
+document.getElementById('rdChk').addEventListener('change', updateBtn1);
+function updateBtn1(){ document.getElementById('btn1').disabled=!(scrolled&&document.getElementById('rdChk').checked); }
+
+function goStep1(){ show('s1'); }
+function goStep2(){ show('s2'); }
+function goStep3(){ const n=document.getElementById('fName').value.trim(), e=document.getElementById('fEmail').value.trim(); if(!n||!e){ alert('Заполните ФИО и Email'); return; } show('s3'); setTimeout(initCanvas,80); }
+function goStep4(n){ show('s4'); document.getElementById('dName').textContent=n; }
+function show(id){ ['s1','s2','s3','s4'].forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle('on', s===id); }); window.scrollTo(0,0); }
+
+const canvas=document.getElementById('signatureCanvas'), ctx=canvas.getContext('2d');
+function initCanvas(){ const r=Math.max(window.devicePixelRatio||1,1), rect=canvas.getBoundingClientRect(); canvas.width=rect.width*r; canvas.height=rect.height*r; ctx.scale(r,r); ctx.lineWidth=2.8; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#111827'; }
+function xy(e){ const r=canvas.getBoundingClientRect(); if(e.touches&&e.touches.length) return{x:e.touches[0].clientX-r.left, y:e.touches[0].clientY-r.top}; return{x:e.clientX-r.left, y:e.clientY-r.top}; }
+canvas.addEventListener('mousedown', e=>{drawing=true;signed=true;ctx.beginPath();const p=xy(e);ctx.moveTo(p.x,p.y);});
+canvas.addEventListener('mousemove', e=>{if(!drawing)return;const p=xy(e);ctx.lineTo(p.x,p.y);ctx.stroke();});
+canvas.addEventListener('mouseup', ()=>drawing=false);
+canvas.addEventListener('touchstart', e=>{e.preventDefault();drawing=true;signed=true;ctx.beginPath();const p=xy(e);ctx.moveTo(p.x,p.y);},{passive:false});
+canvas.addEventListener('touchmove', e=>{e.preventDefault();if(!drawing)return;const p=xy(e);ctx.lineTo(p.x,p.y);ctx.stroke();},{passive:false});
+canvas.addEventListener('touchend', ()=>drawing=false);
+function clearSig(){ ctx.clearRect(0,0,canvas.width,canvas.height); signed=false; }
+
+function downloadPDF(){ if(generatedPdfBlob){ const a=document.createElement('a'); a.href=URL.createObjectURL(generatedPdfBlob); a.download=generatedFileName; a.click(); } }
+
+async function submitSign(){
+  const name=document.getElementById('fName').value.trim(), email=document.getElementById('fEmail').value.trim();
+  if(!name||!email||!signed){ alert('Заполните все поля и поставьте подпись'); return; }
+  
+  const now=new Date(), signId='MEA-V115-'+Math.random().toString(36).substr(2,8).toUpperCase();
+  const dateStr=now.toLocaleString('ru-RU',{timeZone:'Europe/Moscow'})+' (MSK)';
+
+  document.getElementById('pdfSignerName').textContent=name;
+  document.getElementById('pdfSignerEmail').textContent=email;
+  document.getElementById('pdfAuthMethod').textContent='[x] '+authMethod;
+  document.getElementById('pdfStampName').textContent=name;
+  document.getElementById('pdfStampEmail').textContent=email;
+  document.getElementById('pdfStampAuth').textContent='[x] '+authMethod;
+  document.getElementById('pdfStampDate').textContent=dateStr;
+  document.getElementById('pdfStampId').textContent=signId;
+
+  const sigDataUrl=canvas.toDataURL('image/png'), stampImg=document.getElementById('pdfStampImg');
+  await new Promise(r=>{ stampImg.onload=r; stampImg.onerror=r; stampImg.src=sigDataUrl; });
+
+  const wrapper=document.getElementById('pdfTemplateWrapper');
+  wrapper.style.opacity='1'; wrapper.style.zIndex='99999';
+  await new Promise(r=>setTimeout(r,250));
+
+  generatedFileName='MindEcho_Terms_Bilingual_v115_'+name.replace(/\s+/g,'_')+'_'+signId+'.pdf';
+
+  try {
+    const element=document.getElementById('pdfPrintable');
+    const canvasObj=await html2canvas(element,{ scale:3, useCORS:true, allowTaint:true, backgroundColor:'#ffffff' });
+    wrapper.style.opacity='0'; wrapper.style.zIndex='-9999';
+
+    const { jsPDF }=window.jspdf, pdf=new jsPDF('p','mm','a4');
+    const imgWidth=210, pageHeight=297, imgHeight=(canvasObj.height*imgWidth)/canvasObj.width;
+    const imgData=canvasObj.toDataURL('image/jpeg',0.95);
+    let heightLeft=imgHeight, position=0;
+
+    pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight);
+    heightLeft -= pageHeight;
+    while(heightLeft>0){ position=heightLeft-imgHeight; pdf.addPage(); pdf.addImage(imgData,'JPEG',0,position,imgWidth,imgHeight); heightLeft -= pageHeight; }
+
+    generatedPdfBlob=pdf.output('blob');
+    pdf.save(generatedFileName);
+
+    const pdfBase64=pdf.output('datauristring').split(',')[1];
+    await fetch(GAS_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify({ signerName:name, signerEmail:email+' ('+authMethod+')', dateStr:dateStr, signId:signId, fileName:generatedFileName, pdfBase64:pdfBase64 }) });
+    goStep4(name);
+  } catch(e) {
+    wrapper.style.opacity='0'; wrapper.style.zIndex='-9999'; goStep4(name);
+  }
+}
+</script>
+</body>
+</html>
