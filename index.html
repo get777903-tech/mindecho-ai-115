@@ -191,16 +191,16 @@
     </div>
   </section>
 
-  <!-- 3 Audio Modes Selector Section -->
+  <!-- 4 Audio Modes Selector Section -->
   <section id="modes" class="section modes-section">
     <div class="container">
       <div class="section-header text-center">
         <span class="section-tag" data-i18n="tag_modes">Быстрый запуск</span>
-        <h2 class="section-title" data-i18n="title_modes">3 Входных Аудиорежима Терапии</h2>
+        <h2 class="section-title" data-i18n="title_modes">4 Специализированных Аудиорежима Терапии</h2>
         <p class="section-subtitle" data-i18n="sub_modes">Выберите требуемый сценарий для мгновенной генерации рассказа-медитации или помощи</p>
       </div>
 
-      <div class="modes-grid">
+      <div class="modes-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
         <!-- Mode 1: Morning -->
         <div class="mode-card glass-card border-blue" onclick="selectAudioMode('morning')">
           <div class="mode-icon">☀️</div>
@@ -217,7 +217,15 @@
           <button class="btn btn-secondary btn-sm" data-i18n="btn_start_bedtime">Запустить сонную терапию</button>
         </div>
 
-        <!-- Mode 3: Emergency Tantrum -->
+        <!-- Mode 3: Prayer Meditation -->
+        <div class="mode-card glass-card border-cyan" onclick="selectAudioMode('prayer')">
+          <div class="mode-icon">🙏</div>
+          <h3 data-i18n="mode_prayer_title">Молитва-медитация</h3>
+          <p data-i18n="mode_prayer_desc">Духовный покой, благодарность, умиротворение и благословение светлого настроя для семьи.</p>
+          <button class="btn btn-secondary btn-sm" data-i18n="btn_start_prayer">Запустить молитву-медитацию</button>
+        </div>
+
+        <!-- Mode 4: Emergency Tantrum -->
         <div class="mode-card glass-card border-orange highlight-emergency" onclick="selectAudioMode('emergency')">
           <div class="mode-icon">🚨</div>
           <h3 data-i18n="mode_emergency_title">Экстренная помощь при истерике</h3>
@@ -337,6 +345,7 @@
                 <option value="bedtime" data-i18n="opt_mode_bedtime">🌙 Перед сном (Засыпание)</option>
                 <option value="morning" data-i18n="opt_mode_morning">☀️ Утренняя (Уверенность)</option>
                 <option value="emergency" data-i18n="opt_mode_emergency">🚨 Экстренная (Заземление)</option>
+                <option value="prayer" data-i18n="opt_mode_prayer">🙏 Молитва-медитация (Духовный покой)</option>
               </select>
             </div>
           </div>
