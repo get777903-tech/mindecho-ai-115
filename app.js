@@ -801,8 +801,20 @@ function generatePersonalMeditation() {
       .replace(/{GENDER_FRIEND}/g, genderFriend);
   }
 
+  const typeSelect = document.getElementById('meditation-type');
+  const meditationType = typeSelect ? typeSelect.value : 'bedtime';
+
+  if (meditationType === 'prayer') {
+    if (appState.lang === 'he') {
+      customText = `🙏 תפילה-מדיטציה לשלווה, אור וברכה:\n\n` + customText;
+    } else {
+      customText = `🙏 Молитва-медитация о духовном покое, благодарности и защите для ${name}:\n\n` + customText;
+    }
+  }
+
   document.getElementById('meditation-text-box').innerText = customText;
-  document.getElementById('player-title').innerText = `${name} — ${appState.lang === 'he' ? 'סיפור-מדיטציה' : 'Рассказ-Медитация'}`;
+  const modeLabel = meditationType === 'prayer' ? (appState.lang === 'he' ? 'תפילה-מדיטציה' : 'Молитва-Медитация') : (appState.lang === 'he' ? 'סיפור-מדיטציה' : 'Рассказ-Медитация');
+  document.getElementById('player-title').innerText = `${name} — ${modeLabel}`;
   
   // Smooth scroll to player card
   const playerCard = document.querySelector('.player-card');
