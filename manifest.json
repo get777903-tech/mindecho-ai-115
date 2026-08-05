@@ -1,0 +1,21 @@
+{
+  "name": "MindEcho AI — Экосистема Ментального Здоровья",
+  "short_name": "MindEcho AI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3663/3663335.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3663/3663335.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
