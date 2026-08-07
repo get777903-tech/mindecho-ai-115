@@ -14,8 +14,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -45,7 +43,7 @@
         <a href="#modes" data-i18n="nav_modes">Аудиорежимы</a>
         <a href="#generator" data-i18n="nav_generator">Студия</a>
         <a href="#pricing" data-i18n="nav_pricing">Тарифы</a>
-        <a href="#" onclick="openNDAModal(); return false;" data-i18n="nav_nda">DISCLAIMER</a>
+        <a href="#" onclick="openNDAModal(); return false;" data-i18n="nav_nda">DSCLAIMER</a>
         <a href="#" onclick="openCustDevModal(); return false;" class="nav-custdev-btn" data-i18n="nav_custdev">🎁 Опрос + подарок</a>
       </nav>
 
@@ -87,19 +85,16 @@
         </p>
 
         <div class="hero-buttons" style="margin-bottom: 14px; gap: 10px; display: flex; flex-direction: column;">
-          <button class="btn btn-primary btn-lg btn-orange" onclick="selectPlan('Free', 0)" data-i18n="btn_try_free">
-            ✨ Попробовать! Рассказ-медитация с голосом мамы или папы
+          <button class="btn btn-primary btn-lg btn-orange" onclick="scrollToSection('modes')" data-i18n="btn_try_free">
+            ✨ Попробовать! Рассказ-медитация мягко исцеляет дневные стрессы, обиды и страхи ребенка прямо в процессе засыпания и с утра
           </button>
-          <p style="font-size: 14px; color: #ffffff; font-weight: 700; margin-top: 5px; margin-bottom: 8px; line-height: 1.4; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-i18n="btn_try_free_sub">
-            мягко исцеляет дневные стрессы, обиды и страхи ребенка прямо в процессе засыпания или заряд утренней уверенности
-          </p>
 
           <!-- Перемещенные 2 кнопки на одной строчке ВМЕСТО "Поддержать проект / получить ссылку" -->
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a href="games.html" onclick="openGamesModal(); return false;" class="btn btn-secondary btn-md" style="flex: 1; min-width: 160px; text-align: center; justify-content: center; text-decoration: none; padding: 12px 16px; font-weight: 700; background: #a855f7; border: none; color: #fff;" data-i18n="btn_games">
-              🎮 Игры развивающие речь + эмоциональный интеллект
+            <a href="games.html" onclick="openGamesModal(); return false;" class="btn btn-secondary btn-md" style="flex: 1; min-width: 160px; text-align: center; justify-content: center; text-decoration: none; padding: 12px 16px; font-weight: 700; background: rgba(37, 99, 235, 0.25); border: 1px solid rgba(6, 182, 212, 0.4); color: #fff;">
+              🎮 Развивающие игры
             </a>
-            <button class="btn btn-primary btn-md" onclick="scrollToSection('generator')" style="flex: 1; min-width: 160px; justify-content: center; padding: 12px 16px; font-weight: 700; background: #a855f7; border: none; color: #fff;" data-i18n="btn_prayer">
+            <button class="btn btn-primary btn-md btn-orange" onclick="scrollToSection('generator')" style="flex: 1; min-width: 160px; justify-content: center; padding: 12px 16px; font-weight: 700;">
               🙏 Создание молитвы-медитации
             </button>
           </div>
@@ -227,7 +222,7 @@
           <div class="mode-icon">🙏</div>
           <h3 data-i18n="mode_prayer_title">Молитва-медитация</h3>
           <p data-i18n="mode_prayer_desc">Духовный покой, благодарность, умиротворение и благословение светлого настроя для семьи.</p>
-          <button class="btn btn-secondary btn-sm" style="background: #a855f7; border: none; color: #fff;" onclick="scrollToSection('generator'); selectAudioMode('prayer'); setTimeout(() => { generatePersonalMeditation(); }, 100);" data-i18n="btn_start_prayer">Включить Молитву-Медитацию</button>
+          <button class="btn btn-secondary btn-sm" data-i18n="btn_start_prayer">Запустить молитву-медитацию</button>
         </div>
 
         <!-- Mode 4: Emergency Tantrum -->
@@ -310,7 +305,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="child-name" data-i18n="label_child_name">Имя ребенка:</label>
-              <input type="text" id="child-name" value="Анна" placeholder="Например: Анна, София, Александр" class="form-input">
+              <input type="text" id="child-name" value="София" class="form-input">
             </div>
             <div class="form-group">
               <label for="child-gender" data-i18n="label_child_gender">Пол ребенка:</label>
@@ -329,7 +324,6 @@
             <div class="form-group">
               <label for="audio-mode-source" data-i18n="label_audio_source">Источник аудио-озвучки:</label>
               <select id="audio-mode-source" class="form-select">
-                <option value="parent" data-i18n="opt_source_parent">🎙 голос папы или мамы</option>
                 <option value="mp3" data-i18n="opt_source_mp3">🎵 Студийная MP3 фонограмма</option>
                 <option value="tts" data-i18n="opt_source_tts">🤖 Динамический ИИ-диктор (Низкий тембр)</option>
               </select>
@@ -357,7 +351,7 @@
           </div>
 
           <button class="btn btn-primary btn-block btn-lg btn-orange" onclick="generatePersonalMeditation()" data-i18n="btn_generate">
-            ✨ Создать рассказ-медитацию с голосом мамы или папы
+            ✨ Сгенерировать и озвучить рассказ-медитацию
           </button>
         </div>
 
@@ -540,10 +534,10 @@
 
       <div class="social-auth">
         <button class="btn btn-social" onclick="simulateSocialAuth('Google')">
-          <span class="social-icon">🔴</span> <span data-i18n="btn_auth_google">Вход через аккаунт Google</span>
+          <span class="social-icon">🔴</span> <span data-i18n="btn_auth_google">Вход через Google Account</span>
         </button>
         <button class="btn btn-social" onclick="simulateSocialAuth('Apple')">
-          <span class="social-icon">🍏</span> <span data-i18n="btn_auth_apple">Вход через Apple ID</span>
+          <span class="social-icon">🍏</span> <span data-i18n="btn_auth_apple">Вход через Apple Store ID</span>
         </button>
       </div>
 
@@ -563,6 +557,13 @@
         <div class="form-group">
           <label for="auth-phone" data-i18n="label_auth_phone">WhatsApp/Telegram:</label>
           <input type="tel" id="auth-phone" placeholder="WhatsApp / Telegram (+7...)" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="auth-address" data-i18n="label_auth_address">email address</label>
+          <input type="text" id="auth-address" placeholder="Москва / Тель-Авив / Нью-Йорк" class="form-input">
+        </div>
+
         <div class="checkbox-group">
           <input type="checkbox" id="terms-agree" required>
           <label for="terms-agree" data-i18n="label_terms_agree">Я согласен с Условиями использования и политикой конфиденциальности.</label>
@@ -584,11 +585,6 @@
         <div class="form-group">
           <label data-i18n="label_card_name">Имя на карте:</label>
           <input type="text" required placeholder="ALEXANDER IVANOV" class="form-input">
-        </div>
-
-        <div class="form-group">
-          <label data-i18n="label_auth_phone">WhatsApp / Telegram (Обязательно):</label>
-          <input type="tel" id="checkout-phone" required placeholder="WhatsApp / Telegram (+7...)" class="form-input">
         </div>
 
         <div class="form-group">
@@ -642,16 +638,16 @@
 
       <div class="form-group">
         <label for="nda-user-name" data-i18n="label_nda_name">Ваше ФИО Подписанта:</label>
-        <input type="text" id="nda-user-name" required placeholder="Иванов Александр Петрович" class="form-input">
+        <input type="text" id="nda-user-name" placeholder="Иванов Александр Петрович" class="form-input">
       </div>
       
       <div class="form-group">
-        <label data-i18n="label_auth_phone">WhatsApp / Telegram (Обязательно):</label>
-        <input type="tel" id="nda-user-contact" required placeholder="WhatsApp / Telegram (+7...)" class="form-input">
+        <label>WhatsApp / Telegram:</label>
+        <input type="text" id="nda-user-contact" placeholder="+7 999 000 00 00" class="form-input">
       </div>
 
       <div class="form-group">
-        <label data-i18n="label_nda_email">Ваш E-mail адрес:</label>
+        <label>e-mail address:</label>
         <input type="email" id="nda-user-email" placeholder="email@example.com" class="form-input">
       </div>
 
@@ -687,10 +683,6 @@
       <form id="custdev-form" onsubmit="handleCustDevSubmit(event)">
         <div class="custdev-questions-grid" id="custdev-q-container">
           <!-- Dynamic CustDev questions injected via JS -->
-        </div>
-        <div style="margin-top:15px; margin-bottom:15px">
-            <label style="display:block; margin-bottom:6px; font-weight:600;" data-i18n="label_custdev_phone">WhatsApp / Telegram (Обязательно для получения подарка):</label>
-            <input type="text" id="cd-input-contact" placeholder="Ваш WhatsApp или Telegram (+7...)" class="form-input" style="width:100%; border:1px solid rgba(255,255,255,0.2)" required>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-orange" data-i18n="btn_submit_custdev">
@@ -759,7 +751,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="app.js?v=20260807_v99"></script>
+  <script src="app.js?v=20260730"></script>
   <script>
     function openGamesModal() {
       document.getElementById('games-modal').classList.remove('hidden');
