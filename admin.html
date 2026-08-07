@@ -107,7 +107,17 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 
 <div class="two-col">
 <div class="panel"><div class="panel-title"><span>🔽</span>Воронка продаж</div><div id="funnel-wrap"><div class="no-data">Загрузка...</div></div></div>
-<div class="panel"><div class="panel-title"><span>🖱</span>Статистика по кнопкам</div><div id="btn-wrap"><div class="no-data">Загрузка...</div></div></div>
+<div class="panel"><div class="panel-title"><span>🎯</span>Ключевые события</div><div id="btn-wrap"><div class="no-data">Загрузка...</div></div></div>
+</div>
+
+<div class="panel" style="margin-bottom:24px">
+<div class="panel-title"><span>🖱</span>Таблица: Абсолютно ВСЕ клики на сайте (по кнопкам)</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Название кнопки</th><th>Количество</th><th>Диаграмма</th></tr></thead>
+<tbody id="all-btns-body"></tbody>
+</table>
+</div>
 </div>
 
 <div class="two-col">
@@ -165,9 +175,16 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 <button class="export-btn" onclick="exportCSV()">⬇ Экспорт CSV</button>
 <span id="tbl-count" style="color:var(--muted);font-size:12px;margin-left:auto"></span>
 </div>
+<style>
+.exp-btn { background: rgba(249,115,22,0.15); border: 1px solid var(--orange); color: var(--orange); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; transition: 0.2s; }
+.exp-btn:hover { background: var(--orange); color: #fff; }
+.details-row { display: none; background: rgba(0,0,0,0.2); }
+.details-table { width: 100%; border-left: 2px solid var(--orange); margin: 8px 0; background: rgba(255,255,255,0.02); }
+.details-table th, .details-table td { padding: 6px 12px; font-size: 11px; }
+</style>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Время</th><th>Email</th><th>WhatsApp/TG</th><th>Имя</th><th>Событие</th><th>Раздел</th><th>Скролл%</th><th>Время с</th><th>Устройство</th><th>Источник</th><th>Тариф</th></tr></thead>
+<thead><tr><th>ID Сессии / Пользователь</th><th>Email / Phone</th><th>Имя</th><th>Кол-во Кликов</th><th>Устройство</th><th>Источник</th><th>Действие</th></tr></thead>
 <tbody id="tbl-body"></tbody>
 </table>
 </div>
@@ -176,8 +193,11 @@ tr:hover td{background:rgba(255,255,255,0.03)}
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const PASS="Mind2026";
-const READ_URL="https://script.google.com/macros/s/AKfycbx_DEMO_MINDECHO_WEBHOOK/exec?key=mindecho_read_key_2026";
+// Supabase Configuration
+const supabaseUrl = 'https://yslrofsjeujsftlabuqn.supabase.co/rest/v1/analytics_events?select=*&order=id.desc&limit=500';
+const supabaseKey = 'sb_publishable_tnc4wA3Cr-FtaDyjVz9Q6Q_fklMPSDr';
+
+const PASS = 'Mind1234';
 let allRows=[],stats={};
 let hChart,rChart,dChart;
 
@@ -204,62 +224,53 @@ function parseDateStr(str) {
 
 async function loadData(){
   try{
-    const r=await fetch(READ_URL);
-    const j=await r.json();
-    if(j.status==='success'){
-      allRows=j.rows||[];
-      allRows.sort((a,b) => parseDateStr(b.timestamp) - parseDateStr(a.timestamp));
-      stats=j.stats||{}; 
-      renderAll();
+    const response = await fetch(supabaseUrl, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': 'Bearer ' + supabaseKey
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error("HTTP error " + response.status);
     }
-    else loadDemo();
-  }catch(e){loadDemo();}
+    
+    const data = await response.json();
+    allRows = data || [];
+    
+    allRows.sort((a,b) => parseDateStr(b.timestamp) - parseDateStr(a.timestamp));
+    
+    // Process reviews
+    const realReviews = allRows.filter(r => r.event_type === 'CustDev_Submitted').map(r => ({
+      timestamp: r.timestamp,
+      name: r.user_name && r.user_name !== '-' ? r.user_name : 'Аноним',
+      contact: (r.email && r.email !== '-') ? r.email : ((r.phone && r.phone !== '-') ? r.phone : 'Не указан'),
+      scenario: r.plan_name,
+      scenarioTitle: r.plan_name === 'burnout' ? '🟢 Выгорание' : r.plan_name === 'tantrums' ? '🔵 Истерики' : r.plan_name === 'confidence' ? '🟡 Уверенность' : '🟣 Эксперт',
+      answers: r.page_section || '-',
+      status: '⏳ В обработке'
+    }));
+    
+    if(realReviews.length > 0) {
+      reviewsData = realReviews;
+    }
+    
+    loadDemo(); // Builds stats and renders (demo data has been removed from loadDemo)
+  }catch(e){
+    alert("Критическая ошибка загрузки: " + e.message);
+    console.error("Supabase load error:", e);
+    document.getElementById('loading-overlay').style.display='none';
+    loadDemo();
+  }
 }
 
 let reviewsData = [];
 
 function loadDemo(){
-  const evs=['Page_View','Generate_Click','Play_Click','Pricing_Viewed','Buy_Premium_Click','Buy_Basic_Click','Voice_Recorded','NDA_Signed','Engaged_30s','Engaged_60s','Auth_Modal_Opened','Emergency_Click'];
-  const names=['Мария','Анна','Елена','Ольга','Александр','Надежда'];
-  const emails=['user@gmail.com','anna@mail.ru','mama@yandex.ru','olga@icloud.com','elena@mail.ru'];
-  const phones=['+7-999-123-45-67','+7-912-456-78-90'];
-  const devs=['mobile','mobile','mobile','desktop','tablet'];
-  const refs=['direct','Instagram','Google','Telegram','direct'];
-  const secs=['hero','pricing','generator','mission'];
-  const kids=['Sofia','Masha','Sasha','Dasha','Vanya','Alisa'];
-  allRows=[];
-  for(let i=0;i<90;i++){
-    const ev=evs[Math.floor(Math.random()*evs.length)];
-    const he=Math.random()>0.55, hp=Math.random()>0.78;
-    allRows.push({
-      timestamp:new Date(Date.now()-Math.random()*86400000*7).toLocaleString('ru-RU'),
-      event_type:ev,session_id:'s_'+Math.random().toString(36).substr(2,6),
-      user_name:he?names[Math.floor(Math.random()*names.length)]:'-',
-      email:he?emails[Math.floor(Math.random()*emails.length)]:'-',
-      phone:hp?phones[Math.floor(Math.random()*phones.length)]:'-',
-      plan_name:ev.includes('Buy')?ev.includes('Basic')?'Basic':ev.includes('Pro')?'Pro':'Premium':'-',
-      price:ev.includes('Buy')?ev.includes('Basic')?9.99:ev.includes('Pro')?29.99:14.99:0,
-      language:Math.random()>0.2?'ru':'he',
-      device_type:devs[Math.floor(Math.random()*devs.length)],
-      referrer:refs[Math.floor(Math.random()*refs.length)],
-      page_section:secs[Math.floor(Math.random()*secs.length)],
-      scroll_depth:Math.round(Math.random()*100),
-      time_on_page:Math.round(Math.random()*280),
-      child_name:(ev==='Generate_Click'||ev==='Play_Click')?kids[Math.floor(Math.random()*kids.length)]:'-',
-      payment_intent:ev.includes('Buy')
-    });
-  }
-  reviewsData = [
-    { timestamp: '01.08.2026, 15:42', name: 'Анна М.', contact: '+7 (912) 456-78-90 (WA)', scenario: 'burnout', scenarioTitle: '🟢 Выгорание', answers: '1) Усталость вечером: 9/10. 2) Мечтаю о медитации голосом мамы. 3) Приложение очень нужно для мамы!', status: '🎁 Подарок выдан' },
-    { timestamp: '01.08.2026, 14:15', name: 'Елена В.', contact: '@elena_parent (TG)', scenario: 'tantrums', scenarioTitle: '🔵 Истерики', answers: '1) Частота капризов перед сном: 4-5 раз в неделю. 2) Готова платить за экспресс-режим. 3) Спасибо за подарок!', status: '🎁 Подарок выдан' },
-    { timestamp: '01.08.2026, 13:08', name: 'Ольга К.', contact: 'olga_m@icloud.com', scenario: 'confidence', scenarioTitle: '🟡 Уверенность', answers: '1) Ребенок стеснительный в детсаду. 2) Нужен утренний настрой на уверенность. 3) Прошла опрос ради VIP-доступа.', status: '⏳ В обработке' },
-    { timestamp: '01.08.2026, 11:30', name: 'Дмитрий С.', contact: '+7 (903) 777-88-99 (WA)', scenario: 'expert', scenarioTitle: '🟣 Эксперт', answers: '1) Детский нейропсихолог. 2) Интересует валидация Агентом-Супервизором. 3) Хочу сотрудничество.', status: '🎁 Подарок выдан' },
-    { timestamp: '31.07.2026, 19:22', name: 'Надежда П.', contact: '@nadya_mama (TG)', scenario: 'burnout', scenarioTitle: '🟢 Выгорание', answers: '1) Не хватает 1-2 часов личного времени в день. 2) Рассказы-медитации супер! 3) Подарок получен.', status: '🎁 Подарок выдан' }
-  ];
   allRows.sort((a,b) => parseDateStr(b.timestamp) - parseDateStr(a.timestamp));
   stats=buildStats(allRows);
   renderAll();
-  showToast('Demo-данные. Задеплойте Apps Script для реальных данных.');
+  showToast('Данные загружены из Supabase');
 }
 
 function buildStats(rows){
@@ -318,6 +329,7 @@ function renderAll(){
   renderNames(s.child_names||{});
   renderReviewsTable();
   renderTable();
+  renderAllBtns(ec);
 }
 
 function renderFunnel(f,pv){
@@ -343,13 +355,32 @@ function renderBtns(ec){
   const sorted=Object.entries(ec).sort((a,b)=>b[1]-a[1]).slice(0,14);
   const mx=sorted.length?sorted[0][1]:1;
   const cm={'Buy':'#22C55E','Play':'#06B6D4','Page_View':'#F97316','Pricing':'#EAB308','NDA':'#A855F7','Voice':'#F43F5E','Generate':'#3B82F6','Engaged':'#8B5CF6','Emergency':'#EF4444'};
-  const lm={'Page_View':'👁 Заход на сайт','Generate_Click':'✨ Генерация медитации','Play_Click':'▶ Воспроизведение','Pricing_Viewed':'💰 Просмотр цен','Buy_Basic_Click':'💳 Купить Basic','Buy_Premium_Click':'💳 Купить Premium','Buy_Pro_Click':'💳 Купить Pro','Voice_Recorded':'🎙 Запись голоса','NDA_Signed':'✅ NDA подпись','Engaged_30s':'⏱ 30с на сайте','Engaged_60s':'⏱ 60с на сайте','Engaged_120s':'⏱ 2мин на сайте','Emergency_Click':'🚨 Экстренный','Auth_Modal_Opened':'🔐 Вход','CustDev_Submitted':'📝 Опрос'};
+  const lm={'Page_View':'👁 Заход на сайт','Generate_Click':'✨ Генерация медитации','Play_Click':'▶ Воспроизведение','Pricing_Viewed':'💰 Просмотр цен','Buy_Basic_Click':'💳 Купить Basic','Buy_Premium_Click':'💳 Купить Premium','Buy_Pro_Click':'💳 Купить Pro','Voice_Recorded':'🎙 Запись голоса','NDA_Signed':'✅ NDA подпись','WhatsApp_Telegram_Captured':'📱 Ввод WhatsApp/TG','BillingCycle_Toggled':'🔄 Переключение Год/Месяц','Engaged_30s':'⏱ 30с на сайте','Engaged_60s':'⏱ 60с на сайте','Engaged_120s':'⏱ 2мин на сайте','Emergency_Click':'🚨 Экстренный','Auth_Modal_Opened':'🔐 Вход','CustDev_Submitted':'📝 Опрос'};
   function gc(n){for(const[k,v] of Object.entries(cm))if(n.includes(k))return v;return '#64748B';}
   document.getElementById('btn-wrap').innerHTML=sorted.map(([n,c])=>{
     const p=Math.round(c/mx*100);
     return '<div class="btn-stat-row"><div class="btn-stat-name">'+(lm[n]||n)+'</div><div class="btn-stat-bar-bg"><div class="btn-stat-fill" style="width:0%;background:'+gc(n)+'" data-w="'+p+'%"></div></div><div class="btn-stat-count">'+c+'</div></div>';
   }).join('')||'<div class="no-data">Нет данных</div>';
   setTimeout(()=>document.querySelectorAll('.btn-stat-fill').forEach(b=>b.style.width=b.dataset.w),50);
+}
+
+function renderAllBtns(ec){
+  const btnEvents = Object.entries(ec).filter(e => e[0].startsWith('BtnClick_')).sort((a,b)=>b[1]-a[1]);
+  const mx = btnEvents.length ? btnEvents[0][1] : 1;
+  document.getElementById('all-btns-body').innerHTML = btnEvents.map(([n,c])=>{
+    const btnText = n.replace('BtnClick_', '');
+    const p = Math.round(c/mx*100);
+    return `<tr>
+      <td><b style="color:var(--text)">${btnText}</b></td>
+      <td><span style="color:var(--cyan);font-weight:700;font-size:14px">${c}</span></td>
+      <td style="width:100%; min-width:150px">
+        <div class="btn-stat-bar-bg" style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden">
+          <div class="btn-stat-fill" style="height:100%;background:var(--cyan);width:0%;transition:width 1s ease-out" data-w="${p}%"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="3" class="no-data">Пока нет кликов по кнопкам</td></tr>';
+  setTimeout(()=>document.querySelectorAll('#all-btns-body .btn-stat-fill').forEach(b=>b.style.width=b.dataset.w),50);
 }
 
 function renderCharts(){
@@ -411,23 +442,57 @@ function renderTable(){
   if(lf==='email')rows=rows.filter(r=>r.email&&r.email!=='-');
   else if(lf==='phone')rows=rows.filter(r=>r.phone&&r.phone!=='-');
   else if(lf==='leads')rows=rows.filter(r=>(r.email&&r.email!=='-')||(r.phone&&r.phone!=='-'));
-  document.getElementById('tbl-count').textContent='Показано: '+rows.length+' из '+allRows.length;
+  // Group rows by session_id
+  const sessions = {};
+  rows.forEach(r => {
+    const s = r.session_id || 'unknown';
+    if(!sessions[s]) sessions[s] = [];
+    sessions[s].push(r);
+  });
+  const sortedSessions = Object.values(sessions).sort((a,b)=>parseDateStr(b[0].timestamp) - parseDateStr(a[0].timestamp));
+  document.getElementById('tbl-count').textContent='Показано: '+sortedSessions.length+' уникальных сессий';
+  
   const cm={'Buy':'ev-buy','Play':'ev-play','Page_View':'ev-view','Engaged':'ev-engage','NDA':'ev-nda'};
   function ec(n){for(const[k,v]of Object.entries(cm))if(n&&n.includes(k))return v;return 'ev-def';}
-  document.getElementById('tbl-body').innerHTML=rows.slice(0,200).map(r=>`
-<tr>
-<td style="color:var(--muted)">${String(r.timestamp||'').split(',')[0]}</td>
-<td>${r.email&&r.email!=='-'?'<span style="color:var(--cyan)">'+r.email+'</span>':'-'}</td>
-<td>${r.phone&&r.phone!=='-'?'<span style="color:var(--green)">'+r.phone+'</span>':'-'}</td>
-<td>${r.user_name&&r.user_name!=='-'?r.user_name:'-'}</td>
-<td><span class="ev-badge ${ec(r.event_type)}">${r.event_type||'-'}</span></td>
-<td style="color:var(--muted)">${r.page_section||'-'}</td>
-<td>${r.scroll_depth>0?'<span style="color:var(--orange)">'+r.scroll_depth+'%</span>':'-'}</td>
-<td>${r.time_on_page>0?r.time_on_page+'с':'-'}</td>
-<td>${r.device_type||'-'}</td>
-<td style="color:var(--muted)">${r.referrer||'-'}</td>
-<td>${r.plan_name&&r.plan_name!=='-'?'<span style="color:var(--yellow)">'+r.plan_name+'</span>':'-'}</td>
-</tr>`).join('')||'<tr><td colspan="11" class="no-data">Нет данных</td></tr>';
+  
+  document.getElementById('tbl-body').innerHTML=sortedSessions.slice(0, 100).map((sessRows, idx)=>{
+    const r = sessRows[0]; // First event in session for general info
+    const evCount = sessRows.length;
+    // Look for email/phone across the session
+    const em = sessRows.find(x => x.email && x.email !== '-')?.email || '-';
+    const ph = sessRows.find(x => x.phone && x.phone !== '-')?.phone || '-';
+    const nm = sessRows.find(x => x.user_name && x.user_name !== '-')?.user_name || '-';
+    
+    let detailsHtml = `<table class="details-table">
+      <thead><tr><th>Время</th><th>Событие</th><th>Текст / Раздел</th><th>Скролл%</th><th>Время с</th></tr></thead>
+      <tbody>` + sessRows.map(ev => `
+        <tr>
+          <td style="color:var(--muted)">${String(ev.timestamp||'').split(',')[0]}</td>
+          <td><span class="ev-badge ${ec(ev.event_type)}">${ev.event_type||'-'}</span></td>
+          <td>${ev.page_section || ev.plan_name || '-'}</td>
+          <td>${ev.scroll_depth>0?'<span style="color:var(--orange)">'+ev.scroll_depth+'%</span>':'-'}</td>
+          <td>${ev.time_on_page>0?ev.time_on_page+'с':'-'}</td>
+        </tr>
+      `).join('') + `</tbody></table>`;
+
+    return `
+    <tr>
+      <td><span style="color:var(--muted)">${r.session_id||'-'}</span></td>
+      <td>
+        ${em!=='-'?'<span style="color:var(--cyan);display:block;margin-bottom:2px">'+em+'</span>':''}
+        ${ph!=='-'?'<span style="color:var(--green)">'+ph+'</span>':''}
+        ${em==='-'&&ph==='-'?'-':''}
+      </td>
+      <td>${nm}</td>
+      <td><b>${evCount}</b> событий</td>
+      <td>${r.device_type||'-'}</td>
+      <td style="color:var(--muted)">${r.referrer||'-'}</td>
+      <td><button class="exp-btn" onclick="const r=document.getElementById('details-${idx}'); r.style.display=r.style.display==='table-row'?'none':'table-row';">Показать клики 🔽</button></td>
+    </tr>
+    <tr class="details-row" id="details-${idx}">
+      <td colspan="7">${detailsHtml}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="7" class="no-data">Нет данных</td></tr>';
 }
 
 function copyEmails(){const l=(stats.email_list||[]).join('\n');navigator.clipboard.writeText(l).then(()=>showToast('Скопировано '+(stats.email_list||[]).length+' email'));}
