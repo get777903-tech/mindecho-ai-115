@@ -3,8 +3,9 @@
    Admin Analytics Dashboard + Full Click Tracking + Scroll/Time Metrics
    ========================================================================== */
 
-// Webhook URL for Google Sheets logging
-const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx_DEMO_MINDECHO_WEBHOOK/exec";
+// Supabase Configuration
+const supabaseUrl = 'https://yslrofsjeujsftlabuqn.supabase.co/rest/v1/analytics_events';
+const supabaseKey = 'sb_publishable_tnc4wA3Cr-FtaDyjVz9Q6Q_fklMPSDr';
 
 // Audio Track File Name
 const MEDITATION_AUDIO_SRC = "meditation1.mp3";
@@ -45,13 +46,16 @@ const i18n = {
     nav_modes: "Аудиорежимы",
     nav_generator: "Студия",
     nav_pricing: "Тарифы",
-    nav_nda: "NDA Подпись",
+    nav_nda: "DISCLAIMER",
     nav_custdev: "🎁 Опрос + подарок",
     btn_login: "Войти",
+    btn_games: "🎮 Игры развивающие речь + эмоциональный интеллект",
+    btn_prayer: "🙏 Создание молитвы-медитации",
     hero_badge: "ИИ + Детская Нейропсихология + КПТ/ACT + Психосоматика",
     hero_title: "Превращаем родительскую рутину в <span class='text-gradient'>бережную терапию</span>",
     hero_subtitle: "Мы создаем глобальное технологическое решение для защиты ментального здоровья семей. Легальный способ сохранить эмоциональные ресурсы родителей и вырастить счастливого ребенка.",
-    btn_try_free: "🚀 Попробовать бесплатно (2 запроса/день)",
+    btn_try_free: "✨ Попробовать! Рассказ-медитация с голосом мамы или папы",
+    btn_try_free_sub: "мягко исцеляет дневные стрессы, обиды и страхи ребенка прямо в процессе засыпания или заряд утренней уверенности",
     btn_support_project: "[ Поддержать проект / Получить ссылку ]",
     trust_privacy: "🛡 Privacy-First (Банковское шифрование)",
     trust_supervisor: "🧠 Валидировано Агентом-Супервизором",
@@ -95,7 +99,7 @@ const i18n = {
     opt_mode_morning: "☀️ Утренняя (Уверенность)",
     opt_mode_tantrums: "🛑 Экс-Помощь при истерике",
     opt_mode_psychosomatic: "🌿 Психосоматика (Здоровье)",
-    btn_generate: "✨ Сгенерировать и озвучить рассказ-медитацию",
+    btn_generate: "✨ Создать рассказ-медитацию с голосом мамы или папы",
     player_title_default: "Рассказ-Медитация",
     player_sub_default: "Медленный спокойный голос родителя • Без музыки",
     player_placeholder: 'Укажите имя и нажмите "Сгенерировать"...',
@@ -145,13 +149,15 @@ const i18n = {
     legal_privacy_guarantee: "Privacy-First Гарантия",
     modal_auth_title: "Вход в MindEcho AI",
     modal_auth_sub: "Сохраните настройки медитаций и статистику",
-    btn_auth_google: "Вход через Google Account",
-    btn_auth_apple: "Вход через Apple Store ID",
+    btn_auth_google: "Вход через аккаунт Google",
+    btn_auth_apple: "Вход через Apple ID",
     divider_or: "или по Email и Телефону",
     label_auth_name: "Ваше Имя и Фамилия:",
     label_auth_email: "Ваш Email:",
-    label_auth_phone: "Номер телефона:",
-    label_auth_address: "email address",
+    label_auth_phone: "WhatsApp / Telegram (Обязательно):",
+    label_custdev_phone: "WhatsApp / Telegram (Обязательно для получения подарка):",
+    label_auth_address: "Город / Страна проживания:",
+    label_nda_email: "Ваш E-mail адрес:",
     label_terms_agree: "Я согласен с Условиями использования и политикой конфиденциальности.",
     btn_auth_submit: "Войти / Зарегистрироваться",
     checkout_title: "Оформление подписки",
@@ -178,13 +184,16 @@ const i18n = {
     nav_modes: "Audio Modes",
     nav_generator: "Studio",
     nav_pricing: "Pricing",
-    nav_nda: "NDA Signature",
+    nav_nda: "DISCLAIMER",
     nav_custdev: "CustDev Survey",
     btn_login: "Log In",
+    btn_games: "🎮 Speech & Emotional Intelligence Games",
+    btn_prayer: "🙏 Prayer-Meditation Creation",
     hero_badge: "AI + Child Neuropsychology + CBT/ACT + Psychosomatics",
     hero_title: "Transforming parenting routine into <span class='text-gradient'>gentle therapy</span>",
     hero_subtitle: "We build a global tech ecosystem for family mental health. A legal way to save parents' emotional resources and raise happy children.",
-    btn_try_free: "🚀 Try Free (2 requests/day)",
+    btn_try_free: "✨ Try It! Narrative Meditation with Parent's Voice",
+    btn_try_free_sub: "gently heals daytime stress and fears during sleep transition or boosts morning confidence",
     btn_support_project: "[ Support Project / Get Link ]",
     trust_privacy: "🛡 Privacy-First (Bank-grade Encryption)",
     trust_supervisor: "🧠 Validated by Supervisor AI Agent",
@@ -247,7 +256,7 @@ const i18n = {
     opt_mode_bedtime: "🌙 Bedtime (Sleep)",
     opt_mode_morning: "☀️ Morning (Confidence)",
     opt_mode_emergency: "🚨 Emergency (Grounding)",
-    btn_generate: "✨ Generate & Play Narrative Meditation",
+    btn_generate: "✨ Create Narrative Meditation with Parent's Voice",
     player_title_default: "Narrative Meditation",
     player_sub_default: "Very Slow Deep Male Voice • Pure Speech",
     player_placeholder: 'Enter name and click "Generate"...',
@@ -301,12 +310,14 @@ const i18n = {
     modal_auth_title: "Sign in to MindEcho AI",
     modal_auth_sub: "Save your meditation settings and analytics",
     btn_auth_google: "Sign in with Google Account",
-    btn_auth_apple: "Sign in with Apple Store ID",
+    btn_auth_apple: "Sign in with Apple ID",
     divider_or: "or via Email and Phone",
     label_auth_name: "Full Name:",
     label_auth_email: "Email Address:",
-    label_auth_phone: "Phone Number:",
+    label_auth_phone: "WhatsApp / Telegram (Required):",
+    label_custdev_phone: "WhatsApp / Telegram (Required for gift):",
     label_auth_address: "City / Residence Address:",
+    label_nda_email: "Your E-mail Address:",
     label_terms_agree: "I agree with Terms of Use and Privacy Policy.",
     btn_auth_submit: "Sign In / Register",
     checkout_title: "Subscription Checkout",
@@ -333,13 +344,16 @@ const i18n = {
     nav_modes: "מצבי שמע",
     nav_generator: "סטודיו",
     nav_pricing: "תעריפים",
-    nav_nda: "חתימת NDA",
+    nav_nda: "DISCLAIMER",
     nav_custdev: "סקר CustDev",
     btn_login: "התחבר",
+    btn_games: "🎮 משחקי שפה ואינטליגנציה רגשית",
+    btn_prayer: "🙏 יצירת תפילה-מדיטציה",
     hero_badge: "בינה מלאכותית + נוירופסיכולוגיה + CBT/ACT",
     hero_title: "הופכים את שגרת ההורות ל<span class='text-gradient'>תרפיה עדינה</span>",
     hero_subtitle: "פתרון טכנולוגי גלובלי לבריאות הנפש של המשפחה. לשמור על המשאבים הרגשיים של ההורים ולגדל ילדים מאושרים.",
-    btn_try_free: "🚀 נסה בחינם (2 בקשות ביום)",
+    btn_try_free: "✨ נסו! סיפור-מדיטציה בקול של אמא או אבא",
+    btn_try_free_sub: "מרפא בעדינות מתחים ופחדים של היום בזמן ההרדמה או מעניק ביטחון לבוקר",
     btn_support_project: "[ תמוך בפרויקט / קבל קישור ]",
     trust_privacy: "🛡 Privacy-First (הצפנה בנקאית)",
     trust_supervisor: "🧠 מאומת ע\"י סוכן AI מפקח",
@@ -402,7 +416,7 @@ const i18n = {
     opt_mode_bedtime: "🌙 לפני השינה",
     opt_mode_morning: "☀️ בוקר (ביטחון)",
     opt_mode_emergency: "🚨 חירום (קרקוע)",
-    btn_generate: "✨ צור והקרא סיפור-מדיטציה",
+    btn_generate: "✨ צור סיפור-מדיטציה בקול של אמא או אבא",
     player_title_default: "סיפור-מדיטציה",
     player_sub_default: "קול גברי נמוך ואיטי מאוד • ללא מוזיקה",
     player_placeholder: 'הכנס שם ולחץ "צור"...',
@@ -455,13 +469,15 @@ const i18n = {
     legal_privacy_guarantee: "אחריות Privacy-First",
     modal_auth_title: "התחברות ל-MindEcho AI",
     modal_auth_sub: "שמור הגדרות מדיטציה וסטטיסטיקה",
-    btn_auth_google: "התחבר עם Google Account",
-    btn_auth_apple: "התחבר עם Apple Store ID",
+    btn_auth_google: "התחבר עם חשבון Google",
+    btn_auth_apple: "התחבר עם Apple ID",
     divider_or: "או באמצעות אימייל וטלפון",
     label_auth_name: "שם מלא:",
     label_auth_email: "כתובת אימייל:",
-    label_auth_phone: "מספר טלפון:",
-    label_auth_address: "עיר / כתובת מגורים:",
+    label_auth_phone: "WhatsApp / Telegram (חובה):",
+    label_custdev_phone: "WhatsApp / Telegram (חובה לקבלת המתנה):",
+    label_auth_address: "עיר / מדינת מגורים:",
+    label_nda_email: "כתובת אימייל:",
     label_terms_agree: "אני מסכים לתנאי השימוש ומדיניות הפרטיות.",
     btn_auth_submit: "התחבר / הרשם",
     checkout_title: "הרשמה למנוי",
@@ -631,7 +647,7 @@ const BASE_MEDITATION_TEMPLATE_HE = `
 פקחי עיניים וחייכי לחיים, ואז הם יחייכו אלייך בחזרה. פקחי עיניים עם חיוך רחב, תוך תחושת מוכנות ליום נפלא ומאושר.
 `;
 
-// Initialize Page Load & Canvas Pad
+// Initialize Signature Canvas & Setup Listeners on Load
 document.addEventListener('DOMContentLoaded', () => {
   setupScrollListener();
   registerServiceWorker();
@@ -639,6 +655,32 @@ document.addEventListener('DOMContentLoaded', () => {
   initSignatureCanvas();
   initAnalyticsTracking(); // 📊 Full analytics: Page_View, scroll %, time, pricing view
 });
+
+// Explicit Global Window Binds for HTML Inline Event Handlers
+window.openNDAModal = openNDAModal;
+window.closeNDAModal = closeNDAModal;
+window.submitNDASignature = submitNDASignature;
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.handleAuthSubmit = handleAuthSubmit;
+window.openCustDevModal = openCustDevModal;
+window.closeCustDevModal = closeCustDevModal;
+window.handleCustDevSubmit = handleCustDevSubmit;
+window.selectCustDevScenario = selectCustDevScenario;
+window.selectPlan = selectPlan;
+window.closeCheckoutModal = closeCheckoutModal;
+window.handlePaymentSubmit = handlePaymentSubmit;
+window.openGamesModal = openGamesModal;
+window.closeGamesModal = closeGamesModal;
+window.playQuickTestAudio = playQuickTestAudio;
+window.selectAudioMode = selectAudioMode;
+window.toggleBillingCycle = toggleBillingCycle;
+window.switchLanguage = switchLanguage;
+window.scrollToSection = scrollToSection;
+window.simulateSocialAuth = simulateSocialAuth;
+window.generatePersonalMeditation = generatePersonalMeditation;
+window.toggleVoiceRecord = toggleVoiceRecord;
+window.clearSignatureCanvas = clearSignatureCanvas;
 
 // Initialize Audio Element
 function initAudioPlayer() {
@@ -663,11 +705,15 @@ function initAudioPlayer() {
 }
 
 // 100% Multilingual Switcher (RU, EN, HE)
-function switchLanguage(langKey) {
+function switchLanguage(langKey, btnEl) {
   appState.lang = langKey;
   
   document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
+  if (btnEl) {
+    btnEl.classList.add('active');
+  } else if (typeof event !== 'undefined' && event && event.target) {
+    event.target.classList.add('active');
+  }
 
   if (langKey === 'he') {
     document.documentElement.setAttribute('dir', 'rtl');
@@ -782,6 +828,8 @@ function generatePersonalMeditation() {
   const gender = document.getElementById('child-gender').value;
   const audioSource = document.getElementById('audio-mode-source').value;
 
+  logClickAnalytics('Generate_Click', '-', 0, { section: 'generator' });
+
   const isGirl = (gender === 'girl');
   let customText = "";
 
@@ -881,12 +929,24 @@ function playMP3AudioTrack(forceStart = false) {
     initAudioPlayer();
   }
 
-  if (appState.isPlayingAudio && !forceStart) {
+  if (forceStart) {
+    appState.audioTrack.currentTime = 0;
+    appState.audioTrack.play().then(() => {
+      appState.isPlayingAudio = true;
+      document.getElementById('play-btn').innerText = "⏸";
+    }).catch(err => {
+      console.warn("MP3 playback fallback to speech synth:", err);
+      const text = document.getElementById('meditation-text-box').innerText;
+      speakTextTTS(text);
+    });
+    return;
+  }
+
+  if (appState.isPlayingAudio) {
     appState.audioTrack.pause();
     appState.isPlayingAudio = false;
     document.getElementById('play-btn').innerText = "▶";
   } else {
-    // Always resume from where it was paused
     appState.audioTrack.play().then(() => {
       appState.isPlayingAudio = true;
       document.getElementById('play-btn').innerText = "⏸";
@@ -1043,19 +1103,28 @@ function clearSignatureCanvas() {
 }
 
 function openNDAModal() {
-  document.getElementById('nda-modal').classList.remove('hidden');
+  const modal = document.getElementById('nda-modal');
+  if (modal) modal.classList.remove('hidden');
+  initSignatureCanvas();
   logClickAnalytics('NDAModal_Opened', 'NDA_Form', 0);
 }
 
 function closeNDAModal() {
-  document.getElementById('nda-modal').classList.add('hidden');
+  const modal = document.getElementById('nda-modal');
+  if (modal) modal.classList.add('hidden');
 }
 
 async function submitNDASignature() {
   const name = document.getElementById('nda-user-name').value || 'Анонимный Подписант';
-  const contact = document.getElementById('nda-user-contact') ? document.getElementById('nda-user-contact').value : '';
-  const email = document.getElementById('nda-user-email') ? document.getElementById('nda-user-email').value : '';
+  const contact = document.getElementById('nda-user-contact') ? document.getElementById('nda-user-contact').value.trim() : '';
+  const email = document.getElementById('nda-user-email') ? document.getElementById('nda-user-email').value.trim() : '';
   const sigData = appState.signatureCanvas ? appState.signatureCanvas.toDataURL() : '';
+
+  if (!contact) {
+    alert("⚠️ Пожалуйста, укажите ваш номер WhatsApp или Telegram для продолжения!");
+    document.getElementById('nda-user-contact')?.focus();
+    return;
+  }
 
   localStorage.setItem('ndaSigned', 'true');
   if (typeof hasSignedNDA !== 'undefined') {
@@ -1100,19 +1169,36 @@ async function submitNDASignature() {
     user_name: name,
     contact: contact,
     email: email,
+    phone: contact,
     signature_data: sigData ? 'Signature Captured' : 'Empty',
     pdf_base64: pdfBase64
+  });
+
+  // Dedicated separate log entry for WhatsApp/Telegram contact
+  logClickAnalytics('WhatsApp_Telegram_Captured', 'NDA_Signature', 0, {
+    phone: contact,
+    user_name: name,
+    email: email,
+    page_section: 'NDA_Modal'
   });
 
   if (appState.pendingCheckout) {
     appState.pendingCheckout = false;
     if (appState.selectedPrice === 0) {
-      openAuthModal('free');
+      const modal = document.getElementById('auth-modal');
+      if (modal) modal.classList.remove('hidden');
+      logClickAnalytics('AuthModal_Opened', 'free', 0);
     } else {
       document.getElementById('checkout-plan-name').innerText = appState.selectedPlan;
       document.getElementById('checkout-plan-price').innerText = `$${appState.selectedPrice}`;
       document.getElementById('checkout-modal').classList.remove('hidden');
     }
+  } else if (appState.pendingAuthModal) {
+    const type = appState.pendingAuthModal;
+    appState.pendingAuthModal = null;
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.remove('hidden');
+    logClickAnalytics('AuthModal_Opened', type, 0);
   } else {
     scrollToSection('generator');
   }
@@ -1187,8 +1273,20 @@ function handleCustDevSubmit(e) {
   alert("🎉 Спасибо за ваши ответы! Ответы записаны. Вам предоставлен приоритетный VIP-доступ.");
   closeCustDevModal();
 
+  const contact = document.getElementById('cd-input-contact')?.value || '-';
+  const isEmail = contact.includes('@');
+
   logClickAnalytics('CustDev_Submitted', appState.currentCustDevScenario, 0, {
-    custdev_answers: answers.join(" | ")
+    section: answers.join(" | "), // Packing answers here so Google Sheets saves them
+    email: isEmail ? contact : '-',
+    phone: !isEmail ? contact : contact
+  });
+
+  // Dedicated separate log entry for WhatsApp/Telegram contact
+  logClickAnalytics('WhatsApp_Telegram_Captured', 'CustDev_Survey', 0, {
+    phone: contact,
+    plan_name: appState.currentCustDevScenario,
+    page_section: 'CustDev_Modal'
   });
 }
 
@@ -1234,22 +1332,21 @@ function toggleBillingCycle() {
 // Plan Selection & Checkout Modal
 function selectPlan(planName, price) {
   appState.selectedPlan = planName;
-  appState.selectedPrice = price;
-
-  logClickAnalytics('TariffButton_Click', planName, price);
-
-  if (!localStorage.getItem('ndaSigned')) {
-    appState.pendingCheckout = true;
-    openNDAModal();
-  } else {
-    if (price === 0) {
-      openAuthModal('free');
-    } else {
-      document.getElementById('checkout-plan-name').innerText = planName;
-      document.getElementById('checkout-plan-price').innerText = `$${price}`;
-      document.getElementById('checkout-modal').classList.remove('hidden');
-    }
+  
+  // Dynamic annual price calculation
+  let finalPrice = price;
+  if (appState.isAnnualBilling && price > 0) {
+    if (planName === 'Basic') finalPrice = 29.99;
+    else if (planName === 'Premium') finalPrice = 59.99;
+    else if (planName === 'Platinum') finalPrice = 99.99;
   }
+  appState.selectedPrice = finalPrice;
+
+  logClickAnalytics('TariffButton_Click', planName, finalPrice);
+
+  // ALWAYS open DISCLAIMER first!
+  appState.pendingCheckout = true;
+  openNDAModal();
 }
 
 function closeCheckoutModal() {
@@ -1258,19 +1355,45 @@ function closeCheckoutModal() {
 
 function handlePaymentSubmit(e) {
   e.preventDefault();
+  const phone = document.getElementById('checkout-phone')?.value || 'Не указан';
   alert(`🎉 Подписка "${appState.selectedPlan}" успешно активирована! Добро пожаловать в экосистему MindEcho AI.`);
   closeCheckoutModal();
-  logClickAnalytics('Payment_Completed', appState.selectedPlan, appState.selectedPrice);
+  logClickAnalytics('Payment_Completed', appState.selectedPlan, appState.selectedPrice, { phone: phone });
+
+  // Dedicated separate log entry for WhatsApp/Telegram contact
+  logClickAnalytics('WhatsApp_Telegram_Captured', 'Checkout_Payment', appState.selectedPrice, {
+    phone: phone,
+    plan_name: appState.selectedPlan,
+    page_section: 'Checkout_Modal'
+  });
 }
 
 // Auth Modal Handlers
 function openAuthModal(type = 'login') {
-  document.getElementById('auth-modal').classList.remove('hidden');
-  logClickAnalytics('AuthModal_Opened', type, 0);
+  if (!localStorage.getItem('ndaSigned')) {
+    appState.pendingAuthModal = type;
+    openNDAModal();
+  } else {
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.remove('hidden');
+    logClickAnalytics('AuthModal_Opened', type, 0);
+  }
 }
 
 function closeAuthModal() {
   document.getElementById('auth-modal').classList.add('hidden');
+}
+
+// Games Modal Handlers
+function openGamesModal() {
+  const modal = document.getElementById('games-modal');
+  if (modal) modal.classList.remove('hidden');
+  logClickAnalytics('GamesModal_Opened', 'Games', 0);
+}
+
+function closeGamesModal() {
+  const modal = document.getElementById('games-modal');
+  if (modal) modal.classList.add('hidden');
 }
 
 function simulateSocialAuth(provider) {
@@ -1298,7 +1421,6 @@ function handleAuthSubmit(e) {
   const email = document.getElementById('auth-email').value;
   localStorage.setItem('userEmail', email);
   const phone = document.getElementById('auth-phone').value || 'Не указан';
-  const address = document.getElementById('auth-address').value || 'Не указан';
 
   alert(`🎉 Спасибо, ${name}! Аккаунт зарегистрирован.\nВаш ID: ${userId}`);
   closeAuthModal();
@@ -1308,18 +1430,23 @@ function handleAuthSubmit(e) {
     user_name: name,
     email: email,
     phone: phone,
-    address: address,
     auth_provider: 'Email/Phone Form'
   });
+
+  // Dedicated separate log entry for WhatsApp/Telegram contact
+  if (phone && phone !== 'Не указан') {
+    logClickAnalytics('WhatsApp_Telegram_Captured', 'Auth_Registration', 0, {
+      phone: phone,
+      user_name: name,
+      email: email,
+      page_section: 'Auth_Modal'
+    });
+  }
 }
 
 // Google Sheets Webhook Click & Onboarding Logger
 // ─── Core Analytics Logger (v2 — 16 fields) ────────────────────────────────
 function logClickAnalytics(eventType, planName, priceAmount, extraData = {}) {
-  const storedEmail = localStorage.getItem('userEmail');
-  if (storedEmail === 'get777903@gmail.com' || extraData.email === 'get777903@gmail.com') {
-    return; // Ignore activity from admin account
-  }
   const timeOnPage = Math.round((Date.now() - analyticsState.pageStartTime) / 1000);
   const referrer = document.referrer
     ? (document.referrer.includes('instagram') ? 'Instagram'
@@ -1352,15 +1479,23 @@ function logClickAnalytics(eventType, planName, priceAmount, extraData = {}) {
     user_agent:     ua
   };
 
-  console.log('📊 [MindEcho Analytics 111]', eventType, payload);
+  console.log('📊 [MindEcho Supabase Analytics]', eventType, payload);
 
   try {
-    fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+    fetch(supabaseUrl, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': 'Bearer ' + supabaseKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
       body: JSON.stringify(payload)
-    }).catch(err => console.warn('Google Sheets Webhook notice:', err));
+    }).then(res => {
+      if(!res.ok) console.error('🔥 Supabase HTTP error:', res.status);
+    }).catch(err => {
+      console.error('🔥 Supabase network error:', err);
+    });
   } catch (err) {
     console.warn('Analytics fetch error:', err);
   }
@@ -1421,14 +1556,25 @@ function initAnalyticsTracking() {
   }
 
   // Track Buy buttons
-  document.querySelectorAll('[onclick*="selectPlan"], [onclick*="TariffButton"]').forEach(function(btn) {
+  document.querySelectorAll('[onclick*="selectPlan"], [onclick*="TariffButton"], .pricing-section .btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       const text = btn.innerText || '';
-      const ev = text.includes('Basic') ? 'Buy_Basic_Click'
-        : text.includes('Pro') ? 'Buy_Pro_Click'
+      const ev = (text.includes('Базов') || text.includes('Basic')) ? 'Buy_Basic_Click'
+        : (text.includes('Платин') || text.includes('Platinum')) ? 'Buy_Pro_Click'
+        : (text.includes('бесплат') || text.includes('Free')) ? 'Buy_Free_Click'
         : 'Buy_Premium_Click';
       logClickAnalytics(ev, text.trim(), 0, { section: 'pricing', payment_intent: true });
     });
+  });
+
+  // Track ALL button clicks globally for the new Admin Panel Table
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button, .btn, .btn-icon, nav a, .nav-custdev-btn');
+    if (btn) {
+      let btnText = (btn.innerText || btn.getAttribute('aria-label') || btn.title || btn.id || 'unnamed_btn').trim().replace(/[\r\n]+/g, ' ').substring(0, 45);
+      if(!btnText) btnText = 'icon_button';
+      logClickAnalytics('BtnClick_' + btnText, btnText, 0, { section: detectSection() });
+    }
   });
 }
 
