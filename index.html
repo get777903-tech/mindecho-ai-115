@@ -521,7 +521,7 @@
         <p style="color: var(--text-muted); font-size: 14.5px; margin-bottom: 30px;">Многократное усиление развития достижений ребёнка по предметам без дорогих репетиторов за $50/час</p>
       </div>
 
-      <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); max-width: 900px; margin: 0 auto 40px;">
+      <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); max-width: 950px; margin: 0 auto 40px;">
         
         <!-- Card 1: Extracurricular Tutoring -->
         <div class="pricing-card glass-card" style="border: 2px solid #3b82f6; background: rgba(30,41,59,0.7); position: relative;">
@@ -536,17 +536,26 @@
                 <option value="english">🇬🇧 Английский и другие языки</option>
                 <option value="math">📐 Математика</option>
                 <option value="physics">🔬 Физика</option>
+                <option value="chemistry">🧪 Химия</option>
                 <option value="coding">💻 Программирование</option>
                 <option value="it_projects">🚀 IT и интернет-проекты (Стартапы)</option>
+                <option value="eq">🧠 Эмоциональный интеллект (EQ) и Нейродизайн</option>
+                <option value="finance">🎨 Проектная лаборатория и Финансовая грамотность</option>
               </select>
             </div>
 
-            <div class="card-billing-toggle">
-              <button class="card-cycle-btn btn-monthly active" onclick="setEduBillingCycle(this, 'Tutoring', 'monthly')">За месяц</button>
-              <button class="card-cycle-btn btn-annual" onclick="setEduBillingCycle(this, 'Tutoring', 'annual')">За год <span class="discount-badge">-$290 Скидка</span></button>
+            <!-- Price and Billing Toggle positioned right next to each other -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; margin-bottom: 10px; background: rgba(15,23,42,0.6); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(59,130,246,0.3); flex-wrap: wrap;">
+              <div class="price-display-wrapper">
+                <div class="plan-price price-tutoring-monthly" style="font-size: 32px; font-weight: 800; color: #fff; line-height: 1;">$90 <span style="font-size: 13px; color: var(--text-muted);">/ мес</span></div>
+                <div class="annual-subtext price-tutoring-annual hidden" style="font-size: 32px; font-weight: 800; color: #60a5fa; line-height: 1;">$790 <span style="font-size: 13px; color: var(--text-muted);">/ год</span></div>
+              </div>
+
+              <div class="card-billing-toggle" style="margin-top: 0;">
+                <button class="card-cycle-btn btn-monthly active" onclick="setEduBillingCycle(this, 'Tutoring', 'monthly')">За месяц</button>
+                <button class="card-cycle-btn btn-annual" onclick="setEduBillingCycle(this, 'Tutoring', 'annual')">За год <span class="discount-badge">-$290</span></button>
+              </div>
             </div>
-            <div class="plan-price price-tutoring-monthly" style="font-size: 36px; font-weight: 800; color: #fff; margin-top: 10px;">$90 <span style="font-size: 14px; color: var(--text-muted);">/ месяц за предмет</span></div>
-            <div class="annual-subtext price-tutoring-annual hidden" style="font-size: 20px; font-weight: 800; color: #60a5fa; margin-top: 6px;">$790 / год <span style="font-size: 12px; color: var(--text-muted);">($65.8/мес)</span></div>
           </div>
           <ul class="plan-features" style="text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 15px;">
             <li>✅ 15-минутная экспресс-ликвидация пробелов</li>
@@ -555,7 +564,7 @@
             <li>✅ Озвучка родным спокойным голосом родителя</li>
             <li>✅ 3 часа учебы в день со 100% успеваемостью</li>
           </ul>
-          <button class="btn btn-primary btn-block" onclick="submitEduSubjectOrder('Tutoring')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; padding: 14px; font-weight: 700; font-size: 15px; margin-top: 15px;">💎 Выбрать предмет и оплатить ($90 / $790)</button>
+          <button class="btn btn-primary btn-block" id="btn-tutoring-pay" onclick="submitEduSubjectOrder('Tutoring')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; padding: 14px; font-weight: 700; font-size: 15px; margin-top: 15px;">💎 Выбрать предмет и оплатить ($90 / $790)</button>
         </div>
 
         <!-- Card 2: Remote School System -->
@@ -565,21 +574,27 @@
             <h3 style="color: #fff; font-size: 22px;">Удалённое Школьное Обучение</h3>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Полная автономная экосистема семейного обучения по всей школьной программе</p>
             
-            <div class="card-billing-toggle">
-              <button class="card-cycle-btn btn-monthly active" onclick="setEduBillingCycle(this, 'School', 'monthly')">За месяц</button>
-              <button class="card-cycle-btn btn-annual" onclick="setEduBillingCycle(this, 'School', 'annual')">За год <span class="discount-badge">-$820 Скидка</span></button>
+            <!-- Price and Billing Toggle positioned right next to each other -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; margin-bottom: 10px; background: rgba(15,23,42,0.6); padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(16,185,129,0.3); flex-wrap: wrap;">
+              <div class="price-display-wrapper">
+                <div class="plan-price price-school-monthly" style="font-size: 32px; font-weight: 800; color: #fff; line-height: 1;">$360 <span style="font-size: 13px; color: var(--text-muted);">/ мес</span></div>
+                <div class="annual-subtext price-school-annual hidden" style="font-size: 32px; font-weight: 800; color: #34d399; line-height: 1;">$4,900 <span style="font-size: 13px; color: var(--text-muted);">/ год</span></div>
+              </div>
+
+              <div class="card-billing-toggle" style="margin-top: 0;">
+                <button class="card-cycle-btn btn-monthly active" onclick="setEduBillingCycle(this, 'School', 'monthly')">За месяц</button>
+                <button class="card-cycle-btn btn-annual" onclick="setEduBillingCycle(this, 'School', 'annual')">За год <span class="discount-badge">-$820</span></button>
+              </div>
             </div>
-            <div class="plan-price price-school-monthly" style="font-size: 36px; font-weight: 800; color: #fff; margin-top: 10px;">$340 <span style="font-size: 14px; color: var(--text-muted);">/ месяц</span></div>
-            <div class="annual-subtext price-school-annual hidden" style="font-size: 20px; font-weight: 800; color: #34d399; margin-top: 6px;">$4,900 / год <span style="font-size: 12px; color: var(--text-muted);">($408.3/мес)</span></div>
           </div>
           <ul class="plan-features" style="text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 15px;">
-            <li>✅ Все школьные предметы (Языки, Математика, Физика, IT)</li>
+            <li>✅ Все школьные предметы (Языки, Математика, Физика, Химия, IT)</li>
             <li>✅ Учёба за 3 часа в день со 100% успеваемостью</li>
             <li>✅ ИИ-коуч состояний и защиты от выгорания</li>
             <li>✅ Развитие мышления Создателя (Creator Mindset)</li>
             <li>✅ Прозрачный дашборд для родителей в 1 клик</li>
           </ul>
-          <button class="btn btn-primary btn-block" onclick="submitEduSubjectOrder('School')" style="background: linear-gradient(135deg, #10b981, #047857); border: none; padding: 14px; font-weight: 700; font-size: 15px; margin-top: 15px;">🚀 Активировать Школьное Обучение ($340 / $4,900)</button>
+          <button class="btn btn-primary btn-block" id="btn-school-pay" onclick="submitEduSubjectOrder('School')" style="background: linear-gradient(135deg, #10b981, #047857); border: none; padding: 14px; font-weight: 700; font-size: 15px; margin-top: 15px;">🚀 Активировать Школьное Обучение ($360 / $4,900)</button>
         </div>
 
       </div>
