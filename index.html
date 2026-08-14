@@ -70,7 +70,7 @@
       <div class="hero-content">
         <!-- Top Action Button: Быстрое тестирование рассказа-медитации (Включает аудиозапись!) -->
         <div style="margin-bottom: 8px;">
-          <button class="btn btn-primary btn-lg btn-orange btn-block" onclick="playQuickTestAudio()" style="font-weight: 700; font-size: 16px; padding: 12px 18px; box-shadow: 0 8px 25px rgba(255, 107, 0, 0.5);" data-i18n="btn_quick_test">
+          <button id="top-action-btn" class="btn btn-primary btn-lg btn-orange btn-block" onclick="playQuickTestAudio()" style="font-weight: 700; font-size: 16px; padding: 12px 18px; box-shadow: 0 8px 25px rgba(255, 107, 0, 0.5);" data-i18n="btn_quick_test">
             ▶️ Быстрое тестирование рассказа-медитации (Включить аудио)
           </button>
         </div>
@@ -334,11 +334,14 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="voice-timbre" data-i18n="label_voice_timbre">Тембр и Голос озвучки:</label>
-              <select id="voice-timbre" class="form-select">
-                <option value="male_deep" data-i18n="opt_male_deep">🎙 мужской - низкий спокойный голос</option>
-                <option value="female_calm" data-i18n="opt_female_calm">🎙 женский спокойный голос</option>
-                <option value="generated_parent" data-i18n="opt_generated_parent">🎙 сгенерированный голос мамы или папы</option>
+              <label for="meditation-duration" data-i18n="label_meditation_duration">⏳ Время медитации (в минутах):</label>
+              <select id="meditation-duration" class="form-select">
+                <option value="5">5 минут (короткая)</option>
+                <option value="10" selected>10 минут (стандартная)</option>
+                <option value="15">15 минут (глубокая)</option>
+                <option value="20">20 минут (полная)</option>
+                <option value="25">25 минут (расширенная)</option>
+                <option value="30">30 минут (максимальная)</option>
               </select>
             </div>
             <div class="form-group">
@@ -524,7 +527,7 @@
       <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); max-width: 950px; margin: 0 auto 40px;">
         
         <!-- Card 1: Extracurricular Tutoring -->
-        <div class="pricing-card glass-card" style="border: 2px solid #3b82f6; background: rgba(30,41,59,0.7); position: relative;">
+        <div id="block-extracurricular" class="pricing-card glass-card" style="border: 2px solid #3b82f6; background: rgba(30,41,59,0.7); position: relative;">
           <div class="popular-badge" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">📚 Предметное ИИ-Репетиторство</div>
           <div class="plan-header" style="margin-top: 15px;">
             <h3 style="color: #fff; font-size: 22px;">Внешкольное Обучение</h3>
@@ -568,7 +571,7 @@
         </div>
 
         <!-- Card 2: Remote School System -->
-        <div class="pricing-card glass-card" style="border: 2px solid #10b981; background: rgba(30,41,59,0.7); position: relative;">
+        <div id="block-school" class="pricing-card glass-card" style="border: 2px solid #10b981; background: rgba(30,41,59,0.7); position: relative;">
           <div class="popular-badge" style="background: linear-gradient(135deg, #10b981, #059669);">🚀 Полноценная ИИ-Школа</div>
           <div class="plan-header" style="margin-top: 15px;">
             <h3 style="color: #fff; font-size: 22px;">Удалённое Школьное Обучение</h3>
