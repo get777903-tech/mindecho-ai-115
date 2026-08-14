@@ -847,14 +847,22 @@ const llmSystemPromptConfig = {
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
 function generatePersonalMeditation() {
-  const name = document.getElementById('child-name').value || "София";
-  const gender = document.getElementById('child-gender').value;
-  const audioSource = document.getElementById('audio-mode-source').value;
+  const name = document.getElementById('child-name')?.value || "София";
+  const gender = document.getElementById('child-gender')?.value;
+  const audioSource = document.getElementById('audio-mode-source')?.value;
+  const durationMinutes = parseInt(document.getElementById('meditation-duration')?.value) || 10;
 
   logClickAnalytics('Generate_Click', '-', 0, { section: 'generator' });
 
   const typeSelect = document.getElementById('meditation-type');
   const meditationType = typeSelect ? typeSelect.value : 'bedtime';
+
+  // Update top action button to generating state
+  const topBtn = document.getElementById('top-action-btn');
+  if (topBtn) {
+    topBtn.innerText = '⏳ Подождите, создаётся сказка-медиация с голосом родителя или бабушки...';
+    topBtn.style.background = '#f59e0b';
+  }
 
   // Guardrail Safety check
   const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(name);
@@ -862,23 +870,42 @@ function generatePersonalMeditation() {
     console.log(safetyCheck.message);
   }
 
-  const customText = `Я хочу взять тебя ${name} с собой в небольшое путешествие в волшебное место, где мысли становятся реальностью...`;
+  const customText = `Я хочу взять тебя, ${name}, с собой в расслабляющее путешествие на ${durationMinutes} минут в волшебный мир, где мысли становятся реальностью и растворяются дневные тревоги...`;
   document.getElementById('meditation-text-box').innerText = customText;
-  document.getElementById('player-title').innerText = `${name} — Сказка для расслабления`;
+  document.getElementById('player-title').innerText = `${name} — Рассказ-Медитация (${durationMinutes} мин)`;
+  if (document.getElementById('player-time')) {
+    document.getElementById('player-time').innerText = `${durationMinutes}:00`;
+  }
 
   appState.isPlayingAudio = false;
 
   if (appState.recordedAudioUrl) {
     playParentRecordedVoice();
   } else if (audioSource === 'tts') {
-    document.getElementById('player-subtitle').innerText = `🤖 Динамический ИИ-диктор • Низкий тембр`;
+    if (document.getElementById('player-subtitle')) {
+      document.getElementById('player-subtitle').innerText = `🤖 Динамический ИИ-диктор • ${durationMinutes} мин`;
+    }
     speakTextTTS(customText);
   } else {
-    document.getElementById('player-subtitle').innerText = `🎵 Студийная MP3 фонограмма • Без музыки`;
+    if (document.getElementById('player-subtitle')) {
+      document.getElementById('player-subtitle').innerText = `🎵 Студийная MP3 фонограмма • ${durationMinutes} мин`;
+    }
     playMP3AudioTrack(true);
   }
 
-  logClickAnalytics('Meditation_Generated', name, 0, { audio_source: audioSource });
+  // Update top action button to generated play state after creation
+  setTimeout(() => {
+    if (topBtn) {
+      topBtn.innerText = '▶️ Слушать сказку-медиацию сгенерированную Заданным голосом';
+      topBtn.style.background = '#10b981';
+      topBtn.onclick = function() {
+        scrollToSection('generator');
+        togglePlayAudio();
+      };
+    }
+  }, 1000);
+
+  logClickAnalytics('Meditation_Generated', name, 0, { audio_source: audioSource, duration_minutes: durationMinutes });
 }
 
 function playParentRecordedVoice() {
@@ -1540,7 +1567,14 @@ function trackAndSelectPlan(position, serviceName) {
   logClickAnalytics('Click_Choose_Plan', serviceName + '_' + position, 0, { section: serviceName });
   closeEduTutoringModal();
   closeEduSchoolModal();
-  scrollToSection('pricing');
+
+  if (serviceName && (serviceName.includes('репетиторство') || serviceName.includes('Внешкольное') || serviceName.includes('Tutoring'))) {
+    scrollToSection('block-extracurricular');
+  } else if (serviceName && (serviceName.includes('Удалённая') || serviceName.includes('Школьное') || serviceName.includes('School'))) {
+    scrollToSection('block-school');
+  } else {
+    scrollToSection('pricing');
+  }
 }
 
 window.openEduTutoringModal = openEduTutoringModal;
