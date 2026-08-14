@@ -1577,6 +1577,19 @@ function setEduBillingCycle(btnEl, planType, cycle) {
       if (monthlyPriceEl) monthlyPriceEl.classList.remove('hidden');
       if (annualPriceEl) annualPriceEl.classList.add('hidden');
     }
+
+    // Dynamic button label updates
+    if (planType === 'Tutoring') {
+      const payBtn = document.getElementById('btn-tutoring-pay');
+      if (payBtn) {
+        payBtn.innerText = cycle === 'annual' ? '💎 Выбрать предмет и оплатить ($790 / год)' : '💎 Выбрать предмет и оплатить ($90 / мес)';
+      }
+    } else if (planType === 'School') {
+      const payBtn = document.getElementById('btn-school-pay');
+      if (payBtn) {
+        payBtn.innerText = cycle === 'annual' ? '🚀 Активировать Школьное Обучение ($4,900 / год)' : '🚀 Активировать Школьное Обучение ($360 / мес)';
+      }
+    }
   }
 
   logClickAnalytics('EduBillingCycle_Toggled', planType + '_' + cycle, 0);
@@ -1593,7 +1606,7 @@ function submitEduSubjectOrder(planType) {
     price = (cycle === 'annual') ? 790 : 90;
     planName = `Внешкольное Обучение: ${subjectText}`;
   } else {
-    price = (cycle === 'annual') ? 4900 : 340;
+    price = (cycle === 'annual') ? 4900 : 360;
     planName = 'Удалённое Школьное Обучение';
   }
 
