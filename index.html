@@ -218,11 +218,11 @@
 
       <div class="modes-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
         <!-- Mode 1: Morning -->
-        <div class="mode-card glass-card border-blue" onclick="selectAudioMode('morning')">
+        <div class="mode-card glass-card border-blue" onclick="openMorningModal()">
           <div class="mode-icon">☀️</div>
           <h3 data-i18n="mode_morning_title">Утренняя настройка</h3>
           <p data-i18n="mode_morning_desc">Заряд бодрости, веры в свои силы, лёгкости в учебе и радости перед новым днем.</p>
-          <button class="btn btn-secondary btn-sm" data-i18n="btn_start_morning">Запустить утренний настрой</button>
+          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openMorningModal();" data-i18n="btn_start_morning">Запустить утренний настрой</button>
         </div>
 
         <!-- Mode 2: Bedtime -->
@@ -282,8 +282,8 @@
         <div style="background: rgba(30,41,59,0.9); border: 1px solid rgba(59,130,246,0.4); border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 25px;">
           <h4 style="font-size: 16px; color: #fff; margin-bottom: 14px;">📍 Выберите формат аудиозаписи (Середина страницы):</h4>
           <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_Middle', 'meditation_good_morning1.mp3', 0)" style="background: #2563eb; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
-              📥 Скачать стандартную готовую запись (meditation good morning1.mp3)
+            <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_Middle', 'standard_morning', 0)" style="background: #2563eb; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
+              📥 Скачать стандартную готовую запись
             </a>
             <button class="btn btn-primary btn-orange" onclick="scrollToSection('generator'); selectAudioMode('morning');" style="padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px; box-shadow: 0 4px 15px rgba(255,107,0,0.4);">
               🎙️ Создать индивидуальную запись под голос мамы, папы или бабушки
@@ -298,8 +298,8 @@
         <div style="text-align: center; padding-top: 10px;">
           <h4 style="font-size: 16px; color: #fff; margin-bottom: 12px;">Подарите ребенку утреннее легкое пробуждение и мотивацию на настрой на успех уже завтра!</h4>
           <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_End', 'meditation_good_morning1.mp3', 0)" style="background: #1d4ed8; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
-              📥 Скачать готовый стандартный MP3-файл (meditation good morning1.mp3)
+            <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_End', 'standard_morning', 0)" style="background: #1d4ed8; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
+              📥 Скачать готовый стандартный MP3-файл
             </a>
             <button class="btn btn-primary btn-orange" onclick="scrollToSection('generator'); selectAudioMode('morning');" style="padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
               🎙️ Создать индивидуальную запись под голос мамы, папы или бабушки
@@ -1018,6 +1018,66 @@
           💎 Удалённая система образования. Выбрать тарифный план
         </button>
       </div>
+    </div>
+  <!-- Morning Wakeup Modal (Отдельная всплывающая страница) -->
+  <div id="morning-wakeup-modal" class="modal-backdrop hidden">
+    <div class="modal-card glass-card" style="max-width: 780px; max-height: 88vh; overflow-y: auto; text-align: center; border: 2px solid #3b82f6; box-shadow: 0 12px 35px rgba(59,130,246,0.35); padding: 30px 22px;">
+      <button class="modal-close" onclick="closeMorningModal()">✕</button>
+      
+      <span class="section-tag" style="background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); font-size: 13px; font-weight: 700; margin-bottom: 10px; display: inline-block;">☀️ Утренний Ритуал Заряда Энергии</span>
+      <h3 style="font-size: 24px; font-weight: 800; color: #fff; margin-top: 5px; margin-bottom: 10px;">Утреннее легкое пробуждение и мотивация на настрой на успех</h3>
+      <p style="font-size: 14px; color: var(--text-muted); max-width: 700px; margin: 0 auto 20px; line-height: 1.6;">
+        Забудьте про утренние слезы и капризы: дарите ребенку утреннее легкое пробуждение и мотивацию на настрой на успех под голос мамы, папы или бабушки! Смартфон легко проигрывает MP3-файл утреннего подъёма на будильнике за 10 минут до подъема или на время пробуждения без резких звуков.
+      </p>
+
+      <!-- 📍 ДВЕ КНОПКИ ВЫБОРА В НАЧАЛЕ СТРАНИЦЫ МОДАЛА -->
+      <div style="background: rgba(30,41,59,0.9); border: 1px solid rgba(59,130,246,0.4); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 22px;">
+        <h4 style="font-size: 15px; color: #60a5fa; font-weight: 700; margin-bottom: 12px;">📍 Выберите формат аудиозаписи (В начале страницы):</h4>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_Top', 'standard_morning', 0)" style="background: #2563eb; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
+            📥 Скачать готовый стандартный MP3-файл
+          </a>
+          <button class="btn btn-primary btn-orange" onclick="closeMorningModal(); scrollToSection('generator'); selectAudioMode('morning');" style="padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px; box-shadow: 0 4px 15px rgba(255,107,0,0.4);">
+            🎙️ Создать индивидуальную запись под голос мамы, папы или бабушки
+          </button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px; margin-bottom: 0;">
+          Стандартная запись скачивается с озвучкой диктора или сгенерированного ИИ. Индивидуальная запись напевает утреннее легкое пробуждение под ваш родной голос за 60 секунд.
+        </p>
+      </div>
+
+      <!-- ФИЧИ И ИНФОРМАЦИЯ -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 22px; text-align: left;">
+        <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 24px; margin-bottom: 4px;">🌊</div>
+          <h4 style="color: #60a5fa; font-size: 14.5px; font-weight: 700; margin-bottom: 4px;">Секрет Альфа-ритма мозга</h4>
+          <p style="font-size: 12.5px; color: #cbd5e1; line-height: 1.4; margin: 0;">В течение 10 минут перед пробуждением мозг ребенка находится в альфа-состоянии — это лучший момент заложить утреннее легкое пробуждение и мотивацию на настрой на успех без резких звуков.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 24px; margin-bottom: 4px;">📱</div>
+          <h4 style="color: #60a5fa; font-size: 14.5px; font-weight: 700; margin-bottom: 4px;">Смартфон проигрывает MP3 в 1 клик</h4>
+          <p style="font-size: 12.5px; color: #cbd5e1; line-height: 1.4; margin: 0;">Скачайте MP3-файл и поставьте его на будильник смартфона за 10 минут до подъема. Идеальное утреннее легкое пробуждение под голос мамы, папы или бабушки.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 24px; margin-bottom: 4px;">🚀</div>
+          <h4 style="color: #60a5fa; font-size: 14.5px; font-weight: 700; margin-bottom: 4px;">Мотивация на результаты</h4>
+          <p style="font-size: 12.5px; color: #cbd5e1; line-height: 1.4; margin: 0;">Аффирмации уверенности, смелости и нейрогимнастика прямо в кровати обеспечивают естественную мотивацию развиваться и учиться без капризов.</p>
+        </div>
+      </div>
+
+      <!-- 📍 ДВЕ КНОПКИ ВЫБОРА В КОНЦЕ СТРАНИЦЫ МОДАЛА -->
+      <div style="background: rgba(30,41,59,0.9); border: 1px solid rgba(59,130,246,0.4); border-radius: 16px; padding: 20px; text-align: center;">
+        <h4 style="font-size: 15px; color: #fff; font-weight: 700; margin-bottom: 12px;">Подарите ребенку утреннее легкое пробуждение и мотивацию на настрой на успех уже завтра!</h4>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3" download="meditation_good_morning1.mp3" target="_blank" class="btn btn-secondary" onclick="logClickAnalytics('Download_Morning_Standard_Bottom', 'standard_morning', 0)" style="background: #1d4ed8; color: #fff; text-decoration: none; border: none; padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
+            📥 Скачать готовый стандартный MP3-файл
+          </a>
+          <button class="btn btn-primary btn-orange" onclick="closeMorningModal(); scrollToSection('generator'); selectAudioMode('morning');" style="padding: 12px 18px; font-weight: 700; border-radius: 10px; font-size: 13.5px;">
+            🎙️ Создать индивидуальную запись под голос мамы, папы или бабушки
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
