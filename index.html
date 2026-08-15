@@ -218,11 +218,11 @@
 
       <div class="modes-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
         <!-- Mode 1: Morning -->
-        <div class="mode-card glass-card border-blue" onclick="openMorningModal()">
+        <div class="mode-card glass-card border-blue" onclick="window.location.href='morning.html'">
           <div class="mode-icon">☀️</div>
           <h3 data-i18n="mode_morning_title">Утренняя настройка</h3>
           <p data-i18n="mode_morning_desc">Заряд бодрости, веры в свои силы, лёгкости в учебе и радости перед новым днем.</p>
-          <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); openMorningModal();" data-i18n="btn_start_morning">Запустить утренний настрой</button>
+          <a href="morning.html" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.location.href='morning.html';" style="text-decoration: none; display: inline-block;" data-i18n="btn_start_morning">Запустить утренний настрой</a>
         </div>
 
         <!-- Mode 2: Bedtime -->
