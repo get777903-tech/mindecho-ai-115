@@ -1651,6 +1651,20 @@ function submitEduSubjectOrder(planType) {
   openNDAModal();
 }
 
+function openMorningModal() {
+  logClickAnalytics('Click_Btn_Morning_Modal', 'Morning_Modal_Open', 0, { section: 'morning_modal' });
+  const modal = document.getElementById('morning-wakeup-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeMorningModal() {
+  const modal = document.getElementById('morning-wakeup-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
 window.setEduBillingCycle = setEduBillingCycle;
 window.submitEduSubjectOrder = submitEduSubjectOrder;
+window.openMorningModal = openMorningModal;
+window.closeMorningModal = closeMorningModal;
+
 
