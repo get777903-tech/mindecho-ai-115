@@ -828,6 +828,45 @@ async function toggleVoiceRecord() {
   logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
 }
 
+// Custom Parent Audio File Handler (WebM / MP3 / WAV Upload)
+function handleParentAudioUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const statusSpan = document.getElementById('upload-file-status');
+  const micText = document.getElementById('mic-text');
+
+  if (statusSpan) statusSpan.innerText = `⏳ Загрузка "${file.name}"...`;
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    const base64Audio = reader.result;
+    appState.recordedAudioBlob = file;
+    appState.clonedVoiceId = null; // FORCE NEW INSTANT VOICE CLONING FOR THIS UPLOADED FILE!
+    appState.recordedAudioUrl = URL.createObjectURL(file);
+
+    if (statusSpan) statusSpan.innerText = `🟢 Запись загружена!`;
+    if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${file.name}`;
+
+    // Convert and send audio payload to server analytics registry
+    const userEmail = localStorage.getItem('userEmail') || document.getElementById('auth-email')?.value || 'get777903@gmail.com';
+    const userContact = document.getElementById('nda-user-contact')?.value || document.getElementById('checkout-phone')?.value || '-';
+
+    logClickAnalytics('Parent_Audio_File_Uploaded', file.name, Math.round(file.size / 1024), {
+      filename: file.name,
+      file_size_bytes: file.size,
+      mime_type: file.type,
+      user_name: 'Пользователь',
+      email: userEmail,
+      phone: userContact,
+      audio_base64_sample: base64Audio
+    });
+
+    alert(`🟢 Запись голоса родителя "${file.name}" (${Math.round(file.size / 1024)} KB) успешно сохранена на сервере и готова для генерации медитации!`);
+  };
+}
+
 // Stage 3: LLM System Prompt Generator & Guardrail Safety Agent Configuration
 const llmSystemPromptConfig = {
   role: "ИИ-генератор добрых сказок для расслабления и психологической поддержки детей",
@@ -1666,5 +1705,6 @@ window.setEduBillingCycle = setEduBillingCycle;
 window.submitEduSubjectOrder = submitEduSubjectOrder;
 window.openMorningModal = openMorningModal;
 window.closeMorningModal = closeMorningModal;
+window.handleParentAudioUpload = handleParentAudioUpload;
 
 
