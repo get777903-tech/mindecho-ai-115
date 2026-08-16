@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mindecho-v20260728';
+const CACHE_NAME = 'mindecho-v20260817_v1';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -20,7 +20,6 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Network first strategy to ensure immediate updates
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
