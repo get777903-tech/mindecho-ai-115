@@ -125,27 +125,47 @@
       </div>
 
       <div class="hero-visual">
-        <div class="hero-card glass-card float-animation">
+        <div class="hero-card glass-card float-animation" style="padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15,23,42,0.85); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
           <div class="card-header">
             <div class="avatar">🤖</div>
-            <div class="card-info">
-              <h4>MindEcho Supervisor AI</h4>
-              <p data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
+            <div class="card-info" style="text-align: left;">
+              <h4 id="player-title">MindEcho Supervisor AI</h4>
+              <p id="player-subtitle" data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
             </div>
             <span class="live-tag">LIVE</span>
           </div>
+
           <div class="wave-visualizer">
             <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
           </div>
+
           <p class="sample-quote" data-i18n="hero_sample_quote">
             "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
           </p>
-          <div class="card-footer">
+
+          <!-- Interactive Play / Status Button for Generated Audio -->
+          <button type="button" id="meditation-status-badge" onclick="playGeneratedMeditation()" style="width: 100%; margin-top: 10px; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: #FFFFFF; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 6px 20px rgba(255, 107, 0, 0.5);">
+            <span id="meditation-status-icon">▶️</span>
+            <span id="meditation-status-text">Слушать сказку-медитацию, сгенерированную заданным голосом</span>
+          </button>
+
+          <div class="player-controls" style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.4); padding: 10px 16px; border-radius: 12px; margin-bottom: 14px;">
+            <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
+            <div class="player-progress-bar" style="flex: 1;">
+              <div id="player-progress" class="progress-fill"></div>
+            </div>
+            <span id="player-time">00:00</span>
+          </div>
+
+          <!-- Story Box Container -->
+          <div id="meditation-text-box" style="margin-top: 14px; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 12px; font-size: 12.5px; line-height: 1.5; color: #94A3B8; max-height: 120px; overflow-y: auto; text-align: left;"></div>
+
+          <div class="card-footer" style="margin-top: 14px;">
             <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
             <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
           </div>
         </div>
-        <div style="margin-top: 5px; margin-bottom: 5px; display: flex; justify-content: center;">
+        <div style="margin-top: 12px; display: flex; justify-content: center;">
           <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         </div>
       </div>
