@@ -7,8 +7,10 @@
 const supabaseUrl = 'https://yslrofsjeujsftlabuqn.supabase.co/rest/v1/analytics_events';
 const supabaseKey = 'sb_publishable_tnc4wA3Cr-FtaDyjVz9Q6Q_fklMPSDr';
 
-// Audio Track File Name
+// Audio Track File Names & External Repositories
 const MEDITATION_AUDIO_SRC = "meditation1.mp3";
+const MORNING_AUDIO_STANDARD_URL = "https://raw.githubusercontent.com/get777903-tech/mindecho-ai-115/main/audio/meditation%20good%20morning1.mp3";
+
 
 // Unique session ID for this visit
 const SESSION_ID = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
@@ -108,7 +110,7 @@ const translations = {
     m4_title: "4. Развитие эмоционального интеллекта (EQ)",
     m4_desc: "Мягко снимаем дневной стресс, тревоги и обиды ребенка прямо в процессе засыпания, программируя его на абсолютную уверенность в себе и психологическую устойчивость.",
     m4_tag: "CBT & ACT Framework. Нейропсихологический подход к эмоциональной саморегуляции ребенка",
-    btn_quick_test: "Послушать пример сказки-медитации (Включить аудио)",
+    btn_quick_test: "▶️ Быстрое тестирование рассказа-медитации (Включить аудио)",
     mic_story_reader_title: "📖 Текст для чтения вслух при записи (читать медленно с паузами):",
     btn_toggle_story_text: "Развернуть весь текст 📖",
     btn_toggle_story_text_collapse: "Свернуть текст 🔼",
@@ -161,8 +163,8 @@ const translations = {
     opt_mode_morning: "☀️ Утренняя (Уверенность)",
     opt_mode_emergency: "🚨 Экстренная (Заземление)",
     opt_mode_prayer: "🙏 Молитва-медитация (Духовный покой)",
-    label_mic_rec: "🎙️ Записать 60 сек своего голоса для ИИ-клонирования",
-    mic_press_text: "🎙️ Записать 60 сек своего голоса для ИИ-клонирования",
+    label_mic_rec: "🎙 Запись голоса родителя (60 секунд для ElevenLabs):",
+    mic_press_text: "Нажмите для записи голоса родителя или бабушки (60 секунд)",
     btn_generate: "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки",
     player_title_default: "Рассказ-Медитация",
     player_sub_default: "Самый родной и успокаивающий голос • Без музыки",
@@ -828,45 +830,6 @@ async function toggleVoiceRecord() {
   logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
 }
 
-// Custom Parent Audio File Handler (WebM / MP3 / WAV Upload)
-function handleParentAudioUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const statusSpan = document.getElementById('upload-file-status');
-  const micText = document.getElementById('mic-text');
-
-  if (statusSpan) statusSpan.innerText = `⏳ Загрузка "${file.name}"...`;
-
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onloadend = () => {
-    const base64Audio = reader.result;
-    appState.recordedAudioBlob = file;
-    appState.clonedVoiceId = null; // FORCE NEW INSTANT VOICE CLONING FOR THIS UPLOADED FILE!
-    appState.recordedAudioUrl = URL.createObjectURL(file);
-
-    if (statusSpan) statusSpan.innerText = `🟢 Запись загружена!`;
-    if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${file.name}`;
-
-    // Convert and send audio payload to server analytics registry
-    const userEmail = localStorage.getItem('userEmail') || document.getElementById('auth-email')?.value || 'get777903@gmail.com';
-    const userContact = document.getElementById('nda-user-contact')?.value || document.getElementById('checkout-phone')?.value || '-';
-
-    logClickAnalytics('Parent_Audio_File_Uploaded', file.name, Math.round(file.size / 1024), {
-      filename: file.name,
-      file_size_bytes: file.size,
-      mime_type: file.type,
-      user_name: 'Пользователь',
-      email: userEmail,
-      phone: userContact,
-      audio_base64_sample: base64Audio
-    });
-
-    alert(`🟢 Запись голоса родителя "${file.name}" (${Math.round(file.size / 1024)} KB) успешно сохранена на сервере и готова для генерации медитации!`);
-  };
-}
-
 // Stage 3: LLM System Prompt Generator & Guardrail Safety Agent Configuration
 const llmSystemPromptConfig = {
   role: "ИИ-генератор добрых сказок для расслабления и психологической поддержки детей",
@@ -886,22 +849,14 @@ const llmSystemPromptConfig = {
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
 function generatePersonalMeditation() {
-  const name = document.getElementById('child-name')?.value || "София";
-  const gender = document.getElementById('child-gender')?.value;
-  const audioSource = document.getElementById('audio-mode-source')?.value;
-  const durationMinutes = parseInt(document.getElementById('meditation-duration')?.value) || 10;
+  const name = document.getElementById('child-name').value || "София";
+  const gender = document.getElementById('child-gender').value;
+  const audioSource = document.getElementById('audio-mode-source').value;
 
   logClickAnalytics('Generate_Click', '-', 0, { section: 'generator' });
 
   const typeSelect = document.getElementById('meditation-type');
   const meditationType = typeSelect ? typeSelect.value : 'bedtime';
-
-  // Update top action button to generating state
-  const topBtn = document.getElementById('top-action-btn');
-  if (topBtn) {
-    topBtn.innerText = '⏳ Подождите, создаётся сказка-медиация с голосом родителя или бабушки...';
-    topBtn.style.background = '#f59e0b';
-  }
 
   // Guardrail Safety check
   const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(name);
@@ -909,42 +864,23 @@ function generatePersonalMeditation() {
     console.log(safetyCheck.message);
   }
 
-  const customText = `Я хочу взять тебя, ${name}, с собой в расслабляющее путешествие на ${durationMinutes} минут в волшебный мир, где мысли становятся реальностью и растворяются дневные тревоги...`;
+  const customText = `Я хочу взять тебя ${name} с собой в небольшое путешествие в волшебное место, где мысли становятся реальностью...`;
   document.getElementById('meditation-text-box').innerText = customText;
-  document.getElementById('player-title').innerText = `${name} — Рассказ-Медитация (${durationMinutes} мин)`;
-  if (document.getElementById('player-time')) {
-    document.getElementById('player-time').innerText = `${durationMinutes}:00`;
-  }
+  document.getElementById('player-title').innerText = `${name} — Сказка для расслабления`;
 
   appState.isPlayingAudio = false;
 
   if (appState.recordedAudioUrl) {
     playParentRecordedVoice();
   } else if (audioSource === 'tts') {
-    if (document.getElementById('player-subtitle')) {
-      document.getElementById('player-subtitle').innerText = `🤖 Динамический ИИ-диктор • ${durationMinutes} мин`;
-    }
+    document.getElementById('player-subtitle').innerText = `🤖 Динамический ИИ-диктор • Низкий тембр`;
     speakTextTTS(customText);
   } else {
-    if (document.getElementById('player-subtitle')) {
-      document.getElementById('player-subtitle').innerText = `🎵 Студийная MP3 фонограмма • ${durationMinutes} мин`;
-    }
+    document.getElementById('player-subtitle').innerText = `🎵 Студийная MP3 фонограмма • Без музыки`;
     playMP3AudioTrack(true);
   }
 
-  // Update top action button to generated play state after creation
-  setTimeout(() => {
-    if (topBtn) {
-      topBtn.innerText = '▶️ Слушать сказку-медиацию сгенерированную Заданным голосом';
-      topBtn.style.background = '#10b981';
-      topBtn.onclick = function() {
-        scrollToSection('generator');
-        togglePlayAudio();
-      };
-    }
-  }, 1000);
-
-  logClickAnalytics('Meditation_Generated', name, 0, { audio_source: audioSource, duration_minutes: durationMinutes });
+  logClickAnalytics('Meditation_Generated', name, 0, { audio_source: audioSource });
 }
 
 function playParentRecordedVoice() {
@@ -1606,14 +1542,7 @@ function trackAndSelectPlan(position, serviceName) {
   logClickAnalytics('Click_Choose_Plan', serviceName + '_' + position, 0, { section: serviceName });
   closeEduTutoringModal();
   closeEduSchoolModal();
-
-  if (serviceName && (serviceName.includes('репетиторство') || serviceName.includes('Внешкольное') || serviceName.includes('Tutoring'))) {
-    scrollToSection('block-extracurricular');
-  } else if (serviceName && (serviceName.includes('Удалённая') || serviceName.includes('Школьное') || serviceName.includes('School'))) {
-    scrollToSection('block-school');
-  } else {
-    scrollToSection('pricing');
-  }
+  scrollToSection('pricing');
 }
 
 window.openEduTutoringModal = openEduTutoringModal;
@@ -1650,19 +1579,6 @@ function setEduBillingCycle(btnEl, planType, cycle) {
       if (monthlyPriceEl) monthlyPriceEl.classList.remove('hidden');
       if (annualPriceEl) annualPriceEl.classList.add('hidden');
     }
-
-    // Dynamic button label updates
-    if (planType === 'Tutoring') {
-      const payBtn = document.getElementById('btn-tutoring-pay');
-      if (payBtn) {
-        payBtn.innerText = cycle === 'annual' ? '💎 Выбрать предмет и оплатить ($790 / год)' : '💎 Выбрать предмет и оплатить ($90 / мес)';
-      }
-    } else if (planType === 'School') {
-      const payBtn = document.getElementById('btn-school-pay');
-      if (payBtn) {
-        payBtn.innerText = cycle === 'annual' ? '🚀 Активировать Школьное Обучение ($4,900 / год)' : '🚀 Активировать Школьное Обучение ($360 / мес)';
-      }
-    }
   }
 
   logClickAnalytics('EduBillingCycle_Toggled', planType + '_' + cycle, 0);
@@ -1679,7 +1595,7 @@ function submitEduSubjectOrder(planType) {
     price = (cycle === 'annual') ? 790 : 90;
     planName = `Внешкольное Обучение: ${subjectText}`;
   } else {
-    price = (cycle === 'annual') ? 4900 : 360;
+    price = (cycle === 'annual') ? 4900 : 340;
     planName = 'Удалённое Школьное Обучение';
   }
 
@@ -1690,21 +1606,19 @@ function submitEduSubjectOrder(planType) {
   openNDAModal();
 }
 
-function openMorningModal() {
-  logClickAnalytics('Click_Btn_Morning_Modal', 'Morning_Modal_Open', 0, { section: 'morning_modal' });
-  const modal = document.getElementById('morning-wakeup-modal');
-  if (modal) modal.classList.remove('hidden');
-}
-
-function closeMorningModal() {
-  const modal = document.getElementById('morning-wakeup-modal');
-  if (modal) modal.classList.add('hidden');
+function downloadStandardMorningAudio() {
+  logClickAnalytics('Download_Standard_Morning_Audio', 'meditation_good_morning1.mp3', 0);
+  const link = document.createElement('a');
+  link.href = MORNING_AUDIO_STANDARD_URL;
+  link.download = 'meditation_good_morning1.mp3';
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 window.setEduBillingCycle = setEduBillingCycle;
 window.submitEduSubjectOrder = submitEduSubjectOrder;
-window.openMorningModal = openMorningModal;
-window.closeMorningModal = closeMorningModal;
-window.handleParentAudioUpload = handleParentAudioUpload;
+window.downloadStandardMorningAudio = downloadStandardMorningAudio;
 
 
