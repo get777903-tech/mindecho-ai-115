@@ -124,114 +124,36 @@
         </div>
       </div>
 
-      <div class="hero-visual" style="max-width: 540px; width: 100%;">
-        <!-- Embedded Generator Section inside Hero Visual Block -->
-        <div id="generator" class="generator-card glass-card" style="padding: 20px; border-radius: 20px; background: rgba(15,23,42,0.85); border: 2px solid rgba(168,85,247,0.4); box-shadow: 0 10px 30px rgba(168,85,247,0.25);">
-          <div style="text-align: center; margin-bottom: 15px;">
-            <span class="section-tag" data-i18n="tag_studio" style="font-size: 11px; padding: 4px 10px;">Ð¡Ñ‚ÑƒÐ´Ð¸Ñ ÐœÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸Ð¸ - Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ðµ Ð¼ÐµÑ‚Ð¾Ð´Ð¾Ð² Ð´ÐµÑ‚ÑÐºÐ¾Ð¹ Ð½ÐµÐ¹Ñ€Ð¾Ð¿ÑÐ¸Ñ…Ð¾Ð»Ð¾Ð³Ð¸Ð¸</span>
-            <h3 class="section-title" data-i18n="title_studio" style="font-size: 20px; margin-top: 4px; margin-bottom: 4px; color: #fff;">ÐŸÐµÑ€ÑÐ¾Ð½Ð°Ð»ÑŒÐ½Ñ‹Ð¹ Ð Ð°ÑÑÐºÐ°Ð·-ÐœÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸Ñ</h3>
-            <p class="section-subtitle" data-i18n="sub_studio" style="font-size: 12px; color: var(--text-muted);">Ð—Ð°Ð¿Ð¸ÑÑŒ Ð²Ð°ÑˆÐµÐ³Ð¾ Ð³Ð¾Ð»Ð¾ÑÐ° + Ð¡Ñ‚ÑƒÐ´Ð¸Ð¹Ð½Ð°Ñ MP3 Ñ„Ð¾Ð½Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð° + Ð”Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ°Ñ Ð˜Ð˜-Ð¾Ð·Ð²ÑƒÑ‡ÐºÐ°</p>
+      <div class="hero-visual">
+        <div class="hero-card glass-card float-animation">
+          <div class="card-header">
+            <div class="avatar">🤖</div>
+            <div class="card-info" style="text-align: left;">
+              <h4 id="player-title">MindEcho Supervisor AI</h4>
+              <p id="player-subtitle" data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
+            </div>
+            <span class="live-tag">LIVE</span>
           </div>
-
-          <div class="generator-controls" style="font-size: 13px;">
-            <div class="form-row" style="margin-bottom: 8px;">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="child-name" data-i18n="label_child_name" style="font-size: 12px;">Ð˜Ð¼Ñ Ñ€ÐµÐ±ÐµÐ½ÐºÐ°:</label>
-                <input type="text" id="child-name" value="ÐÐ½Ð½Ð°" placeholder="ÐÐ°Ð¿Ñ€Ð¸Ð¼ÐµÑ€: ÐÐ½Ð½Ð°, Ð¡Ð¾Ñ„Ð¸Ñ, ÐÐ»ÐµÐºÑÐ°Ð½Ð´Ñ€" class="form-input" style="padding: 8px 12px; font-size: 13px;">
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="child-gender" data-i18n="label_child_gender" style="font-size: 12px;">ÐŸÐ¾Ð» Ñ€ÐµÐ±ÐµÐ½ÐºÐ°:</label>
-                <select id="child-gender" class="form-select" style="padding: 8px 12px; font-size: 13px;">
-                  <option value="girl" data-i18n="opt_girl">Ð”ÐµÐ²Ð¾Ñ‡ÐºÐ°</option>
-                  <option value="boy" data-i18n="opt_boy">ÐœÐ°Ð»ÑŒÑ‡Ð¸Ðº</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row" style="margin-bottom: 8px;">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="child-age" data-i18n="label_child_age" style="font-size: 12px;">Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ (Ð»ÐµÑ‚):</label>
-                <input type="number" id="child-age" value="6" min="1" max="16" class="form-input" style="padding: 8px 12px; font-size: 13px;">
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="audio-mode-source" data-i18n="label_audio_source" style="font-size: 12px;">Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð°ÑƒÐ´Ð¸Ð¾-Ð¾Ð·Ð²ÑƒÑ‡ÐºÐ¸:</label>
-                <select id="audio-mode-source" class="form-select" style="padding: 8px 12px; font-size: 13px;">
-                  <option value="parent" data-i18n="opt_source_parent">ðŸŽ™ Ð³Ð¾Ð»Ð¾Ñ Ð¿Ð°Ð¿Ñ‹ Ð¸Ð»Ð¸ Ð¼Ð°Ð¼Ñ‹</option>
-                  <option value="mp3" data-i18n="opt_source_mp3">ðŸŽµ Ð¡Ñ‚ÑƒÐ´Ð¸Ð¹Ð½Ð°Ñ MP3 Ñ„Ð¾Ð½Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð°</option>
-                  <option value="tts" data-i18n="opt_source_tts">ðŸ¤– Ð”Ð¸Ð½Ð°Ð¼Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð˜Ð˜-Ð´Ð¸ÐºÑ‚Ð¾Ñ€ (ÐÐ¸Ð·ÐºÐ¸Ð¹ Ñ‚ÐµÐ¼Ð±Ñ€)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row" style="margin-bottom: 8px;">
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="voice-timbre" data-i18n="label_voice_timbre" style="font-size: 12px;">Ð¢ÐµÐ¼Ð±Ñ€ Ð¸ Ð“Ð¾Ð»Ð¾Ñ Ð¾Ð·Ð²ÑƒÑ‡ÐºÐ¸:</label>
-                <select id="voice-timbre" class="form-select" style="padding: 8px 12px; font-size: 13px;">
-                  <option value="male_deep" data-i18n="opt_male_deep">ðŸŽ™ Ð¼ÑƒÐ¶ÑÐºÐ¾Ð¹ - Ð½Ð¸Ð·ÐºÐ¸Ð¹ ÑÐ¿Ð¾ÐºÐ¾Ð¹Ð½Ñ‹Ð¹ Ð³Ð¾Ð»Ð¾Ñ</option>
-                  <option value="female_calm" data-i18n="opt_female_calm">ðŸŽ™ Ð¶ÐµÐ½ÑÐºÐ¸Ð¹ ÑÐ¿Ð¾ÐºÐ¾Ð¹Ð½Ñ‹Ð¹ Ð³Ð¾Ð»Ð¾Ñ</option>
-                  <option value="generated_parent" data-i18n="opt_generated_parent">ðŸŽ™ ÑÐ³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ð³Ð¾Ð»Ð¾Ñ Ð¼Ð°Ð¼Ñ‹ Ð¸Ð»Ð¸ Ð¿Ð°Ð¿Ñ‹</option>
-                </select>
-              </div>
-              <div class="form-group" style="margin-bottom: 8px;">
-                <label for="meditation-type" data-i18n="label_meditation_mode" style="font-size: 12px;">Ð ÐµÐ¶Ð¸Ð¼ Ñ€Ð°ÑÑÐºÐ°Ð·Ð°-Ð¼ÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸Ð¸:</label>
-                <select id="meditation-type" class="form-select" style="padding: 8px 12px; font-size: 13px;">
-                  <option value="bedtime" data-i18n="opt_mode_bedtime">ðŸŒ™ ÐŸÐµÑ€ÐµÐ´ ÑÐ½Ð¾Ð¼ (Ð—Ð°ÑÑ‹Ð¿Ð°Ð½Ð¸Ðµ)</option>
-                  <option value="morning" data-i18n="opt_mode_morning">â˜€ï¸ Ð£Ñ‚Ñ€ÐµÐ½Ð½ÑÑ (Ð£Ð²ÐµÑ€ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ)</option>
-                  <option value="emergency" data-i18n="opt_mode_emergency">ðŸš¨ Ð­ÐºÑÑ‚Ñ€ÐµÐ½Ð½Ð°Ñ (Ð—Ð°Ð·ÐµÐ¼Ð»ÐµÐ½Ð¸Ðµ)</option>
-                  <option value="prayer" data-i18n="opt_mode_prayer">ðŸ™ ÐœÐ¾Ð»Ð¸Ñ‚Ð²Ð°-Ð¼ÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸Ñ (Ð”ÑƒÑ…Ð¾Ð²Ð½Ñ‹Ð¹ Ð¿Ð¾ÐºÐ¾Ð¹)</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Mic Recorder Block -->
-            <div class="form-group" style="margin-top: 6px; margin-bottom: 6px;">
-              <label data-i18n="label_mic_rec" style="font-size: 12px;">ðŸŽ™ Ð—Ð°Ð¿Ð¸ÑÑŒ Ð³Ð¾Ð»Ð¾ÑÐ° Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ (60 ÑÐµÐºÑƒÐ½Ð´ Ð´Ð»Ñ ElevenLabs):</label>
-              <div class="mic-recorder-box" style="padding: 10px;">
-                <button id="mic-btn" class="mic-btn" onclick="toggleVoiceRecord()">
-                  <span class="mic-icon">ðŸŽ™</span>
-                </button>
-                <div class="mic-status">
-                  <span id="mic-text" data-i18n="mic_press_text" style="font-weight: 700; color: #fff; font-size: 12px;">ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð´Ð»Ñ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð³Ð¾Ð»Ð¾ÑÐ° Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ Ð¸Ð»Ð¸ Ð±Ð°Ð±ÑƒÑˆÐºÐ¸ (60 ÑÐµÐºÑƒÐ½Ð´)</span>
-                  <div id="mic-wave" class="mic-wave hidden">
-                    <span></span><span></span><span></span><span></span>
-                  </div>
-                  <div id="mic-level-box" class="mic-level-box hidden" style="margin-top: 6px; width: 100%; max-width: 260px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 8px; border: 1px solid rgba(255,255,255,0.25); overflow: hidden; display: flex; align-items: center; padding: 1px;">
-                    <div id="mic-level-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 70%, #EF4444 100%); border-radius: 6px; transition: width 0.08s ease-out;"></div>
-                  </div>
-                  <input type="file" id="parent-audio-upload-input" accept="audio/*,.webm,.mp3,.wav,.m4a" class="hidden" onchange="handleParentAudioUpload(event)">
-                  <div style="margin-top: 8px; display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap;">
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('parent-audio-upload-input').click()" style="font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 8px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff;">
-                      ðŸ“ Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÑÐ²Ð¾ÑŽ Ð°ÑƒÐ´Ð¸Ð¾Ð·Ð°Ð¿Ð¸ÑÑŒ (MP3 / WebM)
-                    </button>
-                    <span id="upload-file-status" style="font-size: 11px; color: #10B981; font-weight: 700;"></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Story Reader Box Under Mic Button -->
-              <div id="mic-story-reader" class="mic-story-reader" style="margin-top: 8px; background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; padding: 10px; text-align: left; font-size: 12px; line-height: 1.5; color: #E2E8F0;">
-                <div style="font-weight: 700; color: #06B6D4; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
-                  <span data-i18n="mic_story_reader_title" style="font-size: 11.5px;">ðŸ“– Ð¢ÐµÐºÑÑ‚ Ð´Ð»Ñ Ñ‡Ñ‚ÐµÐ½Ð¸Ñ Ð²ÑÐ»ÑƒÑ… Ð¿Ñ€Ð¸ Ð·Ð°Ð¿Ð¸ÑÐ¸ (Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¼ÐµÐ´Ð»ÐµÐ½Ð½Ð¾ Ñ Ð¿Ð°ÑƒÐ·Ð°Ð¼Ð¸):</span>
-                  <button type="button" onclick="toggleFullStoryText()" id="btn-toggle-story-text" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #A855F7; color: #fff; padding: 3px 8px; border-radius: 6px; font-size: 10px; cursor: pointer; font-weight: 700; white-space: nowrap;" data-i18n="btn_toggle_story_text">Ð Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð²ÐµÑÑŒ Ñ‚ÐµÐºÑÑ‚ ðŸ“–</button>
-                </div>
-                <div id="story-snippet-text" style="color: #F1F5F9;" data-i18n="story_snippet_text">
-                  Â«Ð—Ð½Ð°Ð¹ Ñ‡Ñ‚Ð¾ Ð¼Ð°Ð¼Ð° Ð¸ Ð¿Ð°Ð¿Ð° Ñ‚ÐµÐ±Ñ Ð¾Ñ‡ÐµÐ½ÑŒ Ð»ÑŽÐ±ÑÑ‚â€¦ Ð Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð´Ð°Ð²Ð°Ð¹ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð¸Ð¼ÑÑ Ð² Ð´Ñ€ÑƒÐ¶ÐµÐ»ÑŽÐ±Ð½Ð¾Ðµ Ð¼ÐµÑÑ‚ÐµÑ‡ÐºÐ¾â€¦ ÐŸÑ€ÐµÐ´ÑÑ‚Ð°Ð²ÑŒ, Ñ‡Ñ‚Ð¾ Ñƒ Ñ‚ÐµÐ±Ñ Ð² Ð³Ð¾Ð»Ð¾Ð²Ðµ ÐµÑÑ‚ÑŒ Ñ‚Ð°ÐºÐ¾Ðµ Ð¼ÐµÑÑ‚Ð¾,â€¦ Ð³Ð´Ðµ Ñ‚ÐµÐ±Ðµ Ñ…Ð¾Ñ€Ð¾ÑˆÐ¾â€¦Â»
-                </div>
-                <div id="story-full-text" class="hidden" style="margin-top: 8px; border-top: 1px dashed rgba(255, 255, 255, 0.2); padding-top: 8px; color: #F1F5F9; font-style: italic;" data-i18n="story_full_text">
-                  Â«Ð—Ð½Ð°Ð¹ Ñ‡Ñ‚Ð¾ Ð¼Ð°Ð¼Ð° Ð¸ Ð¿Ð°Ð¿Ð° Ñ‚ÐµÐ±Ñ Ð¾Ñ‡ÐµÐ½ÑŒ Ð»ÑŽÐ±ÑÑ‚ â€¦Ð Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð´Ð°Ð²Ð°Ð¹ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð¸Ð¼ÑÑ Ð² Ð´Ñ€ÑƒÐ¶ÐµÐ»ÑŽÐ±Ð½Ð¾Ðµ Ð¼ÐµÑÑ‚ÐµÑ‡ÐºÐ¾.â€¦ ÐŸÑ€ÐµÐ´ÑÑ‚Ð°Ð²ÑŒ, Ñ‡Ñ‚Ð¾ Ñƒ Ñ‚ÐµÐ±Ñ Ð² Ð³Ð¾Ð»Ð¾Ð²Ðµ ÐµÑÑ‚ÑŒ Ñ‚Ð°ÐºÐ¾Ðµ Ð¼ÐµÑÑ‚Ð¾,â€¦ Ð³Ð´Ðµ Ñ‚ÐµÐ±Ðµ Ñ…Ð¾Ñ€Ð¾ÑˆÐ¾.â€¦ ÐÐ°Ð¹Ð´Ð¸ ÐµÐ³Ð¾ Ð¸ Ð¿Ð¾Ð±ÑƒÐ´ÑŒ Ñ‚Ð°Ð¼.â€¦ ÐŸÑ€ÐµÐ´ÑÑ‚Ð°Ð²ÑŒ ÑÐ°Ð¼Ð¾Ðµ ÐºÑ€Ð°ÑÐ¸Ð²Ð¾Ðµ Ð¸ Ð±ÐµÐ·Ð¾Ð¿Ð°ÑÐ½Ð¾Ðµ Ð¼ÐµÑÑ‚Ð¾, ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ðµ Ñ‚Ñ‹ Ð¼Ð¾Ð¶ÐµÑˆÑŒ Ð²Ð¾Ð¾Ð±Ñ€Ð°Ð·Ð¸Ñ‚ÑŒ.â€¦ Ð³Ð´Ðµ Ð¼Ð°Ð¼Ð° Ð¸ Ð¿Ð°Ð¿Ð° Ð²ÑÐµÐ³Ð´Ð° Ñ€ÑÐ´Ð¾Ð¼ Ñ Ñ‚Ð¾Ð±Ð¾Ð¹ Ð¸ Ð¿Ð¾Ð¼Ð¾Ð³Ð°ÑŽÑ‚ Ñ‚ÐµÐ±Ðµ.â€¦<br><br>
-                  â€¦ÐŸÐ¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ ÑÑ‚Ð¾ Ñ‚Ð¾Ñ‚ Ð¼Ð¸Ñ€, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ñ‚Ñ‹ Ð¿Ð¾ÑÑ‚Ñ€Ð¾Ð¸Ð»Ð° ÑÐ°Ð¼Ð° Ð¸ Ð² ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð²ÑÐµ, Ð²Ð¾ Ñ‡Ñ‚Ð¾ Ñ‚Ñ‹ Ð²ÐµÑ€Ð¸ÑˆÑŒ â€” ÑÑ‚Ð¾ Ð¿Ñ€Ð°Ð²Ð´Ð°. Ð­Ñ‚Ð¾ Ñ‚Ð¾Ñ‚ ÑÐ°Ð¼Ñ‹Ð¹ Ð¼Ð¸Ñ€, Ð³Ð´Ðµ Ð²ÑÐµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ ÑÐ±Ñ‹Ð²Ð°ÐµÑ‚ÑÑ, â€¦Ð³Ð´Ðµ Ð¼Ñ‹ÑÐ»Ð¸ ÑÑ‚Ð°Ð½Ð¾Ð²ÑÑ‚ÑÑ Ñ€ÐµÐ°Ð»ÑŒÐ½Ñ‹Ð¼Ð¸ Ð¸ Ð³Ð´Ðµ Ð²ÑÐµ, Ð²Ð¾ Ñ‡Ñ‚Ð¾ Ñ‚Ñ‹ Ð²ÐµÑ€Ð¸ÑˆÑŒ, Ð¼Ð¾Ð¶ÐµÑ‚ ÑÐ»ÑƒÑ‡Ð¸Ñ‚ÑŒÑÑ. â€¦Ð”ÑƒÐ¼Ð°Ð¹ Ð¾ Ñ‚Ð¾Ð¼, Ñ‡Ñ‚Ð¾ Ð² ÑÑ‚Ð¾Ð¼ Ð¼ÐµÑÑ‚Ðµ Ñ‚Ñ‹ â€” Ð½Ð°ÑÑ‚Ð¾ÑÑ‰Ð°Ñ Ð²Ð¾Ð»ÑˆÐµÐ±Ð½Ð¸Ñ†Ð° Ð¸ Ð²ÑÑ‘ Ð¿Ð¾Ð´Ð²Ð»Ð°ÑÑ‚Ð½Ð¾ Ñ‚Ð²Ð¾ÐµÐ¹ Ð²Ð¾Ð»Ðµ.â€¦<br><br>
-                  â€¦ÐŸÐ¾Ð²ÐµÑ€ÑŒ Ð² Ñ‚Ð¾, Ñ‡Ñ‚Ð¾ Ñ‚Ñ‹ ÑƒÐ¼Ð½Ð°, Ð¸ Ñ‡Ñ‚Ð¾ Ñ‚Ñ‹ Ð¾Ñ‡ÐµÐ½ÑŒ Ð±Ñ‹ÑÑ‚Ñ€Ð¾ Ð¸ Ð»ÐµÐ³ÐºÐ¾ ÑƒÑ‡Ð¸ÑˆÑŒÑÑ. ÐŸÐ¾Ð²ÐµÑ€ÑŒ Ð² ÑÑ‚Ð¾, Ð¸ Ð²ÑÑ‘ ÑÐ±ÑƒÐ´ÐµÑ‚ÑÑ. ÐŸÐ¾Ñ‡ÑƒÐ²ÑÑ‚Ð²ÑƒÐ¹ ÑƒÐ²ÐµÑ€ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ Ð² ÑÐ²Ð¾Ð¸Ñ… ÑÐ¸Ð»Ð°Ñ…, Ð´ÑƒÐ¼Ð°Ð¹ Ð¾ Ñ‚Ð¾Ð¼, ÐºÐ°Ðº Ð»ÐµÐ³ÐºÐ¾ Ñ‚ÐµÐ±Ðµ Ð´Ð°ÑŽÑ‚ÑÑ Ð»ÑŽÐ±Ñ‹Ðµ Ð½Ð¾Ð²Ñ‹Ðµ Ð·Ð½Ð°Ð½Ð¸Ñ.<br><br>
-                  ÐŸÐ¾Ð²ÐµÑ€ÑŒ Ð² Ñ‚Ð¾, Ñ‡Ñ‚Ð¾ Ñ‚ÐµÐ±Ñ Ð¾Ñ‡ÐµÐ½ÑŒ ÑÐ¸Ð»ÑŒÐ½Ð¾ Ð»ÑŽÐ±ÑÑ‚, Ð¸ Ð¿Ð¾Ñ‡ÑƒÐ²ÑÑ‚Ð²ÑƒÐ¹ ÑÑ‚Ð¾ Ð²ÑÐµÐ¼ ÑÐ²Ð¾Ð¸Ð¼ ÑÐµÑ€Ð´Ñ†ÐµÐ¼, Ð¸ Ð¿ÑƒÑÑ‚ÑŒ Ð´ÑƒÑˆÐ° Ð½Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑÑ ÑÑ‡Ð°ÑÑ‚ÑŒÐµÐ¼. ÐŸÑ€ÐµÐ´ÑÑ‚Ð°Ð²ÑŒ Ñ‚ÐµÐ¿Ð»Ð¾Ðµ ÑÐ¸ÑÐ½Ð¸Ðµ Ð² Ð³Ñ€ÑƒÐ´Ð¸, Ð²Ð´Ñ‹Ñ…Ð°Ð¹ ÑÑ‚Ð¾ Ñ‡ÑƒÐ²ÑÑ‚Ð²Ð¾ Ð»ÑŽÐ±Ð²Ð¸ ÐºÐ°Ð¶Ð´Ð¾Ð¹ ÐºÐ»ÐµÑ‚Ð¾Ñ‡ÐºÐ¾Ð¹, ... Ð¼Ð°Ð¼Ð° Ð¸ Ð¿Ð°Ð¿Ð° Ñ€Ð°Ð´Ñ‹ Ñ‡Ñ‚Ð¾ Ñ‚Ñ‹ Ñƒ Ð½Ð¸Ñ… ÐµÑÑ‚ÑŒ...Â»
-                </div>
-              </div>
-            </div>
-
-            <button class="btn btn-primary btn-block btn-orange" onclick="generatePersonalMeditation()" data-i18n="btn_generate" style="margin-top: 10px; padding: 12px; font-size: 14px; font-weight: 700;">
-              âœ¨ Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ñ€Ð°ÑÑÐºÐ°Ð·-Ð¼ÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸ÑŽ Ñ Ð³Ð¾Ð»Ð¾ÑÐ¾Ð¼ Ð¼Ð°Ð¼Ñ‹, Ð¿Ð°Ð¿Ñ‹ Ð¸Ð»Ð¸ Ð±Ð°Ð±ÑƒÑˆÐºÐ¸
-            </button>
+          <div class="wave-visualizer">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
           </div>
+          <p class="sample-quote" data-i18n="hero_sample_quote">
+            "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
+          </p>
+          <div class="card-footer">
+            <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
+            <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
+          </div>
+          <div id="meditation-text-box" class="hidden" style="margin-top: 10px; font-size: 12px; color: #94A3B8;"></div>
         </div>
-      </div><!-- 4 Super-Missions Section -->
+        <div style="margin-top: 5px; margin-bottom: 5px; display: flex; justify-content: center;">
+          <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Super-Missions Section -->
   <section id="missions" class="section missions-section">
     <div class="container">
       <div class="section-header text-center">
@@ -370,65 +292,138 @@
     </div>
   </section>
 
-    <!-- MindEcho Supervisor AI Section (Swapped from Hero) -->
-  <section id="supervisor" class="section supervisor-section" style="padding: 50px 0; background: rgba(15,23,42,0.6);">
-    <div class="container text-center">
-      <div class="section-header text-center" style="margin-bottom: 25px;">
-        <span class="section-tag" style="background: rgba(6,182,212,0.15); color: var(--color-cyan); border: 1px solid rgba(6,182,212,0.3); font-size: 13px; font-weight: 700; padding: 6px 16px;">ðŸ¤– Ð˜Ð½Ñ‚ÐµÑ€Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹ Ð˜Ð˜-ÐÑÑÐ¸ÑÑ‚ÐµÐ½Ñ‚</span>
-        <h2 class="section-title" style="color: #fff; font-size: 32px; margin-top: 8px;">MindEcho Supervisor AI</h2>
-        <p class="section-subtitle" data-i18n="hero_card_sub" style="font-size: 16px; color: var(--text-muted);">Ð¡Ð°Ð¼Ñ‹Ð¹ Ñ€Ð¾Ð´Ð½Ð¾Ð¹ Ð¸ ÑƒÑÐ¿Ð¾ÐºÐ°Ð¸Ð²Ð°ÑŽÑ‰Ð¸Ð¹ Ð³Ð¾Ð»Ð¾Ñ â€¢ Ð‘ÐµÐ· Ð¼ÑƒÐ·Ñ‹ÐºÐ¸</p>
+  <!-- Audio Studio & Meditation Generator -->
+  <section id="generator" class="section generator-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag" data-i18n="tag_studio">Студия Медитации - разработка на основе методов детской нейропсихологии</span>
+        <h2 class="section-title" data-i18n="title_studio">Персональный Рассказ-Медитация</h2>
+        <p class="section-subtitle" data-i18n="sub_studio">Запись вашего голоса + Студийная MP3 фонограмма + Динамическая ИИ-озвучка</p>
       </div>
 
-      <div style="max-width: 680px; margin: 0 auto;">
-        <div class="hero-card glass-card float-animation" style="padding: 26px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15,23,42,0.9); box-shadow: 0 12px 35px rgba(0,0,0,0.5);">
-          <div class="card-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div class="avatar" style="font-size: 32px;">ðŸ¤–</div>
-              <div class="card-info" style="text-align: left;">
-                <h4 id="player-title" style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 2px;">MindEcho Supervisor AI</h4>
-                <p id="player-subtitle" data-i18n="hero_card_sub" style="font-size: 13px; color: var(--text-muted); margin: 0;">Ð¡Ð°Ð¼Ñ‹Ð¹ Ñ€Ð¾Ð´Ð½Ð¾Ð¹ Ð¸ ÑƒÑÐ¿Ð¾ÐºÐ°Ð¸Ð²Ð°ÑŽÑ‰Ð¸Ð¹ Ð³Ð¾Ð»Ð¾Ñ â€¢ Ð‘ÐµÐ· Ð¼ÑƒÐ·Ñ‹ÐºÐ¸</p>
+      <div class="generator-layout glass-card">
+        <!-- Left Column: Settings & Voice Recorder -->
+        <div class="generator-controls">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="child-name" data-i18n="label_child_name">Имя ребенка:</label>
+              <input type="text" id="child-name" value="Анна" placeholder="Например: Анна, София, Александр" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="child-gender" data-i18n="label_child_gender">Пол ребенка:</label>
+              <select id="child-gender" class="form-select">
+                <option value="girl" data-i18n="opt_girl">Девочка</option>
+                <option value="boy" data-i18n="opt_boy">Мальчик</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="child-age" data-i18n="label_child_age">Возраст (лет):</label>
+              <input type="number" id="child-age" value="6" min="1" max="16" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="audio-mode-source" data-i18n="label_audio_source">Источник аудио-озвучки:</label>
+              <select id="audio-mode-source" class="form-select">
+                <option value="parent" data-i18n="opt_source_parent">🎙 голос папы или мамы</option>
+                <option value="mp3" data-i18n="opt_source_mp3">🎵 Студийная MP3 фонограмма</option>
+                <option value="tts" data-i18n="opt_source_tts">🤖 Динамический ИИ-диктор (Низкий тембр)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="voice-timbre" data-i18n="label_voice_timbre">Тембр и Голос озвучки:</label>
+              <select id="voice-timbre" class="form-select">
+                <option value="male_deep" data-i18n="opt_male_deep">🎙 мужской - низкий спокойный голос</option>
+                <option value="female_calm" data-i18n="opt_female_calm">🎙 женский спокойный голос</option>
+                <option value="generated_parent" data-i18n="opt_generated_parent">🎙 сгенерированный голос мамы или папы</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="meditation-type" data-i18n="label_meditation_mode">Режим рассказа-медитации:</label>
+              <select id="meditation-type" class="form-select">
+                <option value="bedtime" data-i18n="opt_mode_bedtime">🌙 Перед сном (Засыпание)</option>
+                <option value="morning" data-i18n="opt_mode_morning">☀️ Утренняя (Уверенность)</option>
+                <option value="emergency" data-i18n="opt_mode_emergency">🚨 Экстренная (Заземление)</option>
+                <option value="prayer" data-i18n="opt_mode_prayer">🙏 Молитва-медитация (Духовный покой)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Mic Recorder Block (Moved down right before Generate Button) -->
+          <div class="form-group" style="margin-top: 10px; margin-bottom: 6px;">
+            <label data-i18n="label_mic_rec">🎙 Запись голоса родителя (60 секунд для ElevenLabs):</label>
+            <div class="mic-recorder-box">
+              <button id="mic-btn" class="mic-btn" onclick="toggleVoiceRecord()">
+                <span class="mic-icon">🎙</span>
+              </button>
+              <div class="mic-status">
+                <span id="mic-text" data-i18n="mic_press_text" style="font-weight: 700; color: #fff;">Нажмите для записи голоса родителя или бабушки (60 секунд)</span>
+                <div id="mic-wave" class="mic-wave hidden">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <!-- Real-Time Mic Volume Level Bar -->
+                <div id="mic-level-box" class="mic-level-box hidden" style="margin-top: 8px; width: 100%; max-width: 280px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; border: 1px solid rgba(255,255,255,0.25); overflow: hidden; display: flex; align-items: center; padding: 1px;">
+                  <div id="mic-level-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 70%, #EF4444 100%); border-radius: 6px; transition: width 0.08s ease-out;"></div>
+                </div>
+                <input type="file" id="parent-audio-upload-input" accept="audio/*,.webm,.mp3,.wav,.m4a" class="hidden" onchange="handleParentAudioUpload(event)">
+                <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; max-width: 100%; box-sizing: border-box;">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('parent-audio-upload-input').click()" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 8px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; max-width: 100%;">
+                    📁 Загрузить свою аудиозапись (MP3 / WebM)
+                  </button>
+                  <span id="upload-file-status" style="font-size: 12px; color: #10B981; font-weight: 700; max-width: 100%; overflow-wrap: anywhere;"></span>
+                </div>
               </div>
             </div>
-            <span class="live-tag" style="background: rgba(16,185,129,0.2); color: #10B981; border: 1px solid rgba(168,85,247,0.4); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;">LIVE</span>
-          </div>
 
-          <div class="wave-visualizer" style="display: flex; gap: 4px; justify-content: center; margin: 20px 0;">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
-          </div>
-
-          <p class="sample-quote" data-i18n="hero_sample_quote" style="font-size: 15px; font-style: italic; color: #e2e8f0; line-height: 1.6; margin-bottom: 20px;">
-            "Ð—Ð°ÐºÑ€Ð¾Ð¹ Ð³Ð»Ð°Ð·Ð° Ð¸ Ð¾Ð±Ñ€Ð°Ñ‚Ð¸ Ð²Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ Ð½Ð° ÑÐ²Ð¾Ð¹ Ð½Ð¾Ñ... ÐŸÐ¾Ñ‡ÑƒÐ²ÑÑ‚Ð²ÑƒÐ¹ Ñ‚Ð¸Ñ…ÑƒÑŽ Ð¸ ÑÐ¿Ð¾ÐºÐ¾Ð¹Ð½ÑƒÑŽ Ñ€Ð°Ð´Ð¾ÑÑ‚ÑŒ Ð²Ð½ÑƒÑ‚Ñ€Ð¸..."
-          </p>
-
-          <!-- Interactive Play / Status Button for Generated Audio -->
-          <button type="button" id="meditation-status-badge" onclick="playGeneratedMeditation()" style="width: 100%; margin-top: 10px; margin-bottom: 16px; padding: 14px 18px; border-radius: 14px; background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700; color: #FFFFFF; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);">
-            <span id="meditation-status-icon">â–¶ï¸</span>
-            <span id="meditation-status-text">Ð¡Ð»ÑƒÑˆÐ°Ñ‚ÑŒ ÑÐºÐ°Ð·ÐºÑƒ-Ð¼ÐµÐ´Ð¸Ñ‚Ð°Ñ†Ð¸ÑŽ, ÑÐ³ÐµÐ½ÐµÑ€Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½ÑƒÑŽ Ð·Ð°Ð´Ð°Ð½Ð½Ñ‹Ð¼ Ð³Ð¾Ð»Ð¾ÑÐ¾Ð¼</span>
-          </button>
-
-          <div class="player-controls" style="display: flex; align-items: center; gap: 14px; background: rgba(0,0,0,0.4); padding: 12px 18px; border-radius: 14px; margin-bottom: 14px;">
-            <button id="play-btn" class="btn-play" onclick="togglePlayAudio()" style="background: #2563eb; color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; cursor: pointer;">â–¶</button>
-            <div class="player-progress-bar" style="flex: 1; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; position: relative;">
-              <div id="player-progress" class="progress-fill" style="width: 0%; height: 100%; background: #06B6D4; transition: width 0.1s linear;"></div>
+            <!-- Story Reader Box Under Mic Button -->
+            <div id="mic-story-reader" class="mic-story-reader" style="margin-top: 10px; background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 14px; padding: 14px; text-align: left; font-size: 13.5px; line-height: 1.6; color: #E2E8F0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
+              <div style="font-weight: 700; color: #06B6D4; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <span data-i18n="mic_story_reader_title">📖 Текст для чтения вслух при записи (читать медленно с паузами):</span>
+                <button type="button" onclick="toggleFullStoryText()" id="btn-toggle-story-text" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #A855F7; color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 700; white-space: nowrap;" data-i18n="btn_toggle_story_text">Развернуть весь текст 📖</button>
+              </div>
+              <div id="story-snippet-text" style="color: #F1F5F9;" data-i18n="story_snippet_text">
+                «Знай что мама и папа тебя очень любят… А теперь давай отправимся в дружелюбное местечко… Представь, что у тебя в голове есть такое место,… где тебе хорошо…»
+              </div>
+              <div id="story-full-text" class="hidden" style="margin-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.2); padding-top: 10px; color: #F1F5F9; font-style: italic;" data-i18n="story_full_text">
+                «Знай что мама и папа тебя очень любят …А теперь давай отправимся в дружелюбное местечко.… Представь, что у тебя в голове есть такое место,… где тебе хорошо.… Найди его и побудь там.… Представь самое красивое и безопасное место, которое ты можешь вообразить.… где мама и папа всегда рядом с тобой и помогают тебе.…<br><br>
+                …Потому что это тот мир, который ты построила сама и в котором все, во что ты веришь — это правда. Это тот самый мир, где все действительно сбывается, …где мысли становятся реальными и где все, во что ты веришь, может случиться. …Думай о том, что в этом месте ты — настоящая волшебница и всё подвластно твоей воле.…<br><br>
+                …Поверь в то, что ты умна, и что ты очень быстро и легко учишься. Поверь в это, и всё сбудется. Почувствуй уверенность в своих силах, думай о том, как легко тебе даются любые новые знания.<br><br>
+                Поверь в то, что тебя очень сильно любят, и почувствуй это всем своим сердцем, и пусть душа наполнится счастьем. Представь теплое сияние в груди, вдыхай это чувство любви каждой клеточкой, ... мама и папа рады что ты у них есть...»
+              </div>
             </div>
-            <span id="player-time" style="font-size: 13px; font-weight: 700; color: #fff;">00:00</span>
           </div>
 
-          <div id="meditation-text-box" style="background: rgba(0,0,0,0.4); border-radius: 12px; padding: 14px; font-size: 13px; line-height: 1.5; color: #94A3B8; max-height: 120px; overflow-y: auto; text-align: left;"></div>
-
-          <div class="card-footer" style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-            <span data-i18n="hero_card_footer" style="font-size: 13px; color: #a855f7; font-weight: 700;">âœ¨ ÐŸÐµÑ€ÑÐ¾Ð½Ð°Ð»Ð¸Ð·Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¹ Ñ€Ð°ÑÑÐºÐ°Ð· Ð´Ð»Ñ Ñ€Ð°ÑÑÐ»Ð°Ð±Ð»ÐµÐ½Ð¸Ñ</span>
-            <button class="btn-icon" onclick="scrollToSection('generator')" style="background: #a855f7; color: #fff; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer;">ðŸŽ™ ÐŸÐµÑ€ÐµÐ¹Ñ‚Ð¸ Ðº Ð³ÐµÐ½ÐµÑ€Ð°Ñ‚Ð¾Ñ€Ñƒ</button>
-          </div>
+          <button class="btn btn-primary btn-block btn-lg btn-orange" onclick="generatePersonalMeditation()" data-i18n="btn_generate">
+            ✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки
+          </button>
         </div>
 
-        <div style="margin-top: 25px; display: flex; justify-content: center;">
-          <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+        <!-- Right Column: Interactive Audio Player -->
+        <div class="generator-preview">
+          <div class="player-card">
+            <div class="player-header">
+              <div class="disc-spin">✨</div>
+              <div>
+                <h4 id="player-title" data-i18n="player_title_default">Рассказ-Медитация</h4>
+              <p class="placeholder-text" data-i18n="player_placeholder">Укажите имя и нажмите "Сгенерировать"...</p>
+            </div>
+
+            <div class="player-controls">
+              <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
+              <div class="player-progress-bar">
+                <div id="player-progress" class="progress-fill"></div>
+              </div>
+              <span id="player-time">00:00</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
-
 
   <div class="container text-center" style="margin-top: -20px; margin-bottom: -60px; position: relative; z-index: 10;">
     <img src="parents_chair_1-2.jpg" alt="Parent putting child to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
