@@ -83,12 +83,12 @@
           Превращаем родительскую рутину в <span class="text-gradient">бережную психологическую поддержку</span>
         </h1>
         <p class="hero-subtitle" data-i18n="hero_subtitle" style="margin-bottom: 12px; font-size: 16px;">
-          Экосистема эмоциональной безопасности семьи и превентивная психологическая поддержка детей родным голосом. Легальный способ сохранить эмоциональные ресурсы родителей и вырастить счастливого ребенка.
+          Экосистема эмоциональной безопасности семьи и превентивная психологическая поддержка детей родным голосом: растворяет утренние капризы и вечернюю тревогу за 10 минут, заменяет репетиторов за $50/час и дарит родителям 1–2 часа времени ежедневно.
         </p>
 
         <div class="hero-buttons" style="margin-bottom: 14px; gap: 10px; display: flex; flex-direction: column;">
           <button class="btn btn-primary btn-lg btn-orange" onclick="playQuickTestAudio()" data-i18n="btn_try_free">
-            ✨ Попробовать! Сказка для расслабления с голосом мамы, папы или бабушки
+            Попробовать бесплатно: Сказка-Медитация для расслабления с голосом мамы, папы или бабушки
           </button>
           <p style="font-size: 14px; color: #ffffff; font-weight: 700; margin-top: 5px; margin-bottom: 8px; line-height: 1.4; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-i18n="btn_try_free_sub">
             мягко растворяет дневной стресс, снятие тревог и развитие эмоционального интеллекта (EQ) ребенка прямо в процессе засыпания .
@@ -125,7 +125,7 @@
       </div>
 
       <div class="hero-visual">
-        <div class="hero-card glass-card float-animation" style="padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15,23,42,0.85); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div class="hero-card glass-card float-animation">
           <div class="card-header">
             <div class="avatar">🤖</div>
             <div class="card-info" style="text-align: left;">
@@ -134,38 +134,19 @@
             </div>
             <span class="live-tag">LIVE</span>
           </div>
-
           <div class="wave-visualizer">
             <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
           </div>
-
           <p class="sample-quote" data-i18n="hero_sample_quote">
             "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
           </p>
-
-          <!-- Interactive Play / Status Button for Generated Audio -->
-          <button type="button" id="meditation-status-badge" onclick="playGeneratedMeditation()" style="width: 100%; margin-top: 10px; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: #FFFFFF; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 6px 20px rgba(255, 107, 0, 0.5);">
-            <span id="meditation-status-icon">▶️</span>
-            <span id="meditation-status-text">Слушать сказку-медитацию, сгенерированную заданным голосом</span>
-          </button>
-
-          <div class="player-controls" style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.4); padding: 10px 16px; border-radius: 12px; margin-bottom: 14px;">
-            <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
-            <div class="player-progress-bar" style="flex: 1;">
-              <div id="player-progress" class="progress-fill"></div>
-            </div>
-            <span id="player-time">00:00</span>
-          </div>
-
-          <!-- Story Box Container -->
-          <div id="meditation-text-box" style="margin-top: 14px; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 12px; font-size: 12.5px; line-height: 1.5; color: #94A3B8; max-height: 120px; overflow-y: auto; text-align: left;"></div>
-
-          <div class="card-footer" style="margin-top: 14px;">
+          <div class="card-footer">
             <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
             <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
           </div>
+          <div id="meditation-text-box" class="hidden" style="margin-top: 10px; font-size: 12px; color: #94A3B8;"></div>
         </div>
-        <div style="margin-top: 12px; display: flex; justify-content: center;">
+        <div style="margin-top: 5px; margin-bottom: 5px; display: flex; justify-content: center;">
           <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         </div>
       </div>
@@ -311,12 +292,7 @@
     </div>
   </section>
 
-  <!-- First Photo Banner immediately above Studio Meditation Generator -->
-  <div class="container text-center" style="margin-top: 35px; margin-bottom: 25px; position: relative: z-index: 10;">
-    <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 100%; max-width: 690px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
-  </div>
-
-<!-- Audio Studio & Meditation Generator -->
+  <!-- Audio Studio & Meditation Generator -->
   <section id="generator" class="section generator-section">
     <div class="container">
       <div class="section-header text-center">
@@ -331,7 +307,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="child-name" data-i18n="label_child_name">Имя ребенка:</label>
-              <input type="text" id="child-name" value="Имя ребёнка" placeholder="Имя ребёнка" class="form-input">
+              <input type="text" id="child-name" value="Анна" placeholder="Например: Анна, София, Александр" class="form-input">
             </div>
             <div class="form-group">
               <label for="child-gender" data-i18n="label_child_gender">Пол ребенка:</label>
