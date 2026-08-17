@@ -124,35 +124,137 @@
         </div>
       </div>
 
-      <div class="hero-visual">
-        <div class="hero-card glass-card float-animation">
-          <div class="card-header">
-            <div class="avatar">🤖</div>
-            <div class="card-info">
-              <h4>MindEcho Supervisor AI</h4>
-              <p data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
+      <div class="hero-visual" style="max-width: 540px; width: 100%;">
+
+        <!-- Audio Studio & Meditation Generator -->
+  <section id="generator" class="section generator-section">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-tag" data-i18n="tag_studio">Студия Медитации - разработка на основе методов детской нейропсихологии</span>
+        <h2 class="section-title" data-i18n="title_studio">Персональный Рассказ-Медитация</h2>
+        <p class="section-subtitle" data-i18n="sub_studio">Запись вашего голоса + Студийная MP3 фонограмма + Динамическая ИИ-озвучка</p>
+      </div>
+
+      <div class="generator-layout glass-card">
+        <!-- Left Column: Settings & Voice Recorder -->
+        <div class="generator-controls">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="child-name" data-i18n="label_child_name">Имя ребенка:</label>
+              <input type="text" id="child-name" value="Анна" placeholder="Например: Анна, София, Александр" class="form-input">
             </div>
-            <span class="live-tag">LIVE</span>
+            <div class="form-group">
+              <label for="child-gender" data-i18n="label_child_gender">Пол ребенка:</label>
+              <select id="child-gender" class="form-select">
+                <option value="girl" data-i18n="opt_girl">Девочка</option>
+                <option value="boy" data-i18n="opt_boy">Мальчик</option>
+              </select>
+            </div>
           </div>
-          <div class="wave-visualizer">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="child-age" data-i18n="label_child_age">Возраст (лет):</label>
+              <input type="number" id="child-age" value="6" min="1" max="16" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="audio-mode-source" data-i18n="label_audio_source">Источник аудио-озвучки:</label>
+              <select id="audio-mode-source" class="form-select">
+                <option value="parent" data-i18n="opt_source_parent">🎙 голос папы или мамы</option>
+                <option value="mp3" data-i18n="opt_source_mp3">🎵 Студийная MP3 фонограмма</option>
+                <option value="tts" data-i18n="opt_source_tts">🤖 Динамический ИИ-диктор (Низкий тембр)</option>
+              </select>
+            </div>
           </div>
-          <p class="sample-quote" data-i18n="hero_sample_quote">
-            "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
-          </p>
-          <div class="card-footer">
-            <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
-            <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="voice-timbre" data-i18n="label_voice_timbre">Тембр и Голос озвучки:</label>
+              <select id="voice-timbre" class="form-select">
+                <option value="male_deep" data-i18n="opt_male_deep">🎙 мужской - низкий спокойный голос</option>
+                <option value="female_calm" data-i18n="opt_female_calm">🎙 женский спокойный голос</option>
+                <option value="generated_parent" data-i18n="opt_generated_parent">🎙 сгенерированный голос мамы или папы</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="meditation-type" data-i18n="label_meditation_mode">Режим рассказа-медитации:</label>
+              <select id="meditation-type" class="form-select">
+                <option value="bedtime" data-i18n="opt_mode_bedtime">🌙 Перед сном (Засыпание)</option>
+                <option value="morning" data-i18n="opt_mode_morning">☀️ Утренняя (Уверенность)</option>
+                <option value="emergency" data-i18n="opt_mode_emergency">🚨 Экстренная (Заземление)</option>
+                <option value="prayer" data-i18n="opt_mode_prayer">🙏 Молитва-медитация (Духовный покой)</option>
+              </select>
+            </div>
           </div>
+
+          <!-- Mic Recorder Block (Moved down right before Generate Button) -->
+          <div class="form-group" style="margin-top: 10px; margin-bottom: 6px;">
+            <label data-i18n="label_mic_rec">🎙 Запись голоса родителя (60 секунд для ElevenLabs):</label>
+            <div class="mic-recorder-box">
+              <button id="mic-btn" class="mic-btn" onclick="toggleVoiceRecord()">
+                <span class="mic-icon">🎙</span>
+              </button>
+              <div class="mic-status">
+                <span id="mic-text" data-i18n="mic_press_text" style="font-weight: 700; color: #fff;">Нажмите для записи голоса родителя или бабушки (60 секунд)</span>
+                <div id="mic-wave" class="mic-wave hidden">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <!-- Real-Time Mic Volume Level Bar -->
+                <div id="mic-level-box" class="mic-level-box hidden" style="margin-top: 8px; width: 100%; max-width: 280px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; border: 1px solid rgba(255,255,255,0.25); overflow: hidden; display: flex; align-items: center; padding: 1px;">
+                  <div id="mic-level-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 70%, #EF4444 100%); border-radius: 6px; transition: width 0.08s ease-out;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Story Reader Box Under Mic Button -->
+            <div id="mic-story-reader" class="mic-story-reader" style="margin-top: 10px; background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 14px; padding: 14px; text-align: left; font-size: 13.5px; line-height: 1.6; color: #E2E8F0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
+              <div style="font-weight: 700; color: #06B6D4; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <span data-i18n="mic_story_reader_title">📖 Текст для чтения вслух при записи (читать медленно с паузами):</span>
+                <button type="button" onclick="toggleFullStoryText()" id="btn-toggle-story-text" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #A855F7; color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 700; white-space: nowrap;" data-i18n="btn_toggle_story_text">Развернуть весь текст 📖</button>
+              </div>
+              <div id="story-snippet-text" style="color: #F1F5F9;" data-i18n="story_snippet_text">
+                «Знай что мама и папа тебя очень любят… А теперь давай отправимся в дружелюбное местечко… Представь, что у тебя в голове есть такое место,… где тебе хорошо…»
+              </div>
+              <div id="story-full-text" class="hidden" style="margin-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.2); padding-top: 10px; color: #F1F5F9; font-style: italic;" data-i18n="story_full_text">
+                «Знай что мама и папа тебя очень любят …А теперь давай отправимся в дружелюбное местечко.… Представь, что у тебя в голове есть такое место,… где тебе хорошо.… Найди его и побудь там.… Представь самое красивое и безопасное место, которое ты можешь вообразить.… где мама и папа всегда рядом с тобой и помогают тебе.…<br><br>
+                …Потому что это тот мир, который ты построила сама и в котором все, во что ты веришь — это правда. Это тот самый мир, где все действительно сбывается, …где мысли становятся реальными и где все, во что ты веришь, может случиться. …Думай о том, что в этом месте ты — настоящая волшебница и всё подвластно твоей воле.…<br><br>
+                …Поверь в то, что ты умна, и что ты очень быстро и легко учишься. Поверь в это, и всё сбудется. Почувствуй уверенность в своих силах, думай о том, как легко тебе даются любые новые знания.<br><br>
+                Поверь в то, что тебя очень сильно любят, и почувствуй это всем своим сердцем, и пусть душа наполнится счастьем. Представь теплое сияние в груди, вдыхай это чувство любви каждой клеточкой, ... мама и папа рады что ты у них есть...»
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block btn-lg btn-orange" onclick="generatePersonalMeditation()" data-i18n="btn_generate">
+            ✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки
+          </button>
         </div>
-        <div style="margin-top: 5px; margin-bottom: 5px; display: flex; justify-content: center;">
-          <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+
+        <!-- Right Column: Interactive Audio Player -->
+        <div class="generator-preview">
+          <div class="player-card">
+            <div class="player-header">
+              <div class="disc-spin">✨</div>
+              <div>
+                <h4 id="player-title" data-i18n="player_title_default">Рассказ-Медитация</h4>
+              <p class="placeholder-text" data-i18n="player_placeholder">Укажите имя и нажмите "Сгенерировать"...</p>
+            </div>
+
+            <div class="player-controls">
+              <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
+              <div class="player-progress-bar">
+                <div id="player-progress" class="progress-fill"></div>
+              </div>
+              <span id="player-time">00:00</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 4 Super-Missions Section -->
+  
+      </div>
+<!-- 4 Super-Missions Section -->
   <section id="missions" class="section missions-section">
     <div class="container">
       <div class="section-header text-center">
@@ -291,133 +393,70 @@
     </div>
   </section>
 
-  <!-- Audio Studio & Meditation Generator -->
-  <section id="generator" class="section generator-section">
-    <div class="container">
-      <div class="section-header text-center">
-        <span class="section-tag" data-i18n="tag_studio">Студия Медитации - разработка на основе методов детской нейропсихологии</span>
-        <h2 class="section-title" data-i18n="title_studio">Персональный Рассказ-Медитация</h2>
-        <p class="section-subtitle" data-i18n="sub_studio">Запись вашего голоса + Студийная MP3 фонограмма + Динамическая ИИ-озвучка</p>
+  <!-- MindEcho Supervisor AI Section (Swapped from Hero) -->
+  <section id="supervisor" class="section supervisor-section" style="padding: 40px 0; background: rgba(15,23,42,0.5);">
+    <div class="container text-center">
+      <div class="section-header text-center" style="margin-bottom: 20px;">
+        <span class="section-tag" style="background: rgba(6,182,212,0.15); color: var(--color-cyan); border: 1px solid rgba(6,182,212,0.3); font-size: 13px; font-weight: 700; padding: 6px 16px;">🤖 Интерактивный ИИ-Ассистент</span>
+        <h2 class="section-title" style="color: #fff; font-size: 28px; margin-top: 6px;">MindEcho Supervisor AI</h2>
+        <p class="section-subtitle" data-i18n="hero_card_sub" style="font-size: 15px; color: var(--text-muted);">Самый родной и успокаивающий голос • Без музыки</p>
       </div>
 
-      <div class="generator-layout glass-card">
-        <!-- Left Column: Settings & Voice Recorder -->
-        <div class="generator-controls">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="child-name" data-i18n="label_child_name">Имя ребенка:</label>
-              <input type="text" id="child-name" value="Анна" placeholder="Например: Анна, София, Александр" class="form-input">
+      <div style="max-width: 650px; margin: 0 auto;">
+        <div class="hero-card glass-card float-animation" style="padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); background: rgba(15,23,42,0.85); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div class="card-header">
+            <div class="avatar">🤖</div>
+            <div class="card-info" style="text-align: left;">
+              <h4 id="player-title">MindEcho Supervisor AI</h4>
+              <p id="player-subtitle" data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
             </div>
-            <div class="form-group">
-              <label for="child-gender" data-i18n="label_child_gender">Пол ребенка:</label>
-              <select id="child-gender" class="form-select">
-                <option value="girl" data-i18n="opt_girl">Девочка</option>
-                <option value="boy" data-i18n="opt_boy">Мальчик</option>
-              </select>
-            </div>
+            <span class="live-tag">LIVE</span>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="child-age" data-i18n="label_child_age">Возраст (лет):</label>
-              <input type="number" id="child-age" value="6" min="1" max="16" class="form-input">
-            </div>
-            <div class="form-group">
-              <label for="audio-mode-source" data-i18n="label_audio_source">Источник аудио-озвучки:</label>
-              <select id="audio-mode-source" class="form-select">
-                <option value="parent" data-i18n="opt_source_parent">🎙 голос папы или мамы</option>
-                <option value="mp3" data-i18n="opt_source_mp3">🎵 Студийная MP3 фонограмма</option>
-                <option value="tts" data-i18n="opt_source_tts">🤖 Динамический ИИ-диктор (Низкий тембр)</option>
-              </select>
-            </div>
+          <div class="wave-visualizer">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="voice-timbre" data-i18n="label_voice_timbre">Тембр и Голос озвучки:</label>
-              <select id="voice-timbre" class="form-select">
-                <option value="male_deep" data-i18n="opt_male_deep">🎙 мужской - низкий спокойный голос</option>
-                <option value="female_calm" data-i18n="opt_female_calm">🎙 женский спокойный голос</option>
-                <option value="generated_parent" data-i18n="opt_generated_parent">🎙 сгенерированный голос мамы или папы</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="meditation-type" data-i18n="label_meditation_mode">Режим рассказа-медитации:</label>
-              <select id="meditation-type" class="form-select">
-                <option value="bedtime" data-i18n="opt_mode_bedtime">🌙 Перед сном (Засыпание)</option>
-                <option value="morning" data-i18n="opt_mode_morning">☀️ Утренняя (Уверенность)</option>
-                <option value="emergency" data-i18n="opt_mode_emergency">🚨 Экстренная (Заземление)</option>
-                <option value="prayer" data-i18n="opt_mode_prayer">🙏 Молитва-медитация (Духовный покой)</option>
-              </select>
-            </div>
-          </div>
+          <p class="sample-quote" data-i18n="hero_sample_quote">
+            "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
+          </p>
 
-          <!-- Mic Recorder Block (Moved down right before Generate Button) -->
-          <div class="form-group" style="margin-top: 10px; margin-bottom: 6px;">
-            <label data-i18n="label_mic_rec">🎙 Запись голоса родителя (60 секунд для ElevenLabs):</label>
-            <div class="mic-recorder-box">
-              <button id="mic-btn" class="mic-btn" onclick="toggleVoiceRecord()">
-                <span class="mic-icon">🎙</span>
-              </button>
-              <div class="mic-status">
-                <span id="mic-text" data-i18n="mic_press_text" style="font-weight: 700; color: #fff;">Нажмите для записи голоса родителя или бабушки (60 секунд)</span>
-                <div id="mic-wave" class="mic-wave hidden">
-                  <span></span><span></span><span></span><span></span>
-                </div>
-                <!-- Real-Time Mic Volume Level Bar -->
-                <div id="mic-level-box" class="mic-level-box hidden" style="margin-top: 8px; width: 100%; max-width: 280px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; border: 1px solid rgba(255,255,255,0.25); overflow: hidden; display: flex; align-items: center; padding: 1px;">
-                  <div id="mic-level-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 70%, #EF4444 100%); border-radius: 6px; transition: width 0.08s ease-out;"></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Story Reader Box Under Mic Button -->
-            <div id="mic-story-reader" class="mic-story-reader" style="margin-top: 10px; background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 14px; padding: 14px; text-align: left; font-size: 13.5px; line-height: 1.6; color: #E2E8F0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);">
-              <div style="font-weight: 700; color: #06B6D4; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-                <span data-i18n="mic_story_reader_title">📖 Текст для чтения вслух при записи (читать медленно с паузами):</span>
-                <button type="button" onclick="toggleFullStoryText()" id="btn-toggle-story-text" style="background: rgba(168, 85, 247, 0.25); border: 1px solid #A855F7; color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: 700; white-space: nowrap;" data-i18n="btn_toggle_story_text">Развернуть весь текст 📖</button>
-              </div>
-              <div id="story-snippet-text" style="color: #F1F5F9;" data-i18n="story_snippet_text">
-                «Знай что мама и папа тебя очень любят… А теперь давай отправимся в дружелюбное местечко… Представь, что у тебя в голове есть такое место,… где тебе хорошо…»
-              </div>
-              <div id="story-full-text" class="hidden" style="margin-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.2); padding-top: 10px; color: #F1F5F9; font-style: italic;" data-i18n="story_full_text">
-                «Знай что мама и папа тебя очень любят …А теперь давай отправимся в дружелюбное местечко.… Представь, что у тебя в голове есть такое место,… где тебе хорошо.… Найди его и побудь там.… Представь самое красивое и безопасное место, которое ты можешь вообразить.… где мама и папа всегда рядом с тобой и помогают тебе.…<br><br>
-                …Потому что это тот мир, который ты построила сама и в котором все, во что ты веришь — это правда. Это тот самый мир, где все действительно сбывается, …где мысли становятся реальными и где все, во что ты веришь, может случиться. …Думай о том, что в этом месте ты — настоящая волшебница и всё подвластно твоей воле.…<br><br>
-                …Поверь в то, что ты умна, и что ты очень быстро и легко учишься. Поверь в это, и всё сбудется. Почувствуй уверенность в своих силах, думай о том, как легко тебе даются любые новые знания.<br><br>
-                Поверь в то, что тебя очень сильно любят, и почувствуй это всем своим сердцем, и пусть душа наполнится счастьем. Представь теплое сияние в груди, вдыхай это чувство любви каждой клеточкой, ... мама и папа рады что ты у них есть...»
-              </div>
-            </div>
-          </div>
-
-          <button class="btn btn-primary btn-block btn-lg btn-orange" onclick="generatePersonalMeditation()" data-i18n="btn_generate">
-            ✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки
+          <!-- Interactive Play / Status Button for Generated Audio -->
+          <button type="button" id="meditation-status-badge" onclick="playGeneratedMeditation()" style="width: 100%; margin-top: 10px; margin-bottom: 16px; padding: 12px 16px; border-radius: 12px; background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: #FFFFFF; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 6px 20px rgba(255, 107, 0, 0.5);">
+            <span id="meditation-status-icon">▶️</span>
+            <span id="meditation-status-text">Слушать сказку-медитацию, сгенерированную заданным голосом</span>
           </button>
+
+          <div class="player-controls" style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.4); padding: 10px 16px; border-radius: 12px; margin-bottom: 14px;">
+            <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
+            <div class="player-progress-bar" style="flex: 1;">
+              <div id="player-progress" class="progress-fill"></div>
+            </div>
+            <span id="player-time">00:00</span>
+          </div>
+
+          <!-- Story Box Container -->
+          <div id="meditation-text-box" style="margin-top: 14px; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 12px; font-size: 12.5px; line-height: 1.5; color: #94A3B8; max-height: 120px; overflow-y: auto; text-align: left;"></div>
+
+          <div class="card-footer" style="margin-top: 14px;">
+            <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
+            <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
+          </div>
         </div>
 
-        <!-- Right Column: Interactive Audio Player -->
-        <div class="generator-preview">
-          <div class="player-card">
-            <div class="player-header">
-              <div class="disc-spin">✨</div>
-              <div>
-                <h4 id="player-title" data-i18n="player_title_default">Рассказ-Медитация</h4>
-              <p class="placeholder-text" data-i18n="player_placeholder">Укажите имя и нажмите "Сгенерировать"...</p>
-            </div>
-
-            <div class="player-controls">
-              <button id="play-btn" class="btn-play" onclick="togglePlayAudio()">▶</button>
-              <div class="player-progress-bar">
-                <div id="player-progress" class="progress-fill"></div>
-              </div>
-              <span id="player-time">00:00</span>
-            </div>
-          </div>
+        <div style="margin-top: 20px; display: flex; justify-content: center;">
+          <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
         </div>
       </div>
     </div>
   </section>
 
-  <div class="container text-center" style="margin-top: -20px; margin-bottom: -60px; position: relative; z-index: 10;">
+  
+      </div>
+    </div>
+  </section>
+
+<div class="container text-center" style="margin-top: -20px; margin-bottom: -60px; position: relative; z-index: 10;">
     <img src="parents_chair_1-2.jpg" alt="Parent putting child to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
   </div>
 
