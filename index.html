@@ -83,12 +83,12 @@
           Превращаем родительскую рутину в <span class="text-gradient">бережную психологическую поддержку</span>
         </h1>
         <p class="hero-subtitle" data-i18n="hero_subtitle" style="margin-bottom: 12px; font-size: 16px;">
-          Экосистема эмоциональной безопасности семьи и превентивная психологическая поддержка детей родным голосом: растворяет утренние капризы и вечернюю тревогу за 10 минут, заменяет репетиторов за $50/час и дарит родителям 1–2 часа времени ежедневно.
+          Экосистема эмоциональной безопасности семьи и превентивная психологическая поддержка детей родным голосом. Легальный способ сохранить эмоциональные ресурсы родителей и вырастить счастливого ребенка.
         </p>
 
         <div class="hero-buttons" style="margin-bottom: 14px; gap: 10px; display: flex; flex-direction: column;">
           <button class="btn btn-primary btn-lg btn-orange" onclick="playQuickTestAudio()" data-i18n="btn_try_free">
-            Попробовать бесплатно: Сказка-Медитация для расслабления с голосом мамы, папы или бабушки
+            ✨ Попробовать! Сказка для расслабления с голосом мамы, папы или бабушки
           </button>
           <p style="font-size: 14px; color: #ffffff; font-weight: 700; margin-top: 5px; margin-bottom: 8px; line-height: 1.4; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-i18n="btn_try_free_sub">
             мягко растворяет дневной стресс, снятие тревог и развитие эмоционального интеллекта (EQ) ребенка прямо в процессе засыпания .
@@ -148,6 +148,40 @@
         </div>
         <div style="margin-top: 5px; margin-bottom: 5px; display: flex; justify-content: center;">
           <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 80%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Block 1: MindEcho Supervisor AI Section (Placed IMMEDIATELY ABOVE Supermission Section) -->
+  <section id="supervisor" class="section supervisor-section" style="padding: 45px 0; background: rgba(15,23,42,0.65);">
+    <div class="container text-center" style="max-width: 1140px; margin: 0 auto; padding: 0 20px;">
+      <div class="section-header text-center" style="margin-bottom: 25px;">
+        <span class="section-tag" style="background: rgba(6,182,212,0.15); color: var(--color-cyan); border: 1px solid rgba(6,182,212,0.3); font-size: 13px; font-weight: 700; padding: 6px 16px;">🤖 Интерактивный ИИ-Ассистент</span>
+        <h2 class="section-title" style="color: #fff; font-size: 34px; margin-top: 8px;">MindEcho Supervisor AI</h2>
+        <p class="section-subtitle" data-i18n="hero_card_sub" style="font-size: 16px; color: var(--text-muted);">Самый родной и успокаивающий голос • Без музыки</p>
+      </div>
+
+      <div style="max-width: 720px; margin: 0 auto;">
+        <div class="hero-card glass-card float-animation">
+          <div class="card-header">
+            <div class="avatar">🤖</div>
+            <div class="card-info" style="text-align: left;">
+              <h4>MindEcho Supervisor AI</h4>
+              <p data-i18n="hero_card_sub">Самый родной и успокаивающий голос • Без музыки</p>
+            </div>
+            <span class="live-tag">LIVE</span>
+          </div>
+          <div class="wave-visualizer">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+          <p class="sample-quote" data-i18n="hero_sample_quote">
+            "Закрой глаза и обрати внимание на свой нос... Почувствуй тихую и спокойную радость внутри..."
+          </p>
+          <div class="card-footer">
+            <span data-i18n="hero_card_footer">✨ Персонализированный рассказ для расслабления</span>
+            <button class="btn-icon" onclick="scrollToSection('generator')">▶</button>
+          </div>
         </div>
       </div>
     </div>
@@ -292,9 +326,14 @@
     </div>
   </section>
 
-  <!-- Audio Studio & Meditation Generator -->
-  <section id="generator" class="section generator-section">
-    <div class="container">
+  <!-- First Photo Banner immediately above Studio Meditation Generator -->
+  <div class="container text-center" style="margin-top: 35px; margin-bottom: 25px; position: relative; z-index: 10;">
+    <img src="parents_chair_2_v1-2.jpg" alt="Parents putting children to sleep" style="width: 100%; max-width: 690px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
+  </div>
+
+  <!-- Audio Studio & Meditation Generator (Placed IMMEDIATELY ABOVE Pricing Section) -->
+  <section id="generator" class="section generator-section" style="padding: 40px 0;">
+    <div class="container" style="max-width: 1140px; margin: 0 auto; padding: 0 20px;">
       <div class="section-header text-center">
         <span class="section-tag" data-i18n="tag_studio">Студия Медитации - разработка на основе методов детской нейропсихологии</span>
         <h2 class="section-title" data-i18n="title_studio">Персональный Рассказ-Медитация</h2>
@@ -368,13 +407,6 @@
                 <!-- Real-Time Mic Volume Level Bar -->
                 <div id="mic-level-box" class="mic-level-box hidden" style="margin-top: 8px; width: 100%; max-width: 280px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; border: 1px solid rgba(255,255,255,0.25); overflow: hidden; display: flex; align-items: center; padding: 1px;">
                   <div id="mic-level-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10B981 0%, #F59E0B 70%, #EF4444 100%); border-radius: 6px; transition: width 0.08s ease-out;"></div>
-                </div>
-                <input type="file" id="parent-audio-upload-input" accept="audio/*,.webm,.mp3,.wav,.m4a" class="hidden" onchange="handleParentAudioUpload(event)">
-                <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; max-width: 100%; box-sizing: border-box;">
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('parent-audio-upload-input').click()" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 8px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; max-width: 100%;">
-                    📁 Загрузить свою аудиозапись (MP3 / WebM)
-                  </button>
-                  <span id="upload-file-status" style="font-size: 12px; color: #10B981; font-weight: 700; max-width: 100%; overflow-wrap: anywhere;"></span>
                 </div>
               </div>
             </div>
