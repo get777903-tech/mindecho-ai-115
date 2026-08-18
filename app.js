@@ -155,7 +155,7 @@ const translations = {
     opt_boy: "Мальчик",
     label_child_age: "Возраст (лет):",
     label_audio_source: "Источник аудио-озвучки:",
-    opt_source_parent: "🎙 голос папы или мамы",
+    opt_source_parent: "🎙 голос мамы или папы",
     opt_source_mp3: "🎵 Студийная MP3 фонограмма",
     opt_source_tts: "🤖 Динамический ИИ-диктор (Низкий тембр)",
     label_voice_timbre: "Тембр и Голос озвучки:",
