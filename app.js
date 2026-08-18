@@ -830,6 +830,9 @@ async function toggleVoiceRecord() {
       // Initialize Web Audio API Analyser for real-time volume VU Meter
       try {
         micAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (micAudioContext && micAudioContext.state === 'suspended') {
+          await micAudioContext.resume();
+        }
         const source = micAudioContext.createMediaStreamSource(stream);
         micAnalyser = micAudioContext.createAnalyser();
         micAnalyser.fftSize = 256;
@@ -897,10 +900,10 @@ async function toggleVoiceRecord() {
       appState.clonedVoiceId = null; // Force fresh cloning for new recording
       appState.recordedAudioUrl = URL.createObjectURL(blob);
 
-      // Signal check: Verify if audio stream contained real voice sound or was silent
-      if (maxAudioVolumeRecorded < 3 || blob.size < 5000) {
-        micText.innerText = "⚠️ Внимание: Голос не обнаружен (Записана тишина)";
-        alert("⚠️ Внимание: Запись оказалась тихой/пустой. Пожалуйста, убедитесь, что микрофон включён в настройках Windows и браузера, и разрешите доступ при запросе!");
+      // Robust check: If blob size is valid (>= 1000 bytes), recording is successful
+      if (blob.size < 1000) {
+        micText.innerText = "⚠️ Внимание: Запись оказалась тихой/пустой";
+        alert("⚠️ Внимание: Запись оказалась пустой. Пожалуйста, убедитесь, что микрофон включён в настройках браузера!");
       } else {
         micText.innerText = "🟢 Запись голоса завершена!";
         const uploadStatus = document.getElementById('upload-file-status');
