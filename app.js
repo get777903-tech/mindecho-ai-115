@@ -1008,7 +1008,7 @@ function handleParentAudioUpload(event) {
   };
 }
 
-// 🗄️ 3. Save Parent Voice to Supabase Database (Preserving Full History without deletion)
+// 🗄️ 3. Save Parent Voice to Supabase Database & Local App Storage Directory (Preserving Full History without deletion)
 async function saveParentVoiceToSupabase(fileOrBlob, voiceId = null, childName = 'Ребенок') {
   const userEmail = localStorage.getItem('userEmail') || document.getElementById('auth-email')?.value || 'get777903@gmail.com';
   const userContact = document.getElementById('nda-user-contact')?.value || document.getElementById('checkout-phone')?.value || '-';
@@ -1017,6 +1017,14 @@ async function saveParentVoiceToSupabase(fileOrBlob, voiceId = null, childName =
   reader.readAsDataURL(fileOrBlob);
   reader.onloadend = () => {
     const base64Audio = reader.result;
+
+    // Save audio payload into isolated application local storage directory
+    try {
+      localStorage.setItem('mindecho_latest_parent_voice_b64', base64Audio);
+      localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
+    } catch (storageErr) {
+      console.warn('Local app storage limit notice:', storageErr);
+    }
 
     const voiceRecordPayload = {
       timestamp: new Date().toISOString(),
@@ -1047,8 +1055,23 @@ async function saveParentVoiceToSupabase(fileOrBlob, voiceId = null, childName =
   };
 }
 
-// 🔄 4. Auto-Load Latest Voice Default (LATEST VOICE) from Supabase on Returning User
+// 🔄 4. Auto-Load Latest Voice Default (LATEST VOICE) from App Local Storage & Supabase
 async function loadLatestParentVoiceFromSupabase(childName = '') {
+  // First check isolated application local storage directory for cached parent voice
+  const cachedB64 = localStorage.getItem('mindecho_latest_parent_voice_b64');
+  if (cachedB64 && cachedB64.startsWith('data:audio')) {
+    appState.recordedAudioUrl = cachedB64;
+    const btnCreate = document.getElementById('btn-create-meditation');
+    if (btnCreate) {
+      btnCreate.disabled = false;
+      btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+      btnCreate.style.opacity = "1";
+      btnCreate.style.cursor = "pointer";
+      btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+      btnCreate.onclick = playParentRecordedVoice;
+    }
+  }
+
   try {
     const queryUrl = `${supabaseUrl}?event_type=eq.Parent_Voice_Saved&order=created_at.desc&limit=1`;
     const res = await fetch(queryUrl, {
@@ -1074,6 +1097,16 @@ async function loadLatestParentVoiceFromSupabase(childName = '') {
         const micText = document.getElementById('mic-text');
         if (micText) {
           micText.innerText = `🟢 Автоматически подгружен последний голос из базы данных Supabase`;
+        }
+
+        const btnCreate = document.getElementById('btn-create-meditation');
+        if (btnCreate) {
+          btnCreate.disabled = false;
+          btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+          btnCreate.style.opacity = "1";
+          btnCreate.style.cursor = "pointer";
+          btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+          btnCreate.onclick = playParentRecordedVoice;
         }
       }
     }
