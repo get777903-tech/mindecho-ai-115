@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAudioPlayer();
   initSignatureCanvas();
   initAnalyticsTracking();
+  loadLatestParentVoiceFromSupabase();
 });
 
 // Initialize Audio Element
@@ -867,81 +868,231 @@ async function toggleVoiceRecord() {
       };
 
       appState.mediaRecorder.onstop = () => {
-        // Stop AudioContext & Analyser
-        if (micAnimFrame) cancelAnimationFrame(micAnimFrame);
-        if (micAudioContext) {
-          micAudioContext.close().catch(() => {});
-          micAudioContext = null;
+      // Stop AudioContext & Analyser
+      if (micAnimFrame) cancelAnimationFrame(micAnimFrame);
+      if (micAudioContext) {
+        micAudioContext.close().catch(() => {});
+        micAudioContext = null;
+      }
+      if (micLevelBox) micLevelBox.classList.add('hidden');
+      if (micLevelFill) micLevelFill.style.width = '0%';
+
+      const blob = new Blob(appState.recordedChunks, { type: appState.mediaRecorder.mimeType || 'audio/webm' });
+
+      // STRICT FILE SIZE CHECK: 15 MB MAX (15 * 1024 * 1024 bytes)
+      const MAX_FILE_SIZE = 15 * 1024 * 1024;
+      if (blob.size > MAX_FILE_SIZE) {
+        micText.innerText = "⚠️ Размер файла превышает 15 МБ";
+        alert("⚠️ Размер файла превышает 15 МБ. Пожалуйста, запишите аудиозапись меньшего размера.");
+        return;
+      }
+
+      appState.recordedAudioBlob = blob;
+      appState.clonedVoiceId = null; // Force fresh cloning for new recording
+      appState.recordedAudioUrl = URL.createObjectURL(blob);
+
+      // Signal check: Verify if audio stream contained real voice sound or was silent
+      if (maxAudioVolumeRecorded < 3 || blob.size < 5000) {
+        micText.innerText = "⚠️ Внимание: Голос не обнаружен (Записана тишина)";
+        alert("⚠️ Внимание: Запись оказалась тихой/пустой. Пожалуйста, убедитесь, что микрофон включён в настройках Windows и браузера, и разрешите доступ при запросе!");
+      } else {
+        micText.innerText = "🟢 Запись голоса завершена!";
+        const uploadStatus = document.getElementById('upload-file-status');
+        if (uploadStatus) uploadStatus.innerText = "🟢 Запись голоса завершена!";
+      }
+
+      // Save voice recording to Supabase database (Preserving History)
+      const childName = document.getElementById('child-name')?.value || 'Ребенок';
+      saveParentVoiceToSupabase(blob, null, childName);
+    };
+
+    appState.mediaRecorder.start(250); // Slice chunks every 250ms
+    appState.isRecording = true;
+    micBtn.classList.add('recording');
+    micWave.classList.remove('hidden');
+
+    let remainingSec = 60;
+    micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
+    
+    const recordTimerInterval = setInterval(() => {
+      remainingSec--;
+      if (remainingSec > 0 && appState.isRecording) {
+        micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
+      } else {
+        clearInterval(recordTimerInterval);
+        if (appState.isRecording) {
+          toggleVoiceRecord();
         }
-        if (micLevelBox) micLevelBox.classList.add('hidden');
-        if (micLevelFill) micLevelFill.style.width = '0%';
+      }
+    }, 1000);
 
-        const blob = new Blob(appState.recordedChunks, { type: appState.mediaRecorder.mimeType || 'audio/webm' });
-        appState.recordedAudioUrl = URL.createObjectURL(blob);
+  } catch (err) {
+    console.warn("Microphone access denied or missing:", err);
+    micText.innerText = "⚠️ Доступ к микрофону заблокирован";
+    alert("⚠️ Разрешение на микрофон не предоставлено браузером! Пожалуйста, кликните по иконке замочка 🔒 слева от адресной строки браузера и выберите «Разрешить микрофон».");
+  }
+} else {
+  if (appState.mediaRecorder && appState.mediaRecorder.state !== 'inactive') {
+    appState.mediaRecorder.stop();
+  }
+  appState.isRecording = false;
+  micBtn.classList.remove('recording');
+  micWave.classList.add('hidden');
+}
 
-        // Signal check: Verify if audio stream contained real voice sound or was silent
-        if (maxAudioVolumeRecorded < 3 || blob.size < 5000) {
-          micText.innerText = "⚠️ Внимание: Голос не обнаружен (Записана тишина)";
-          alert("⚠️ Внимание: Запись оказалась тихой/пустой. Пожалуйста, убедитесь, что микрофон включён в настройках Windows и браузера, и разрешите доступ при запросе!");
-        } else {
-          micText.innerText = "🟢 Запись голоса (60 сек) завершена! (Сохранено)";
-        }
+logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
+}
 
-        // Convert blob to Base64 and send analytics
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          const base64Audio = reader.result;
-          const userEmail = localStorage.getItem('userEmail') || document.getElementById('auth-email')?.value || '-';
-          const userContact = document.getElementById('nda-user-contact')?.value || document.getElementById('checkout-phone')?.value || '-';
+// 📁 1. Custom Parent Audio File Handler (WebM / MP3 / WAV Upload) with 15 MB Size Limit
+function handleParentAudioUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-          logClickAnalytics('Voice_Recorded_60s', 'Parent_Voice_Sample', 0, {
-            user_name: 'Пользователь',
-            email: userEmail,
-            phone: userContact,
-            elevenlabs_target: true,
-            max_volume: maxAudioVolumeRecorded,
-            audio_base64_sample: base64Audio.substring(0, 100000)
-          });
-        };
-      };
+  const statusSpan = document.getElementById('upload-file-status');
+  const micText = document.getElementById('mic-text');
 
-      appState.mediaRecorder.start(250); // Slice chunks every 250ms
-      appState.isRecording = true;
-      micBtn.classList.add('recording');
-      micWave.classList.remove('hidden');
-
-      let remainingSec = 60;
-      micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
-      
-      const recordTimerInterval = setInterval(() => {
-        remainingSec--;
-        if (remainingSec > 0 && appState.isRecording) {
-          micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
-        } else {
-          clearInterval(recordTimerInterval);
-          if (appState.isRecording) {
-            toggleVoiceRecord();
-          }
-        }
-      }, 1000);
-
-    } catch (err) {
-      console.warn("Microphone access denied or missing:", err);
-      micText.innerText = "⚠️ Доступ к микрофону заблокирован";
-      alert("⚠️ Разрешение на микрофон не предоставлено браузером! Пожалуйста, кликните по иконке замочка 🔒 слева от адресной строки браузера и выберите «Разрешить микрофон».");
-    }
-  } else {
-    if (appState.mediaRecorder && appState.mediaRecorder.state !== 'inactive') {
-      appState.mediaRecorder.stop();
-    }
-    appState.isRecording = false;
-    micBtn.classList.remove('recording');
-    micWave.classList.add('hidden');
+  // STRICT FILE SIZE CHECK: 15 MB MAX (15 * 1024 * 1024 bytes)
+  const MAX_FILE_SIZE = 15 * 1024 * 1024;
+  if (file.size > MAX_FILE_SIZE) {
+    if (statusSpan) statusSpan.innerText = `⚠️ Размер файла превышает 15 МБ`;
+    alert("⚠️ Размер файла превышает 15 МБ. Пожалуйста, загрузите аудиозапись меньшего размера.");
+    event.target.value = '';
+    return;
   }
 
-  logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
+  if (statusSpan) statusSpan.innerText = `⏳ Загрузка "${file.name}"...`;
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onloadend = () => {
+    appState.recordedAudioBlob = file;
+    appState.clonedVoiceId = null; // Force new Instant Voice Cloning for uploaded file
+    appState.recordedAudioUrl = URL.createObjectURL(file);
+
+    if (statusSpan) statusSpan.innerText = `🟢 Ваша аудиозапись загружена!`;
+    if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+
+    const childName = document.getElementById('child-name')?.value || 'Ребенок';
+    saveParentVoiceToSupabase(file, null, childName);
+
+    alert(`🟢 Ваша аудиозапись загружена! "${file.name}" (${Math.round(file.size / 1024)} KB) сохранена и готова к сгенерированию медитации.`);
+  };
 }
+
+// 🗄️ 3. Save Parent Voice to Supabase Database (Preserving Full History without deletion)
+async function saveParentVoiceToSupabase(fileOrBlob, voiceId = null, childName = 'Ребенок') {
+  const userEmail = localStorage.getItem('userEmail') || document.getElementById('auth-email')?.value || 'get777903@gmail.com';
+  const userContact = document.getElementById('nda-user-contact')?.value || document.getElementById('checkout-phone')?.value || '-';
+
+  const reader = new FileReader();
+  reader.readAsDataURL(fileOrBlob);
+  reader.onloadend = () => {
+    const base64Audio = reader.result;
+
+    const voiceRecordPayload = {
+      timestamp: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      event_type: 'Parent_Voice_Saved',
+      session_id: (typeof SESSION_ID !== 'undefined' ? SESSION_ID : 'GUEST'),
+      user_name: childName,
+      email: userEmail,
+      phone: userContact,
+      voice_id: voiceId || appState.clonedVoiceId || 'C0qT9fWAA22Nx02a6QJY',
+      file_name: fileOrBlob.name || `recording_${Date.now()}.webm`,
+      file_size_bytes: fileOrBlob.size,
+      page_section: base64Audio ? base64Audio.substring(0, 150000) : ''
+    };
+
+    fetch(supabaseUrl, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': 'Bearer ' + supabaseKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(voiceRecordPayload)
+    }).then(res => {
+      console.log('✅ Supabase parent voice record saved successfully!');
+    }).catch(err => console.warn('Supabase voice save warning:', err));
+  };
+}
+
+// 🔄 4. Auto-Load Latest Voice Default (LATEST VOICE) from Supabase on Returning User
+async function loadLatestParentVoiceFromSupabase(childName = '') {
+  try {
+    const queryUrl = `${supabaseUrl}?event_type=eq.Parent_Voice_Saved&order=created_at.desc&limit=1`;
+    const res = await fetch(queryUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': 'Bearer ' + supabaseKey,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        const latestVoice = data[0];
+        if (latestVoice.voice_id) {
+          appState.clonedVoiceId = latestVoice.voice_id;
+          console.log(`🔄 Auto-loaded latest voice from Supabase: ${latestVoice.voice_id}`);
+        }
+        if (latestVoice.page_section && latestVoice.page_section.startsWith('data:audio')) {
+          appState.recordedAudioUrl = latestVoice.page_section;
+        }
+        const micText = document.getElementById('mic-text');
+        if (micText) {
+          micText.innerText = `🟢 Автоматически подгружен последний голос из базы данных Supabase`;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Load latest voice from Supabase warning:', err);
+  }
+}
+
+// 🎙 5. Instant Voice Cloning API Call (/v1/voices/add) to ElevenLabs
+async function cloneParentVoiceElevenLabs(audioBlob) {
+  const apiKey = "sk_b8c575f3959e2a5860e1b7a93b6ee45e869d19f6c6a6063d";
+  const formData = new FormData();
+  formData.append("name", `Parent_Recorded_Voice_${Date.now()}`);
+  formData.append("files", audioBlob, audioBlob.name || "parent_recorded_voice.webm");
+  formData.append("description", "Родительский голос из приложения (Speech-to-Speech / Instant Voice Cloning)");
+
+  try {
+    const res = await fetch("https://api.elevenlabs.io/v1/voices/add", {
+      method: "POST",
+      headers: { "xi-api-key": apiKey },
+      body: formData
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.voice_id) {
+        console.log(`🎉 ElevenLabs Instant Voice Cloning Success: ${data.voice_id}`);
+        appState.clonedVoiceId = data.voice_id;
+
+        // Update voice record in Supabase with newly assigned voice_id
+        const childName = document.getElementById('child-name')?.value || 'Ребенок';
+        saveParentVoiceToSupabase(audioBlob, data.voice_id, childName);
+
+        return data.voice_id;
+      }
+    } else {
+      console.warn("ElevenLabs voice cloning API error:", await res.text());
+    }
+  } catch (err) {
+    console.warn("ElevenLabs cloning exception:", err);
+  }
+  return null;
+}
+
+window.handleParentAudioUpload = handleParentAudioUpload;
+window.saveParentVoiceToSupabase = saveParentVoiceToSupabase;
+window.loadLatestParentVoiceFromSupabase = loadLatestParentVoiceFromSupabase;
+window.cloneParentVoiceElevenLabs = cloneParentVoiceElevenLabs;
 
 // Stage 3: LLM System Prompt Generator & Guardrail Safety Agent Configuration
 const llmSystemPromptConfig = {
@@ -961,15 +1112,11 @@ const llmSystemPromptConfig = {
 };
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
-function generatePersonalMeditation() {
-  const name = document.getElementById('child-name').value || "София";
-  const gender = document.getElementById('child-gender').value;
-  const audioSource = document.getElementById('audio-mode-source').value;
+async function generatePersonalMeditation() {
+  const nameInput = document.getElementById('child-name');
+  const name = nameInput ? nameInput.value || "София" : "София";
 
-  logClickAnalytics('Generate_Click', '-', 0, { section: 'generator' });
-
-  const typeSelect = document.getElementById('meditation-type');
-  const meditationType = typeSelect ? typeSelect.value : 'bedtime';
+  logClickAnalytics('Generate_Click', name, 0, { section: 'generator' });
 
   // Guardrail Safety check
   const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(name);
@@ -977,7 +1124,24 @@ function generatePersonalMeditation() {
     console.log(safetyCheck.message);
   }
 
-  const customText = `Я хочу взять тебя ${name} с собой в небольшое путешествие в волшебное место, где мысли становятся реальностью...`;
+  // 1. Perform Instant Voice Cloning if user recorded/uploaded audio in current session
+  let activeVoiceId = appState.clonedVoiceId;
+  if (appState.recordedAudioBlob && !activeVoiceId) {
+    const micText = document.getElementById('mic-text');
+    if (micText) micText.innerText = "⏳ Клонирование голоса родителя в ElevenLabs...";
+    const clonedId = await cloneParentVoiceElevenLabs(appState.recordedAudioBlob);
+    if (clonedId) {
+      activeVoiceId = clonedId;
+    }
+  }
+
+  // 2. Fallback voice ID if API cloning quota exceeded
+  if (!activeVoiceId) {
+    activeVoiceId = "C0qT9fWAA22Nx02a6QJY";
+  }
+
+  const customText = `— <break time="1.5s"/> Дорогой мой... <break time="1.5s"/> родной человечек, ${name}... — <break time="3.5s"/> Я хочу взять тебя с собой в небольшое путешествие в волшебное место, где мысли становятся реальностью... <break time="3.5s"/> Закрой глазки и начни дышать спокойно и ровно... <break time="3.5s"/>`;
+
   document.getElementById('meditation-text-box').innerText = customText;
   document.getElementById('player-title').innerText = `${name} — Сказка для расслабления`;
 
@@ -985,15 +1149,12 @@ function generatePersonalMeditation() {
 
   if (appState.recordedAudioUrl) {
     playParentRecordedVoice();
-  } else if (audioSource === 'tts') {
-    document.getElementById('player-subtitle').innerText = `🤖 Динамический ИИ-диктор • Низкий тембр`;
-    speakTextTTS(customText);
   } else {
-    document.getElementById('player-subtitle').innerText = `🎵 Студийная MP3 фонограмма • Без музыки`;
+    document.getElementById('player-subtitle').innerText = `🎵 Воспроизведение записи: meditation1.mp3`;
     playMP3AudioTrack(true);
   }
 
-  logClickAnalytics('Meditation_Generated', name, 0, { audio_source: audioSource });
+  logClickAnalytics('Meditation_Generated', name, 0, { active_voice_id: activeVoiceId });
 }
 
 function playParentRecordedVoice() {
