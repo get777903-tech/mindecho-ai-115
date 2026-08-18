@@ -1220,23 +1220,62 @@ async function generatePersonalMeditation() {
 
 function playParentRecordedVoice() {
   if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (appState.audioTrack) appState.audioTrack.pause();
+  
+  // Stop background MP3 meditation1 track if playing
+  if (appState.audioTrack) {
+    appState.audioTrack.pause();
+    appState.isPlayingAudio = false;
+    const playBtn = document.getElementById('play-btn');
+    if (playBtn) playBtn.innerText = "▶";
+  }
+
+  const btnCreate = document.getElementById('btn-create-meditation');
 
   if (appState.recordedAudioUrl) {
-    const parentAudio = new Audio(appState.recordedAudioUrl);
-    appState.isPlayingAudio = true;
-    document.getElementById('play-btn').innerText = "⏸";
-    document.getElementById('player-subtitle').innerText = "🎙 Озвучивание записанным голосом родителя!";
+    // Reuse existing parent audio element to allow smooth Pause/Resume
+    if (!appState.parentAudioTrack || appState.parentAudioTrack.src !== appState.recordedAudioUrl) {
+      if (appState.parentAudioTrack) {
+        appState.parentAudioTrack.pause();
+      }
+      appState.parentAudioTrack = new Audio(appState.recordedAudioUrl);
+    }
 
-    parentAudio.play().catch(err => {
-      console.warn("Parent recorded audio play error:", err);
-      playMP3AudioTrack(true);
-    });
+    const parentAudio = appState.parentAudioTrack;
 
-    parentAudio.onended = () => {
-      appState.isPlayingAudio = false;
-      document.getElementById('play-btn').innerText = "▶";
-    };
+    // TOGGLE LOGIC: If playing -> PAUSE; If paused -> PLAY/RESUME
+    if (!parentAudio.paused && !parentAudio.ended && parentAudio.currentTime > 0) {
+      parentAudio.pause();
+      appState.isPlayingParentVoice = false;
+      if (btnCreate) {
+        btnCreate.innerText = "🎧 Продолжить прослушивание сказки-медиации Заданным голосом";
+        btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+      }
+      const playerSubtitle = document.getElementById('player-subtitle');
+      if (playerSubtitle) playerSubtitle.innerText = "⏸ Пауза воспроизведения родительского голоса";
+    } else {
+      parentAudio.play().then(() => {
+        appState.isPlayingParentVoice = true;
+        if (btnCreate) {
+          btnCreate.innerText = "⏸ Поставить на паузу сказку-медиацию Заданного голоса";
+          btnCreate.style.background = "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)";
+        }
+        const playerSubtitle = document.getElementById('player-subtitle');
+        if (playerSubtitle) playerSubtitle.innerText = "🎙 Озвучивание записанным голосом родителя!";
+      }).catch(err => {
+        console.warn("Parent recorded audio play error:", err);
+        playMP3AudioTrack(true);
+      });
+
+      parentAudio.onended = () => {
+        appState.isPlayingParentVoice = false;
+        if (btnCreate) {
+          btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+          btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+        }
+        const playerSubtitle = document.getElementById('player-subtitle');
+        if (playerSubtitle) playerSubtitle.innerText = "✨ Воспроизведение завершено";
+      };
+    }
   } else {
     alert("🎙 Вы еще не записали свой голос! Нажмите микрофон слева для записи отрывка вашего голоса.");
     playMP3AudioTrack(true);
