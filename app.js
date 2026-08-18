@@ -1112,11 +1112,45 @@ const llmSystemPromptConfig = {
 };
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
+function buildScriptText(childName, mins) {
+  const targetMinutes = parseInt(mins, 10) || 15;
+
+  const baseIntro = [
+    `Дорогой мой... <break time="1.5s"/> родной человечек, ${childName}... — <break time="3.0s"/>`,
+    `Давай отправимся... <break time="1.5s"/> в волшебную, <break time="1.5s"/> тихую сказку-медитацию... — <break time="3.0s"/>`,
+    `Закрой глазки... <break time="1.5s"/> сделай мягкий, <break time="1.5s"/> глубокий вдох... — <break time="3.0s"/>`
+  ];
+
+  const bodyBlocks = [
+    `Представь... <break time="1.5s"/> мягкое, <break time="1.5s"/> уютное облачко... — <break time="3.0s"/> Оно бережно обнимает тебя... <break time="1.5s"/> и укутывает теплом... — <break time="3.0s"/>`,
+    `Все дневные заботы... <break time="1.5s"/> и тревоги... <break time="1.5s"/> растворяются без следа... — <break time="3.0s"/> Ты в полной безопасности... — <break time="3.0s"/>`,
+    `Твои ручки... <break time="1.5s"/> и ножки... <break time="1.5s"/> становятся тяжелыми и расслабленными... — <break time="3.0s"/> Дыхание ровное... <break time="1.5s"/> и очень спокойное... — <break time="3.0s"/>`,
+    `Поверь в то... <break time="1.5s"/> что ты умница... <break time="1.5s"/> и все твои мечты непременно сбудутся... — <break time="3.0s"/> Моя любовь... <break time="1.5s"/> всегда охраняет твой покой... — <break time="3.0s"/>`
+  ];
+
+  const outro = [
+    `Отдыхай... <break time="1.5s"/> засыпай... <break time="1.5s"/> и погружайся в волшебные, <break time="1.5s"/> добрые сны... — <break time="3.0s"/>`
+  ];
+
+  // Scale body blocks dynamically based on targetMinutes (5 to 30 mins)
+  const repeatCount = Math.max(1, Math.min(6, Math.round(targetMinutes / 5)));
+  let scriptBody = [];
+
+  for (let i = 0; i < repeatCount; i++) {
+    scriptBody.push(...bodyBlocks);
+  }
+
+  return [...baseIntro, ...scriptBody, ...outro].join("\n\n");
+}
+
 async function generatePersonalMeditation() {
   const nameInput = document.getElementById('child-name');
   const name = nameInput ? nameInput.value || "София" : "София";
 
-  logClickAnalytics('Generate_Click', name, 0, { section: 'generator' });
+  const durationSelect = document.getElementById('meditation-duration');
+  const selectedDuration = durationSelect ? durationSelect.value : '15';
+
+  logClickAnalytics('Generate_Click', name, 0, { section: 'generator', duration_mins: selectedDuration });
 
   // Guardrail Safety check
   const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(name);
@@ -1140,21 +1174,22 @@ async function generatePersonalMeditation() {
     activeVoiceId = "C0qT9fWAA22Nx02a6QJY";
   }
 
-  const customText = `— <break time="1.5s"/> Дорогой мой... <break time="1.5s"/> родной человечек, ${name}... — <break time="3.5s"/> Я хочу взять тебя с собой в небольшое путешествие в волшебное место, где мысли становятся реальностью... <break time="3.5s"/> Закрой глазки и начни дышать спокойно и ровно... <break time="3.5s"/>`;
+  // Build dynamic text script for target duration (5 to 30 mins) with SSML breaks (1.5s & 3.0s)
+  const customText = buildScriptText(name, selectedDuration);
 
   document.getElementById('meditation-text-box').innerText = customText;
-  document.getElementById('player-title').innerText = `${name} — Сказка для расслабления`;
+  document.getElementById('player-title').innerText = `${name} — Сказка-Медитация (${selectedDuration} мин)`;
 
   appState.isPlayingAudio = false;
 
   if (appState.recordedAudioUrl) {
     playParentRecordedVoice();
   } else {
-    document.getElementById('player-subtitle').innerText = `🎵 Воспроизведение записи: meditation1.mp3`;
+    document.getElementById('player-subtitle').innerText = `🎵 Воспроизведение записи: meditation1.mp3 (${selectedDuration} мин)`;
     playMP3AudioTrack(true);
   }
 
-  logClickAnalytics('Meditation_Generated', name, 0, { active_voice_id: activeVoiceId });
+  logClickAnalytics('Meditation_Generated', name, 0, { active_voice_id: activeVoiceId, duration_mins: selectedDuration });
 }
 
 function playParentRecordedVoice() {
