@@ -1114,9 +1114,14 @@ window.llmSystemPromptConfig = llmSystemPromptConfig;
 
 function buildScriptText(childName, mins) {
   const targetMinutes = parseInt(mins, 10) || 15;
+  const cleanName = (childName && childName.trim()) ? childName.trim() : '';
+
+  const introGreeting = cleanName 
+    ? `Дорогой мой... <break time="1.5s"/> родной человечек, ${cleanName}... — <break time="3.0s"/>` 
+    : `Дорогой мой... <break time="1.5s"/> родной человечек... — <break time="3.0s"/>`;
 
   const baseIntro = [
-    `Дорогой мой... <break time="1.5s"/> родной человечек, ${childName}... — <break time="3.0s"/>`,
+    introGreeting,
     `Давай отправимся... <break time="1.5s"/> в волшебную, <break time="1.5s"/> тихую сказку-медитацию... — <break time="3.0s"/>`,
     `Закрой глазки... <break time="1.5s"/> сделай мягкий, <break time="1.5s"/> глубокий вдох... — <break time="3.0s"/>`
   ];
@@ -1145,15 +1150,26 @@ function buildScriptText(childName, mins) {
 
 async function generatePersonalMeditation() {
   const nameInput = document.getElementById('child-name');
-  const name = nameInput ? nameInput.value || "София" : "София";
+  const rawName = nameInput ? nameInput.value : '';
+  const displayName = (rawName && rawName.trim()) ? rawName.trim() : 'без имени';
 
   const durationSelect = document.getElementById('meditation-duration');
   const selectedDuration = durationSelect ? durationSelect.value : '15';
 
-  logClickAnalytics('Generate_Click', name, 0, { section: 'generator', duration_mins: selectedDuration });
+  const btnCreate = document.getElementById('btn-create-meditation');
+
+  // STEP 4: Instant Button State Shift to Loading State
+  if (btnCreate) {
+    btnCreate.disabled = true;
+    btnCreate.innerText = "⏳ Выполняется генерация сказки-медитации, подождите...";
+    btnCreate.style.opacity = "0.75";
+    btnCreate.style.cursor = "wait";
+  }
+
+  logClickAnalytics('Generate_Click', displayName, 0, { section: 'generator', duration_mins: selectedDuration });
 
   // Guardrail Safety check
-  const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(name);
+  const safetyCheck = llmSystemPromptConfig.guardrailSafetyFilter(displayName);
   if (!safetyCheck.safe) {
     console.log(safetyCheck.message);
   }
@@ -1175,12 +1191,22 @@ async function generatePersonalMeditation() {
   }
 
   // Build dynamic text script for target duration (5 to 30 mins) with SSML breaks (1.5s & 3.0s)
-  const customText = buildScriptText(name, selectedDuration);
+  const customText = buildScriptText(rawName, selectedDuration);
 
   document.getElementById('meditation-text-box').innerText = customText;
-  document.getElementById('player-title').innerText = `${name} — Сказка-Медитация (${selectedDuration} мин)`;
+  document.getElementById('player-title').innerText = `${displayName} — Сказка-Медитация (${selectedDuration} мин)`;
 
   appState.isPlayingAudio = false;
+
+  // STEP 5: Instant Button State Shift to Ready Active State upon completion
+  if (btnCreate) {
+    btnCreate.disabled = false;
+    btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+    btnCreate.style.opacity = "1";
+    btnCreate.style.cursor = "pointer";
+    btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+    btnCreate.onclick = playParentRecordedVoice;
+  }
 
   if (appState.recordedAudioUrl) {
     playParentRecordedVoice();
@@ -1189,7 +1215,7 @@ async function generatePersonalMeditation() {
     playMP3AudioTrack(true);
   }
 
-  logClickAnalytics('Meditation_Generated', name, 0, { active_voice_id: activeVoiceId, duration_mins: selectedDuration });
+  logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId, duration_mins: selectedDuration });
 }
 
 function playParentRecordedVoice() {
