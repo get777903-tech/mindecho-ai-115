@@ -1208,11 +1208,10 @@ async function generatePersonalMeditation() {
     btnCreate.onclick = playParentRecordedVoice;
   }
 
-  if (appState.recordedAudioUrl) {
-    playParentRecordedVoice();
-  } else {
-    document.getElementById('player-subtitle').innerText = `🎵 Воспроизведение записи: meditation1.mp3 (${selectedDuration} мин)`;
-    playMP3AudioTrack(true);
+  // DO NOT AUTO-START PLAYBACK! Wait for user to explicitly click "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом"
+  const playerSubtitle = document.getElementById('player-subtitle');
+  if (playerSubtitle) {
+    playerSubtitle.innerText = `🟢 Сказка-медитация готова! Нажмите зеленую кнопку «Слушать сказку-медиацию» для воспроизведения.`;
   }
 
   logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId, duration_mins: selectedDuration });
