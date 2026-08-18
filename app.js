@@ -908,6 +908,16 @@ async function toggleVoiceRecord() {
         micText.innerText = "🟢 Запись голоса завершена!";
         const uploadStatus = document.getElementById('upload-file-status');
         if (uploadStatus) uploadStatus.innerText = "🟢 Запись голоса завершена!";
+
+        const btnCreate = document.getElementById('btn-create-meditation');
+        if (btnCreate) {
+          btnCreate.disabled = false;
+          btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+          btnCreate.style.opacity = "1";
+          btnCreate.style.cursor = "pointer";
+          btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+          btnCreate.onclick = playParentRecordedVoice;
+        }
       }
 
       // Save voice recording to Supabase database (Preserving History)
@@ -981,10 +991,20 @@ function handleParentAudioUpload(event) {
     if (statusSpan) statusSpan.innerText = `🟢 Ваша аудиозапись загружена!`;
     if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${file.name} (${Math.round(file.size / 1024)} KB)`;
 
+    const btnCreate = document.getElementById('btn-create-meditation');
+    if (btnCreate) {
+      btnCreate.disabled = false;
+      btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+      btnCreate.style.opacity = "1";
+      btnCreate.style.cursor = "pointer";
+      btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+      btnCreate.onclick = playParentRecordedVoice;
+    }
+
     const childName = document.getElementById('child-name')?.value || 'Ребенок';
     saveParentVoiceToSupabase(file, null, childName);
 
-    alert(`🟢 Ваша аудиозапись загружена! "${file.name}" (${Math.round(file.size / 1024)} KB) сохранена и готова к сгенерированию медитации.`);
+    alert(`🟢 Ваша аудиозапись загружена! "${file.name}" (${Math.round(file.size / 1024)} KB) сохранена и готова к прослушиванию.`);
   };
 }
 
