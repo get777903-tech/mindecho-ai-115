@@ -1142,7 +1142,7 @@ const llmSystemPromptConfig = {
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
 function buildScriptText(childName, mins) {
-  const targetMinutes = parseInt(mins, 10) || 15;
+  const targetMinutes = parseInt(mins, 10) || 10;
   const cleanName = (childName && childName.trim()) ? childName.trim() : '';
 
   const introGreeting = cleanName 
@@ -1183,7 +1183,7 @@ async function generatePersonalMeditation() {
   const displayName = (rawName && rawName.trim()) ? rawName.trim() : 'без имени';
 
   const durationSelect = document.getElementById('meditation-duration');
-  const selectedDuration = durationSelect ? durationSelect.value : '15';
+  const selectedDuration = durationSelect ? durationSelect.value : '10';
 
   const btnCreate = document.getElementById('btn-create-meditation');
 
