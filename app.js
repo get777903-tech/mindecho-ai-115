@@ -935,7 +935,7 @@ async function toggleVoiceRecord() {
   } catch (err) {
     console.warn("Microphone access denied or missing:", err);
     micText.innerText = "⚠️ Доступ к микрофону заблокирован";
-    alert("⚠️ Разрешение на микрофон не предоставлено браузером! Пожалуйста, кликните по иконке замочка 🔒 слева от адресной строки браузера и выберите «Разрешить микрофон».");
+    alert("⚠️ Разрешение на микрофон заблокировано! Кликните по иконке замочка 🔒 слева от адресной строки и разрешите доступ к микрофону.");
   }
 } else {
   if (appState.mediaRecorder && appState.mediaRecorder.state !== 'inactive') {
