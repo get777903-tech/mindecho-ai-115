@@ -1151,10 +1151,51 @@ async function cloneParentVoiceElevenLabs(audioBlob) {
   return null;
 }
 
+// 🎵 6. ElevenLabs Text-to-Speech Generation API Call (/v1/text-to-speech/{voice_id})
+async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY") {
+  const apiKey = "sk_b8c575f3959e2a5860e1b7a93b6ee45e869d19f6c6a6063d";
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+  // Clean SSML break tags for ElevenLabs speech engine
+  const cleanText = text.replace(/<break\s+time=["'][^"']+["']\/>/gi, " ... ").replace(/—/g, ", ");
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": apiKey
+      },
+      body: JSON.stringify({
+        text: cleanText,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: {
+          stability: 0.60,
+          similarity_boost: 0.80,
+          style: 0.15,
+          use_speaker_boost: true
+        }
+      })
+    });
+
+    if (res.ok) {
+      const audioBlob = await res.blob();
+      console.log(`🎉 ElevenLabs Meditation Synthesis Success! Audio size: ${Math.round(audioBlob.size / 1024)} KB`);
+      return audioBlob;
+    } else {
+      console.warn("ElevenLabs TTS synthesis API notice:", await res.text());
+    }
+  } catch (err) {
+    console.warn("ElevenLabs TTS synthesis exception:", err);
+  }
+  return null;
+}
+
 window.handleParentAudioUpload = handleParentAudioUpload;
 window.saveParentVoiceToSupabase = saveParentVoiceToSupabase;
 window.loadLatestParentVoiceFromSupabase = loadLatestParentVoiceFromSupabase;
 window.cloneParentVoiceElevenLabs = cloneParentVoiceElevenLabs;
+window.synthesizeElevenLabsAudio = synthesizeElevenLabsAudio;
 
 // Stage 3: LLM System Prompt Generator & Guardrail Safety Agent Configuration
 const llmSystemPromptConfig = {
@@ -1257,6 +1298,21 @@ async function generatePersonalMeditation() {
 
   document.getElementById('meditation-text-box').innerText = customText;
   document.getElementById('player-title').innerText = `${displayName} — Сказка-Медитация (${selectedDuration} мин)`;
+
+  // 3. Synthesize Meditation Audio Track via ElevenLabs API
+  const micText = document.getElementById('mic-text');
+  if (micText) micText.innerText = "⏳ Озвучивание сказки-медитации в ElevenLabs...";
+
+  const synthesizedBlob = await synthesizeElevenLabsAudio(customText, activeVoiceId);
+
+  if (synthesizedBlob && synthesizedBlob.size > 1000) {
+    appState.recordedAudioBlob = synthesizedBlob;
+    appState.recordedAudioUrl = URL.createObjectURL(synthesizedBlob);
+
+    // Save synthesized track to Supabase and Local Storage Directory
+    saveParentVoiceToSupabase(synthesizedBlob, activeVoiceId, displayName);
+    if (micText) micText.innerText = "🟢 Сказка-медитация успешно сгенерирована в ElevenLabs!";
+  }
 
   appState.isPlayingAudio = false;
 
