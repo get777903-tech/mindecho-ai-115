@@ -1121,12 +1121,17 @@ async function cloneParentVoiceElevenLabs(audioBlob) {
   const formData = new FormData();
   formData.append("name", `Parent_Recorded_Voice_${Date.now()}`);
   formData.append("files", audioBlob, audioBlob.name || "parent_recorded_voice.webm");
-  formData.append("description", "Родительский голос из приложения (Speech-to-Speech / Instant Voice Cloning)");
+  formData.append("description", "Родительский голос из приложения MindEcho AI (Instant Voice Cloning)");
+
+  const micText = document.getElementById('mic-text');
 
   try {
+    if (micText) micText.innerText = "⏳ Клонирование голоса родителя в ElevenLabs...";
+
     const res = await fetch("https://api.elevenlabs.io/v1/voices/add", {
       method: "POST",
       headers: { "xi-api-key": apiKey },
+      // Do NOT set Content-Type — browser sets multipart boundary automatically
       body: formData
     });
 
@@ -1140,61 +1145,132 @@ async function cloneParentVoiceElevenLabs(audioBlob) {
         const childName = document.getElementById('child-name')?.value || 'Ребенок';
         saveParentVoiceToSupabase(audioBlob, data.voice_id, childName);
 
+        if (micText) micText.innerText = "🟢 Голос родителя клонирован в ElevenLabs!";
         return data.voice_id;
       }
     } else {
-      console.warn("ElevenLabs voice cloning API error:", await res.text());
+      const errText = await res.text();
+      console.warn("ElevenLabs voice cloning API error:", errText);
+      if (micText) micText.innerText = "⚠️ Клонирование голоса недоступно. Используется стандартный голос.";
     }
   } catch (err) {
-    console.warn("ElevenLabs cloning exception:", err);
+    // CORS or network error — acceptable for MVP on GitHub Pages
+    console.warn("ElevenLabs cloning unavailable (CORS/network), using fallback voice:", err.message);
+    if (micText) micText.innerText = "⚠️ Клонирование голоса недоступно. Используется стандартный голос.";
   }
   return null;
 }
 
+// ✂️ Helper: split long text into chunks at paragraph/sentence boundaries for ElevenLabs
+function chunkTextForElevenLabs(text, maxChars = 8000) {
+  if (text.length <= maxChars) return [text];
+
+  const chunks = [];
+  const paragraphs = text.split(/\n\n+/);
+  let current = '';
+
+  for (const para of paragraphs) {
+    if ((current + '\n\n' + para).length > maxChars) {
+      if (current.trim()) chunks.push(current.trim());
+      // If a single paragraph exceeds limit, split at sentence boundaries
+      if (para.length > maxChars) {
+        const sentences = para.match(/[^.!?…]+[.!?…]+/g) || [para];
+        let sentChunk = '';
+        for (const s of sentences) {
+          if ((sentChunk + s).length > maxChars) {
+            if (sentChunk.trim()) chunks.push(sentChunk.trim());
+            sentChunk = s;
+          } else {
+            sentChunk += s;
+          }
+        }
+        if (sentChunk.trim()) current = sentChunk;
+        else current = '';
+      } else {
+        current = para;
+      }
+    } else {
+      current = current ? current + '\n\n' + para : para;
+    }
+  }
+  if (current.trim()) chunks.push(current.trim());
+  return chunks;
+}
+
 // 🎵 6. ElevenLabs Text-to-Speech Generation API Call (/v1/text-to-speech/{voice_id})
+// Supports chunked synthesis for long meditation scripts (> 8000 chars)
 async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY") {
   const apiKey = "sk_b8c575f3959e2a5860e1b7a93b6ee45e869d19f6c6a6063d";
-  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+  const micText = document.getElementById('mic-text');
 
-  // Clean SSML break tags for ElevenLabs speech engine
-  const cleanText = text.replace(/<break\s+time=["'][^"']+["']\/>/gi, " ... ").replace(/—/g, ", ");
+  // Clean SSML break tags to natural pauses for ElevenLabs speech engine
+  const cleanText = text
+    .replace(/<break\s+time=["'][^"']+["']\/>/gi, " ... ")
+    .replace(/—/g, ", ")
+    .replace(/…/g, "...");
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": apiKey
-      },
-      body: JSON.stringify({
-        text: cleanText,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: {
-          stability: 0.60,
-          similarity_boost: 0.80,
-          style: 0.15,
-          use_speaker_boost: true
-        }
-      })
-    });
+  // Split text into chunks if it exceeds 8000 chars (eleven_multilingual_v2 limit: 10,000)
+  const chunks = chunkTextForElevenLabs(cleanText, 8000);
+  const audioBuffers = [];
 
-    if (res.ok) {
-      const audioBlob = await res.blob();
-      console.log(`🎉 ElevenLabs Meditation Synthesis Success! Audio size: ${Math.round(audioBlob.size / 1024)} KB`);
-      return audioBlob;
-    } else {
-      console.warn("ElevenLabs TTS synthesis API notice:", await res.text());
+  for (let i = 0; i < chunks.length; i++) {
+    if (micText && chunks.length > 1) {
+      micText.innerText = `⏳ Синтез голоса: часть ${i + 1} из ${chunks.length}...`;
     }
-  } catch (err) {
-    console.warn("ElevenLabs TTS synthesis exception:", err);
+
+    try {
+      // output_format as query param: mp3_44100_128 — best for browser playback
+      const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`;
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": apiKey,
+          "accept": "audio/mpeg"
+        },
+        body: JSON.stringify({
+          text: chunks[i],
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.65,          // Steady, consistent delivery — no pitch jumps
+            similarity_boost: 0.80,   // Close to parent voice without artifacts
+            style: 0.05,              // Minimal dramatic inflection — calm bedtime tone
+            use_speaker_boost: true   // Enhances clarity, compensates mic quality
+          }
+        })
+      });
+
+      if (res.ok) {
+        const arrayBuffer = await res.arrayBuffer();
+        audioBuffers.push(arrayBuffer);
+        console.log(`🎉 ElevenLabs TTS chunk ${i + 1}/${chunks.length} success: ${Math.round(arrayBuffer.byteLength / 1024)} KB`);
+      } else {
+        const errText = await res.text();
+        console.warn(`ElevenLabs TTS chunk ${i + 1} error:`, errText);
+        if (micText) micText.innerText = "⚠️ Синтез голоса недоступен. Используется записанный голос.";
+        return null;
+      }
+    } catch (err) {
+      // CORS or network error — acceptable for MVP on GitHub Pages
+      console.warn(`ElevenLabs TTS chunk ${i + 1} unavailable (CORS/network):`, err.message);
+      if (micText) micText.innerText = "⚠️ Синтез через ElevenLabs недоступен. Используется записанный голос.";
+      return null;
+    }
   }
-  return null;
+
+  // Merge all audio chunk buffers into one MP3 Blob
+  if (audioBuffers.length === 0) return null;
+  const mergedBlob = new Blob(audioBuffers, { type: 'audio/mpeg' });
+  console.log(`🎉 ElevenLabs Meditation Synthesis Complete! Total size: ${Math.round(mergedBlob.size / 1024)} KB (${chunks.length} chunk(s))`);
+  return mergedBlob;
 }
 
 window.handleParentAudioUpload = handleParentAudioUpload;
 window.saveParentVoiceToSupabase = saveParentVoiceToSupabase;
 window.loadLatestParentVoiceFromSupabase = loadLatestParentVoiceFromSupabase;
 window.cloneParentVoiceElevenLabs = cloneParentVoiceElevenLabs;
+window.chunkTextForElevenLabs = chunkTextForElevenLabs;
 window.synthesizeElevenLabsAudio = synthesizeElevenLabsAudio;
 
 // Stage 3: LLM System Prompt Generator & Guardrail Safety Agent Configuration
@@ -1311,12 +1387,42 @@ async function generatePersonalMeditation() {
   const synthesizedBlob = await synthesizeElevenLabsAudio(customText, activeVoiceId);
 
   if (synthesizedBlob && synthesizedBlob.size > 1000) {
+    // Successfully synthesized — use ElevenLabs audio
     appState.recordedAudioBlob = synthesizedBlob;
     appState.recordedAudioUrl = URL.createObjectURL(synthesizedBlob);
 
-    // Save synthesized track to Supabase and Local Storage Directory
+    // Save to Supabase
     saveParentVoiceToSupabase(synthesizedBlob, activeVoiceId, displayName);
+
+    // Save to localStorage ONLY if blob is small enough (< 4 MB to stay within localStorage limit)
+    if (synthesizedBlob.size < 4 * 1024 * 1024) {
+      try {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          try {
+            localStorage.setItem('mindecho_latest_parent_voice_b64', reader.result);
+            localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
+          } catch (e) {
+            console.warn('localStorage save skipped (size limit):', e.message);
+          }
+        };
+        reader.readAsDataURL(synthesizedBlob);
+      } catch (e) {
+        console.warn('localStorage write error:', e.message);
+      }
+    } else {
+      // Too large for localStorage — store only the ObjectURL reference
+      localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
+      console.log('Synthesized audio too large for localStorage — playing via ObjectURL only');
+    }
+
     if (micText) micText.innerText = "🟢 Сказка-медитация успешно сгенерирована в ElevenLabs!";
+  } else if (appState.recordedAudioUrl) {
+    // ElevenLabs unavailable — play the original parent recording directly
+    if (micText) micText.innerText = "🟡 Воспроизводится голос родителя (без синтеза ElevenLabs)";
+    console.log('ElevenLabs synthesis skipped — using previously recorded parent voice for playback');
+  } else {
+    if (micText) micText.innerText = "⚠️ Запись голоса не найдена. Нажмите микрофон для записи.";
   }
 
   appState.isPlayingAudio = false;
