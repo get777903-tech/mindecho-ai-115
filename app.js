@@ -962,6 +962,47 @@ async function toggleVoiceRecord() {
 logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
 }
 
+function buildScriptText(childName, mins) {
+  const targetMinutes = parseInt(mins, 10) || 10;
+  const cleanName = (childName && childName.trim()) ? childName.trim() : '';
+
+  const introGreeting = cleanName
+    ? `Дорогой мой, <break time="1.5s"/> родной человечек, ${cleanName}. <break time="3.0s"/>`
+    : `Дорогой мой, <break time="1.5s"/> родной человечек. <break time="3.0s"/>`;
+
+  // ВСТУПЛЕНИЕ (всегда, 2 блока)
+  const baseIntro = [
+    introGreeting,
+    `Я хочу взять тебя с собой в небольшое путешествие. <break time="2.0s"/> В волшебное место, где мысли становятся реальностью. <break time="2.0s"/> Слушай меня внимательно, расслабься, <break time="1.5s"/> и давай отправимся в путь. <break time="3.0s"/>`,
+    `Закрой глаза. <break time="2.0s"/> Начни дышать спокойно и ровно. <break time="2.0s"/> Почувствуй, как приятное тепло разливается по всему телу. <break time="2.0s"/> Ощути пространство вокруг себя. <break time="1.5s"/> Оно мягкое, доброе и безопасное. <break time="1.5s"/> Словно невидимое облако уюта. <break time="3.0s"/>`
+  ];
+
+  // ОСНОВНЫЕ БЛОКИ (повторяются по длительности, 6 уникальных блоков)
+  const bodyBlocks = [
+    `А теперь представь самое красивое и спокойное место на свете. <break time="2.0s"/> Найди его мысленно и побудь там. <break time="2.0s"/> Знай, что в этом месте мама и папа всегда рядом с тобой. <break time="1.5s"/> Мы тебя очень сильно любим, <break time="1.0s"/> и так рады, что ты у нас есть. <break time="3.0s"/>`,
+    `В этом волшебном мире ты — настоящая волшебница. <break time="2.0s"/> Здесь всё, во что ты веришь, обязательно сбывается. <break time="2.0s"/> Поверь всем сердцем, что ты очень умная и легко учишься новому. <break time="1.5s"/> Поверь, что твоё тело сильное и здоровое. <break time="3.0s"/>`,
+    `Пусть все неприятности растают, как снег под ласковым солнышком. <break time="2.0s"/> С каждым твоим длинным выдохом <break time="1.0s"/> все страхи и тревоги просто испаряются. <break time="3.0s"/>`,
+    `Поверь в себя. <break time="1.5s"/> Ты можешь стать кем захочешь и достичь любых высот. <break time="1.5s"/> Ощути свою уникальность, ведь ты — настоящее сокровище. <break time="2.0s"/> Что бы ни случилось в жизни, наша любовь всегда будет защищать тебя. <break time="3.0s"/>`,
+    `А теперь давай научим твоё тело новым, чудесным чувствам. <break time="1.5s"/> Почувствуй прямо сейчас, каково это — быть совершенно храброй и бесстрашной. <break time="2.0s"/> Почувствуй, как это — быть абсолютно свободной и счастливой. <break time="1.5s"/> Ощути внутри себя безграничную энергию и вдохновение. <break time="3.0s"/>`,
+    `Поблагодари свою жизнь, которая полна удивительных приключений и радости. <break time="2.0s"/> Улыбнись мысленно, <break time="1.0s"/> и почувствуй огромную нежность к самой себе. <break time="3.0s"/>`
+  ];
+
+  // ЗАВЕРШЕНИЕ (всегда, 1 блок)
+  const outro = [
+    `Почувствуй, как это — быть абсолютно свободной и счастливой. <break time="2.0s"/> Что такое изобилие? <break time="1.5s"/> Почувствуй, что у тебя уже есть всё, что тебе нужно для счастья. <break time="2.0s"/> Что такое вдохновение? <break time="1.5s"/> Представь, что у тебя появилась отличная идея, <break time="1.0s"/> и ты точно знаешь, как её исполнить. <break time="2.0s"/> Улыбнись мысленно, <break time="1.0s"/> и почувствуй огромную нежность к самой себе. <break time="2.0s"/> Сохрани это мягкое состояние покоя и уверенности. <break time="1.5s"/> Тебя ждёт чудесный и очень счастливый день. <break time="3.0s"/>`
+  ];
+
+  // Масштабирование: 5 мин = 1 повтор, 10 мин = 2, 30 мин = 6 (все 6 блоков × повторы)
+  const repeatCount = Math.max(1, Math.min(6, Math.round(targetMinutes / 5)));
+  let scriptBody = [];
+
+  for (let i = 0; i < repeatCount; i++) {
+    scriptBody.push(...bodyBlocks);
+  }
+
+  return [...baseIntro, ...scriptBody, ...outro].join("\n\n");
+}
+
 // 📁 1. Custom Parent Audio File Handler (WebM / MP3 / WAV Upload) with 15 MB Size Limit
 function handleParentAudioUpload(event) {
   const file = event.target.files[0];
@@ -1217,8 +1258,8 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
     .replace(/\s{2,}/g, ' ')     // двойные пробелы → одинарный
     .trim();
 
-  // Split text into chunks if it exceeds 8000 chars (eleven_multilingual_v2 limit: 10,000)
-  const chunks = chunkTextForElevenLabs(cleanText, 8000);
+  // Split text into chunks of 800 chars max — prevents prosodic drift and vowel artifacts
+  const chunks = chunkTextForElevenLabs(cleanText, 800);
   const audioBuffers = [];
 
   for (let i = 0; i < chunks.length; i++) {
@@ -1242,8 +1283,8 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
           model_id: "eleven_multilingual_v2",
           speed: 0.75,               // Медленнее на 25% — оптимально для медитации детей
           voice_settings: {
-            stability: 0.45,         // Живая, человечная подача (не монотонная)
-            similarity_boost: 0.85,  // Максимально близко к голосу родителя
+            stability: 0.70,         // Повышена для предотвращения артефактов растяжки гласных
+            similarity_boost: 0.78,  // Снижена — меньше давления на клонированный голос
             style: 0.0,              // Полное отсутствие театральности — спокойный тон
             use_speaker_boost: true  // Компенсирует качество записи с микрофона
           }
@@ -1300,46 +1341,6 @@ const llmSystemPromptConfig = {
 };
 window.llmSystemPromptConfig = llmSystemPromptConfig;
 
-function buildScriptText(childName, mins) {
-  const targetMinutes = parseInt(mins, 10) || 10;
-  const cleanName = (childName && childName.trim()) ? childName.trim() : '';
-
-  const introGreeting = cleanName
-    ? `Дорогой мой... <break time="1.5s"/> родной человечек, ${cleanName}... <break time="3.0s"/>`
-    : `Дорогой мой... <break time="1.5s"/> родной человечек... <break time="3.0s"/>`;
-
-  // ВСТУПЛЕНИЕ (всегда, 2 блока)
-  const baseIntro = [
-    introGreeting,
-    `…Я хочу взять тебя с собой в небольшое путешествие… <break time="2.0s"/> в волшебное место, где мысли становятся реальностью… <break time="2.0s"/> Слушай меня внимательно, расслабься… <break time="2.0s"/> и давай отправимся в путь… <break time="3.5s"/>`,
-    `…Закрой глаза… <break time="2.0s"/> и начни дышать спокойно и ровно… <break time="2.0s"/> Почувствуй, как приятное тепло разливается по всему телу… <break time="2.5s"/> Ощути пространство вокруг себя… <break time="1.5s"/> оно мягкое, доброе и безопасное… <break time="2.0s"/> словно невидимое облако уюта… <break time="3.5s"/>`
-  ];
-
-  // ОСНОВНЫЕ БЛОКИ (повторяются по длительности, 6 уникальных блоков)
-  const bodyBlocks = [
-    `…А теперь представь самое красивое и спокойное место на свете… <break time="2.0s"/> Найди его мысленно и побудь там… <break time="2.5s"/> Знай, что в этом месте мама и папа всегда рядом с тобой… <break time="2.0s"/> мы тебя очень-очень сильно любим… <break time="1.5s"/> и так рады, что ты у нас есть… <break time="3.5s"/>`,
-    `…В этом волшебном мире ты — настоящая волшебница… <break time="2.0s"/> Здесь всё, во что ты веришь, обязательно сбывается… <break time="2.5s"/> Поверь всем сердцем, что ты очень умная и легко учишься новому… <break time="2.0s"/> Поверь, что твоё тело сильное и здоровое… <break time="3.5s"/>`,
-    `…Пусть все неприятности растают, как снег под ласковым солнышком… <break time="2.5s"/> С каждым твоим длинным выдохом… <break time="2.0s"/> все страхи и тревоги просто испаряются… <break time="3.5s"/>`,
-    `…Поверь в себя… <break time="2.0s"/> Ты можешь стать кем захочешь и достичь любых высот… <break time="2.0s"/> Ощути свою уникальность, ведь ты — настоящее сокровище… <break time="2.0s"/> И помни: что бы ни случилось в жизни, наша любовь всегда будет защищать тебя… <break time="3.5s"/>`,
-    `…А теперь давай научим твоё тело новым, чудесным чувствам… <break time="2.0s"/> Почувствуй прямо сейчас, каково это — быть совершенно храброй и бесстрашной… <break time="2.5s"/> Почувствуй, как это — быть абсолютно свободной и счастливой… <break time="2.0s"/> Ощути внутри себя безграничную энергию и вдохновение… <break time="3.5s"/>`,
-    `…Поблагодари свою жизнь, которая полна удивительных приключений и радости… <break time="2.0s"/> Улыбнись мысленно… <break time="1.5s"/> и почувствуй огромную нежность к самой себе… <break time="3.5s"/>`
-  ];
-
-  // ЗАВЕРШЕНИЕ (всегда, 1 блок)
-  const outro = [
-    `…Почувствуй, как это — быть абсолютно свободной и счастливой… <break time="2.0s"/> Что такое изобилие?… <break time="2.0s"/> Почувствуй, что у тебя уже есть всё, что тебе нужно для счастья… <break time="3.0s"/> Что такое вдохновение?… <break time="2.0s"/> Представь, что у тебя появилась отличная идея… <break time="1.5s"/> и ты точно знаешь, как её исполнить… <break time="3.0s"/> Улыбнись мысленно… <break time="1.5s"/> и почувствуй огромную нежность к самой себе… <break time="2.5s"/> Сохрани это мягкое состояние покоя и уверенности… <break time="2.0s"/> тебя ждёт чудесный и очень счастливый день… <break time="3.0s"/>`
-  ];
-
-  // Масштабирование: 5 мин = 1 повтор, 10 мин = 2, 30 мин = 6 (все 6 блоков × повторы)
-  const repeatCount = Math.max(1, Math.min(6, Math.round(targetMinutes / 5)));
-  let scriptBody = [];
-
-  for (let i = 0; i < repeatCount; i++) {
-    scriptBody.push(...bodyBlocks);
-  }
-
-  return [...baseIntro, ...scriptBody, ...outro].join("\n\n");
-}
 
 async function generatePersonalMeditation() {
   const nameInput = document.getElementById('child-name');
