@@ -979,7 +979,7 @@ function handleParentAudioUpload(event) {
     return;
   }
 
-  if (statusSpan) statusSpan.innerText = `⏳ Загрузка "${file.name}"...`;
+  if (statusSpan) statusSpan.innerText = `⏳ Загрузка...`;
 
   const reader = new FileReader();
   reader.readAsDataURL(file);
@@ -988,8 +988,11 @@ function handleParentAudioUpload(event) {
     appState.clonedVoiceId = null; // Force new Instant Voice Cloning for uploaded file
     appState.recordedAudioUrl = URL.createObjectURL(file);
 
-    if (statusSpan) statusSpan.innerText = `🟢 Ваша аудиозапись загружена!`;
-    if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+    // Truncate long filenames to prevent UI overflow
+    const shortName = file.name.length > 25 ? file.name.slice(0, 22) + '…' : file.name;
+
+    if (statusSpan) statusSpan.innerText = `🟢 Загружено!`;
+    if (micText) micText.innerText = `🟢 Загружена аудиозапись: ${shortName} (${Math.round(file.size / 1024)} KB)`;
 
     const btnCreate = document.getElementById('btn-create-meditation');
     if (btnCreate) {
@@ -1203,11 +1206,16 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
   const apiKey = "sk_b8c575f3959e2a5860e1b7a93b6ee45e869d19f6c6a6063d";
   const micText = document.getElementById('mic-text');
 
-  // Clean SSML break tags to natural pauses for ElevenLabs speech engine
+  // Clean SSML: limit break pauses to max 3.0s, convert typography chars to ElevenLabs-friendly forms
   const cleanText = text
-    .replace(/<break\s+time=["'][^"']+["']\/>/gi, " ... ")
-    .replace(/—/g, ", ")
-    .replace(/…/g, "...");
+    .replace(/<break\s+time=["']([0-9.]+)s["']\/>/gi, (match, sec) => {
+      const limited = Math.min(parseFloat(sec), 3.0);
+      return `<break time="${limited}s"/>`;
+    })
+    .replace(/…/g, '...')        // типографское многоточие → обычное
+    .replace(/—/g, ',')          // длинное тире → запятая (пауза без разрыва)
+    .replace(/\s{2,}/g, ' ')     // двойные пробелы → одинарный
+    .trim();
 
   // Split text into chunks if it exceeds 8000 chars (eleven_multilingual_v2 limit: 10,000)
   const chunks = chunkTextForElevenLabs(cleanText, 8000);
@@ -1232,11 +1240,12 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
         body: JSON.stringify({
           text: chunks[i],
           model_id: "eleven_multilingual_v2",
+          speed: 0.75,               // Медленнее на 25% — оптимально для медитации детей
           voice_settings: {
-            stability: 0.65,          // Steady, consistent delivery — no pitch jumps
-            similarity_boost: 0.80,   // Close to parent voice without artifacts
-            style: 0.05,              // Minimal dramatic inflection — calm bedtime tone
-            use_speaker_boost: true   // Enhances clarity, compensates mic quality
+            stability: 0.45,         // Живая, человечная подача (не монотонная)
+            similarity_boost: 0.85,  // Максимально близко к голосу родителя
+            style: 0.0,              // Полное отсутствие театральности — спокойный тон
+            use_speaker_boost: true  // Компенсирует качество записи с микрофона
           }
         })
       });
