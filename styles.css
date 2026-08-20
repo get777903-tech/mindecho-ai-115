@@ -1197,7 +1197,10 @@ h1, h2, h3, h4 {
   .hero-container { grid-template-columns: 1fr; }
   .modes-grid { grid-template-columns: 1fr; }
   .pricing-grid { grid-template-columns: 1fr 1fr; }
-  .generator-layout { grid-template-columns: 1fr; }
+  .generator-layout { grid-template-columns: 1fr; display: flex; flex-direction: column; }
+  /* На мобильном: сначала плеер с круглой кнопкой (meditation1.mp3), потом настройки */
+  .generator-preview { order: -1; }
+  .generator-controls { order: 1; }
   .steps-grid { grid-template-columns: 1fr 1fr; }
 }
 
