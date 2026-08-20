@@ -1362,8 +1362,9 @@ async function generatePersonalMeditation() {
   const selectedDuration = durationSelect ? durationSelect.value : '10';
 
   const btnCreate = document.getElementById('btn-create-meditation');
+  const micText = document.getElementById('mic-text');
 
-  // STEP 4: Instant Button State Shift to Loading State
+  // STEP 1: Show loading state
   if (btnCreate) {
     btnCreate.disabled = true;
     btnCreate.innerText = "⏳ Выполняется генерация сказки-медитации, подождите...";
@@ -1379,10 +1380,11 @@ async function generatePersonalMeditation() {
     console.log(safetyCheck.message);
   }
 
-  // 1. Perform Instant Voice Cloning if user recorded/uploaded audio in current session
+  // STEP 2: Try ElevenLabs Instant Voice Cloning if parent recorded audio exists
   let activeVoiceId = appState.clonedVoiceId;
+  const hasParentRecording = !!(appState.recordedAudioBlob && appState.recordedAudioUrl);
+
   if (appState.recordedAudioBlob && !activeVoiceId) {
-    const micText = document.getElementById('mic-text');
     if (micText) micText.innerText = "⏳ Клонирование голоса родителя в ElevenLabs...";
     const clonedId = await cloneParentVoiceElevenLabs(appState.recordedAudioBlob);
     if (clonedId) {
@@ -1390,65 +1392,73 @@ async function generatePersonalMeditation() {
     }
   }
 
-  // 2. Fallback voice ID if API cloning quota exceeded
-  if (!activeVoiceId) {
-    activeVoiceId = "C0qT9fWAA22Nx02a6QJY";
-  }
-
-  // Build dynamic text script for target duration (5 to 30 mins) with SSML breaks (1.5s & 3.0s)
+  // STEP 3: Build meditation text
   const customText = buildScriptText(rawName, selectedDuration);
-
   document.getElementById('meditation-text-box').innerText = customText;
   document.getElementById('player-title').innerText = `${displayName} — Сказка-Медитация (${selectedDuration} мин)`;
 
-  // 3. Synthesize Meditation Audio Track via ElevenLabs API
-  const micText = document.getElementById('mic-text');
-  if (micText) micText.innerText = "⏳ Озвучивание сказки-медитации в ElevenLabs...";
+  // STEP 4: Decide synthesis strategy
+  if (activeVoiceId) {
+    // ✅ Cloning succeeded — synthesize with parent's cloned voice
+    if (micText) micText.innerText = "⏳ Озвучивание медитации голосом родителя в ElevenLabs...";
+    const synthesizedBlob = await synthesizeElevenLabsAudio(customText, activeVoiceId);
 
-  const synthesizedBlob = await synthesizeElevenLabsAudio(customText, activeVoiceId);
+    if (synthesizedBlob && synthesizedBlob.size > 1000) {
+      appState.recordedAudioBlob = synthesizedBlob;
+      appState.recordedAudioUrl = URL.createObjectURL(synthesizedBlob);
+      saveParentVoiceToSupabase(synthesizedBlob, activeVoiceId, displayName);
 
-  if (synthesizedBlob && synthesizedBlob.size > 1000) {
-    // Successfully synthesized — use ElevenLabs audio
-    appState.recordedAudioBlob = synthesizedBlob;
-    appState.recordedAudioUrl = URL.createObjectURL(synthesizedBlob);
-
-    // Save to Supabase
-    saveParentVoiceToSupabase(synthesizedBlob, activeVoiceId, displayName);
-
-    // Save to localStorage ONLY if blob is small enough (< 4 MB to stay within localStorage limit)
-    if (synthesizedBlob.size < 4 * 1024 * 1024) {
-      try {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          try {
-            localStorage.setItem('mindecho_latest_parent_voice_b64', reader.result);
-            localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
-          } catch (e) {
-            console.warn('localStorage save skipped (size limit):', e.message);
-          }
-        };
-        reader.readAsDataURL(synthesizedBlob);
-      } catch (e) {
-        console.warn('localStorage write error:', e.message);
+      // Cache in localStorage only if < 4 MB
+      if (synthesizedBlob.size < 4 * 1024 * 1024) {
+        try {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            try {
+              localStorage.setItem('mindecho_latest_parent_voice_b64', reader.result);
+              localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
+            } catch (e) {
+              console.warn('localStorage save skipped (size limit):', e.message);
+            }
+          };
+          reader.readAsDataURL(synthesizedBlob);
+        } catch (e) {
+          console.warn('localStorage write error:', e.message);
+        }
+      } else {
+        localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
       }
+      if (micText) micText.innerText = "🟢 Сказка-медитация озвучена голосом родителя!";
     } else {
-      // Too large for localStorage — store only the ObjectURL reference
-      localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
-      console.log('Synthesized audio too large for localStorage — playing via ObjectURL only');
+      // Synthesis failed even with cloned voice — fall back to original recording
+      if (hasParentRecording) {
+        if (micText) micText.innerText = "🟡 Используется оригинальная запись голоса родителя.";
+      } else {
+        if (micText) micText.innerText = "⚠️ Синтез недоступен. Запишите голос через микрофон.";
+      }
     }
 
-    if (micText) micText.innerText = "🟢 Сказка-медитация успешно сгенерирована в ElevenLabs!";
-  } else if (appState.recordedAudioUrl) {
-    // ElevenLabs unavailable — play the original parent recording directly
-    if (micText) micText.innerText = "🟡 Воспроизводится голос родителя (без синтеза ElevenLabs)";
-    console.log('ElevenLabs synthesis skipped — using previously recorded parent voice for playback');
+  } else if (hasParentRecording) {
+    // ⚠️ Cloning blocked (CORS/network) — PRESERVE original parent recording, play it directly
+    // DO NOT overwrite appState.recordedAudioUrl with default voice!
+    if (micText) micText.innerText = "🟡 Воспроизводится запись голоса родителя (ElevenLabs клонирование недоступно с этого устройства).";
+    console.log('ElevenLabs cloning unavailable (CORS) — playing original parent voice recording directly');
+
   } else {
-    if (micText) micText.innerText = "⚠️ Запись голоса не найдена. Нажмите микрофон для записи.";
+    // ℹ️ No recording at all — synthesize with default ElevenLabs voice as last resort
+    if (micText) micText.innerText = "⏳ Синтез медитации стандартным голосом ElevenLabs...";
+    const fallbackVoiceId = "C0qT9fWAA22Nx02a6QJY";
+    const fallbackBlob = await synthesizeElevenLabsAudio(customText, fallbackVoiceId);
+    if (fallbackBlob && fallbackBlob.size > 1000) {
+      appState.recordedAudioUrl = URL.createObjectURL(fallbackBlob);
+      if (micText) micText.innerText = "🟢 Медитация готова (стандартный голос). Запишите свой голос для персонального озвучивания.";
+    } else {
+      if (micText) micText.innerText = "⚠️ Запишите свой голос через микрофон для генерации.";
+    }
   }
 
   appState.isPlayingAudio = false;
 
-  // STEP 5: Instant Button State Shift to Ready Active State upon completion
+  // STEP 5: Activate listen button
   if (btnCreate) {
     btnCreate.disabled = false;
     btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
@@ -1458,13 +1468,12 @@ async function generatePersonalMeditation() {
     btnCreate.onclick = playParentRecordedVoice;
   }
 
-  // DO NOT AUTO-START PLAYBACK! Wait for user to explicitly click "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом"
   const playerSubtitle = document.getElementById('player-subtitle');
   if (playerSubtitle) {
-    playerSubtitle.innerText = `🟢 Сказка-медитация готова! Нажмите зеленую кнопку «Слушать сказку-медиацию» для воспроизведения.`;
+    playerSubtitle.innerText = `🟢 Сказка-медитация готова! Нажмите зелёную кнопку для воспроизведения.`;
   }
 
-  logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId, duration_mins: selectedDuration });
+  logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId || 'parent_direct', duration_mins: selectedDuration });
 }
 
 function playParentRecordedVoice() {
