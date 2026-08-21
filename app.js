@@ -1119,11 +1119,10 @@ async function loadLatestParentVoiceFromSupabase(childName = '') {
     const btnCreate = document.getElementById('btn-create-meditation');
     if (btnCreate) {
       btnCreate.disabled = false;
-      btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+      btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
       btnCreate.style.opacity = "1";
       btnCreate.style.cursor = "pointer";
-      btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-      btnCreate.onclick = playParentRecordedVoice;
+      btnCreate.onclick = generatePersonalMeditation;
     }
   }
 
@@ -1157,11 +1156,10 @@ async function loadLatestParentVoiceFromSupabase(childName = '') {
         const btnCreate = document.getElementById('btn-create-meditation');
         if (btnCreate) {
           btnCreate.disabled = false;
-          btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+          btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
           btnCreate.style.opacity = "1";
           btnCreate.style.cursor = "pointer";
-          btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-          btnCreate.onclick = playParentRecordedVoice;
+          btnCreate.onclick = generatePersonalMeditation;
         }
       }
     }
@@ -1258,14 +1256,15 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
   const apiKey = "sk_b8c575f3959e2a5860e1b7a93b6ee45e869d19f6c6a6063d";
   const micText = document.getElementById('mic-text');
 
-  // Clean SSML: limit break pauses to max 3.0s, convert typography chars to ElevenLabs-friendly forms
+  // Clean SSML: limit break pauses to max 2.5s, clean up typography for smooth Russian phonetics
   const cleanText = text
     .replace(/<break\s+time=["']([0-9.]+)s["']\/>/gi, (match, sec) => {
-      const limited = Math.min(parseFloat(sec), 3.0);
+      const limited = Math.min(parseFloat(sec), 2.5);
       return `<break time="${limited}s"/>`;
     })
-    .replace(/…/g, '...')        // типографское многоточие → обычное
-    .replace(/—/g, ',')          // длинное тире → запятая (пауза без разрыва)
+    .replace(/…/g, '.')          // типографское многоточие → точка (предотвращает тянущиеся звуки)
+    .replace(/\.\.\./g, '.')     // обычное многоточие → точка
+    .replace(/—/g, ',')          // длинное тире → запятая (естественная пауза без разрыва дыхания)
     .replace(/\s{2,}/g, ' ')     // двойные пробелы → одинарный
     .trim();
 
@@ -1292,12 +1291,12 @@ async function synthesizeElevenLabsAudio(text, voiceId = "C0qT9fWAA22Nx02a6QJY")
         body: JSON.stringify({
           text: chunks[i],
           model_id: "eleven_multilingual_v2",
-          speed: 0.75,               // Медленнее на 25% — оптимально для медитации детей
+          speed: 0.75,               // Медленнее на 25% — оптимально для медитации
           voice_settings: {
-            stability: 0.70,         // Повышена для предотвращения артефактов растяжки гласных
-            similarity_boost: 0.78,  // Снижена — меньше давления на клонированный голос
-            style: 0.0,              // Полное отсутствие театральности — спокойный тон
-            use_speaker_boost: true  // Компенсирует качество записи с микрофона
+            stability: 0.40,         // 0.40: Спокойная, мягкая и естественная интонация (без механической спешки)
+            similarity_boost: 0.80,  // Оптимальное сходство с голосом родителя
+            style: 0.0,              // Полное отсутствие экспрессивной театральности для медитации
+            use_speaker_boost: true  // Повышение четкости микрофонной записи
           }
         })
       });
