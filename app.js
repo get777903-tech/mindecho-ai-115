@@ -896,68 +896,115 @@ async function toggleVoiceRecord() {
         return;
       }
 
-      appState.recordedAudioBlob = blob;
-      appState.clonedVoiceId = null; // Force fresh cloning for new recording
-      appState.recordedAudioUrl = URL.createObjectURL(blob);
+    // Check if recorded audio blob is valid
+    appState.recordedAudioBlob = blob;
+    appState.clonedVoiceId = null; // Force fresh cloning for new recording
+    appState.recordedAudioUrl = URL.createObjectURL(blob);
+    appState.synthesizedAudioUrl = null; // Reset previous generation
 
-      // Robust check: If blob size is valid (>= 1000 bytes), recording is successful
-      if (blob.size < 1000) {
-        micText.innerText = "⚠️ Внимание: Запись оказалась тихой/пустой";
-        alert("⚠️ Внимание: Запись оказалась пустой. Пожалуйста, убедитесь, что микрофон включён в настройках браузера!");
-      } else {
-        micText.innerText = "🟢 Запись голоса завершена!";
-        const uploadStatus = document.getElementById('upload-file-status');
-        if (uploadStatus) uploadStatus.innerText = "🟢 Запись голоса завершена!";
+    const previewBtn = document.getElementById('btn-preview-raw-audio');
+    if (previewBtn) {
+      previewBtn.style.display = 'inline-block';
+      previewBtn.innerText = '▶️ Прослушать запись';
+    }
 
-        const btnCreate = document.getElementById('btn-create-meditation');
-        if (btnCreate) {
-          btnCreate.disabled = false;
-          btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
-          btnCreate.style.opacity = "1";
-          btnCreate.style.cursor = "pointer";
-          // Кнопка остаётся кнопкой ГЕНЕРАЦИИ — НЕ меняем на воспроизведение
-          btnCreate.onclick = generatePersonalMeditation;
-        }
+    if (blob.size < 1000) {
+      micText.innerText = "⚠️ Внимание: Запись оказалась тихой/пустой";
+      alert("⚠️ Внимание: Запись оказалась пустой. Пожалуйста, убедитесь, что микрофон включён в настройках браузера!");
+    } else {
+      micText.innerText = "🟢 Запись голоса завершена! Нажмите «✨ Создать рассказ-медитацию» ниже.";
+      const uploadStatus = document.getElementById('upload-file-status');
+      if (uploadStatus) uploadStatus.innerText = "🟢 Запись сохранена";
+
+      const btnCreate = document.getElementById('btn-create-meditation');
+      if (btnCreate) {
+        btnCreate.disabled = false;
+        btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
+        btnCreate.style.opacity = "1";
+        btnCreate.style.cursor = "pointer";
+        btnCreate.style.background = ""; // standard style
+        btnCreate.onclick = generatePersonalMeditation;
       }
+    }
 
-      // Save voice recording to Supabase database (Preserving History)
-      const childName = document.getElementById('child-name')?.value || 'Ребенок';
-      saveParentVoiceToSupabase(blob, null, childName);
-    };
+    // Save voice recording to Supabase database (Preserving History)
+    const childName = document.getElementById('child-name')?.value || 'Ребенок';
+    saveParentVoiceToSupabase(blob, null, childName);
+  };
 
-    appState.mediaRecorder.start(250); // Slice chunks every 250ms
-    appState.isRecording = true;
-    micBtn.classList.add('recording');
-    micWave.classList.remove('hidden');
+  appState.mediaRecorder.start(250); // Slice chunks every 250ms
+  appState.isRecording = true;
+  micBtn.classList.add('recording');
+  micWave.classList.remove('hidden');
 
-    let remainingSec = 60;
-    micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
-    
-    const recordTimerInterval = setInterval(() => {
-      remainingSec--;
-      if (remainingSec > 0 && appState.isRecording) {
-        micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
-      } else {
-        clearInterval(recordTimerInterval);
-        if (appState.isRecording) {
-          toggleVoiceRecord();
-        }
+  let remainingSec = 60;
+  micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
+  
+  const recordTimerInterval = setInterval(() => {
+    remainingSec--;
+    if (remainingSec > 0 && appState.isRecording) {
+      micText.innerText = `🔴 Идет запись голоса... Говорите в микрофон! (${remainingSec} сек)`;
+    } else {
+      clearInterval(recordTimerInterval);
+      if (appState.isRecording) {
+        toggleVoiceRecord();
       }
-    }, 1000);
+    }
+  }, 1000);
 
-  } catch (err) {
-    console.warn("Microphone access denied or missing:", err);
-    micText.innerText = "⚠️ Доступ к микрофону заблокирован";
-    alert("⚠️ Разрешение на микрофон заблокировано! Кликните по иконке замочка 🔒 слева от адресной строки и разрешите доступ к микрофону.");
-  }
-} else {
-  if (appState.mediaRecorder && appState.mediaRecorder.state !== 'inactive') {
-    appState.mediaRecorder.stop();
-  }
-  appState.isRecording = false;
-  micBtn.classList.remove('recording');
-  micWave.classList.add('hidden');
+} catch (err) {
+  console.warn("Microphone access denied or missing:", err);
+  micText.innerText = "⚠️ Доступ к микрофону заблокирован";
+  alert("⚠️ Разрешение на микрофон заблокировано! Кликните по иконке замочка 🔒 слева от адресной строки и разрешите доступ к микрофону.");
 }
+} else {
+if (appState.mediaRecorder && appState.mediaRecorder.state !== 'inactive') {
+  appState.mediaRecorder.stop();
+}
+appState.isRecording = false;
+micBtn.classList.remove('recording');
+micWave.classList.add('hidden');
+}
+}
+
+// 🎧 1.1 Helper: Play / Pause raw recorded or uploaded voice sample
+function togglePlayRawInputAudio() {
+  if (!appState.recordedAudioUrl) {
+    alert("Сначала запишите или загрузите аудиозапись.");
+    return;
+  }
+
+  const previewBtn = document.getElementById('btn-preview-raw-audio');
+
+  if (!appState.rawInputAudioTrack || appState.rawInputAudioTrack.src !== appState.recordedAudioUrl) {
+    if (appState.rawInputAudioTrack) {
+      appState.rawInputAudioTrack.pause();
+    }
+    appState.rawInputAudioTrack = new Audio(appState.recordedAudioUrl);
+  }
+
+  const rawAudio = appState.rawInputAudioTrack;
+
+  if (!rawAudio.paused && !rawAudio.ended && rawAudio.currentTime > 0) {
+    rawAudio.pause();
+    if (previewBtn) previewBtn.innerText = '▶️ Прослушать запись/файл';
+  } else {
+    // Stop other audios
+    if (appState.audioTrack) appState.audioTrack.pause();
+    if (appState.parentAudioTrack) appState.parentAudioTrack.pause();
+
+    rawAudio.play().then(() => {
+      if (previewBtn) previewBtn.innerText = '⏸ Пауза записи';
+    }).catch(err => {
+      console.warn("Error playing raw input audio:", err);
+    });
+
+    rawAudio.onended = () => {
+      if (previewBtn) previewBtn.innerText = '▶️ Прослушать запись/файл';
+    };
+  }
+}
+window.togglePlayRawInputAudio = togglePlayRawInputAudio;
 
 logClickAnalytics('VoiceRecord_Toggled', appState.isRecording ? 'Start' : 'Stop', 0);
 }
@@ -1039,6 +1086,13 @@ function handleParentAudioUpload(event) {
     appState.recordedAudioBlob = file;
     appState.clonedVoiceId = null; // Force new Instant Voice Cloning for uploaded file
     appState.recordedAudioUrl = URL.createObjectURL(file);
+    appState.synthesizedAudioUrl = null; // Reset previous generation
+
+    const previewBtn = document.getElementById('btn-preview-raw-audio');
+    if (previewBtn) {
+      previewBtn.style.display = 'inline-block';
+      previewBtn.innerText = '▶️ Прослушать запись/файл';
+    }
 
     // Truncate long filenames to prevent UI overflow
     const shortName = file.name.length > 25 ? file.name.slice(0, 22) + '…' : file.name;
@@ -1052,6 +1106,7 @@ function handleParentAudioUpload(event) {
       btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
       btnCreate.style.opacity = "1";
       btnCreate.style.cursor = "pointer";
+      btnCreate.style.background = ""; // Standard button gradient
       // Кнопка остаётся кнопкой ГЕНЕРАЦИИ — НЕ меняем на воспроизведение
       btnCreate.onclick = generatePersonalMeditation;
     }
@@ -1059,7 +1114,7 @@ function handleParentAudioUpload(event) {
     const childName = document.getElementById('child-name')?.value || 'Ребенок';
     saveParentVoiceToSupabase(file, null, childName);
 
-    alert(`🟢 Ваша аудиозапись загружена! "${file.name}" (${Math.round(file.size / 1024)} KB) сохранена и готова к прослушиванию.`);
+    alert(`🟢 Ваша аудиозапись загружена! "${file.name}" (${Math.round(file.size / 1024)} KB) сохранена и готова к созданию медитации.`);
   };
 }
 
@@ -1397,14 +1452,16 @@ async function generatePersonalMeditation() {
   document.getElementById('player-title').innerText = `${displayName} — Сказка-Медитация (${selectedDuration} мин)`;
 
   // STEP 4: Decide synthesis strategy
+  let successfulSynthesizedBlob = null;
+
   if (activeVoiceId) {
     // ✅ Cloning succeeded — synthesize with parent's cloned voice
     if (micText) micText.innerText = "⏳ Озвучивание медитации голосом родителя в ElevenLabs...";
     const synthesizedBlob = await synthesizeElevenLabsAudio(customText, activeVoiceId);
 
     if (synthesizedBlob && synthesizedBlob.size > 1000) {
-      appState.recordedAudioBlob = synthesizedBlob;
-      appState.recordedAudioUrl = URL.createObjectURL(synthesizedBlob);
+      successfulSynthesizedBlob = synthesizedBlob;
+      appState.synthesizedAudioUrl = URL.createObjectURL(synthesizedBlob);
       saveParentVoiceToSupabase(synthesizedBlob, activeVoiceId, displayName);
 
       // Cache in localStorage only if < 4 MB
@@ -1426,53 +1483,59 @@ async function generatePersonalMeditation() {
       } else {
         localStorage.setItem('mindecho_latest_parent_voice_time', new Date().toISOString());
       }
-      if (micText) micText.innerText = "🟢 Сказка-медитация озвучена голосом родителя!";
+      if (micText) micText.innerText = "🟢 Сказка-медитация успешно сгенерирована голосом родителя!";
     } else {
-      // Synthesis failed even with cloned voice — fall back to original recording
-      if (hasParentRecording) {
-        if (micText) micText.innerText = "🟡 Используется оригинальная запись голоса родителя.";
-      } else {
-        if (micText) micText.innerText = "⚠️ Синтез недоступен. Запишите голос через микрофон.";
-      }
+      // Synthesis failed
+      console.warn("Synthesis with cloned voice failed, attempting default voice fallback...");
     }
+  }
 
-  } else if (hasParentRecording) {
-    // ⚠️ Cloning blocked (CORS/network) — PRESERVE original parent recording, play it directly
-    // DO NOT overwrite appState.recordedAudioUrl with default voice!
-    if (micText) micText.innerText = "🟡 Воспроизводится запись голоса родителя (ElevenLabs клонирование недоступно с этого устройства).";
-    console.log('ElevenLabs cloning unavailable (CORS) — playing original parent voice recording directly');
-
-  } else {
-    // ℹ️ No recording at all — synthesize with default ElevenLabs voice as last resort
-    if (micText) micText.innerText = "⏳ Синтез медитации стандартным голосом ElevenLabs...";
+  // If cloned voice synthesis was unavailable or failed, try default ElevenLabs voice
+  if (!successfulSynthesizedBlob) {
+    if (micText) micText.innerText = "⏳ Генерация озвучки сказки-медитации в ElevenLabs...";
     const fallbackVoiceId = "C0qT9fWAA22Nx02a6QJY";
     const fallbackBlob = await synthesizeElevenLabsAudio(customText, fallbackVoiceId);
+
     if (fallbackBlob && fallbackBlob.size > 1000) {
-      appState.recordedAudioUrl = URL.createObjectURL(fallbackBlob);
-      if (micText) micText.innerText = "🟢 Медитация готова (стандартный голос). Запишите свой голос для персонального озвучивания.";
+      successfulSynthesizedBlob = fallbackBlob;
+      appState.synthesizedAudioUrl = URL.createObjectURL(fallbackBlob);
+      if (micText) micText.innerText = "🟢 Сказка-медитация успешно сгенерирована!";
     } else {
-      if (micText) micText.innerText = "⚠️ Запишите свой голос через микрофон для генерации.";
+      if (micText) micText.innerText = "⚠️ Не удалось подключиться к ElevenLabs. Проверьте интернет-соединение.";
     }
   }
 
   appState.isPlayingAudio = false;
 
-  // STEP 5: Activate listen button
+  // STEP 5: Activate listen button ONLY if synthesis succeeded
   if (btnCreate) {
-    btnCreate.disabled = false;
-    btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
-    btnCreate.style.opacity = "1";
-    btnCreate.style.cursor = "pointer";
-    btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-    btnCreate.onclick = playParentRecordedVoice;
+    if (appState.synthesizedAudioUrl) {
+      btnCreate.disabled = false;
+      btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+      btnCreate.style.opacity = "1";
+      btnCreate.style.cursor = "pointer";
+      btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
+      btnCreate.onclick = playParentRecordedVoice;
+    } else {
+      btnCreate.disabled = false;
+      btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
+      btnCreate.style.opacity = "1";
+      btnCreate.style.cursor = "pointer";
+      btnCreate.style.background = "";
+      btnCreate.onclick = generatePersonalMeditation;
+    }
   }
 
   const playerSubtitle = document.getElementById('player-subtitle');
   if (playerSubtitle) {
-    playerSubtitle.innerText = `🟢 Сказка-медитация готова! Нажмите зелёную кнопку для воспроизведения.`;
+    if (appState.synthesizedAudioUrl) {
+      playerSubtitle.innerText = `🟢 Сказка-медитация готова! Нажмите зелёную кнопку для воспроизведения.`;
+    } else {
+      playerSubtitle.innerText = `⚠️ Ошибка генерации. Попробуйте еще раз.`;
+    }
   }
 
-  logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId || 'parent_direct', duration_mins: selectedDuration });
+  logClickAnalytics('Meditation_Generated', displayName, 0, { active_voice_id: activeVoiceId || 'fallback', duration_mins: selectedDuration });
 }
 
 function playParentRecordedVoice() {
@@ -1487,14 +1550,15 @@ function playParentRecordedVoice() {
   }
 
   const btnCreate = document.getElementById('btn-create-meditation');
+  const targetAudioUrl = appState.synthesizedAudioUrl || appState.recordedAudioUrl;
 
-  if (appState.recordedAudioUrl) {
+  if (targetAudioUrl) {
     // Reuse existing parent audio element to allow smooth Pause/Resume
-    if (!appState.parentAudioTrack || appState.parentAudioTrack.src !== appState.recordedAudioUrl) {
+    if (!appState.parentAudioTrack || appState.parentAudioTrack.src !== targetAudioUrl) {
       if (appState.parentAudioTrack) {
         appState.parentAudioTrack.pause();
       }
-      appState.parentAudioTrack = new Audio(appState.recordedAudioUrl);
+      appState.parentAudioTrack = new Audio(targetAudioUrl);
     }
 
     const parentAudio = appState.parentAudioTrack;
@@ -1508,7 +1572,7 @@ function playParentRecordedVoice() {
         btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
       }
       const playerSubtitle = document.getElementById('player-subtitle');
-      if (playerSubtitle) playerSubtitle.innerText = "⏸ Пауза воспроизведения родительского голоса";
+      if (playerSubtitle) playerSubtitle.innerText = "⏸ Пауза воспроизведения сказки-медитации";
     } else {
       parentAudio.play().then(() => {
         appState.isPlayingParentVoice = true;
@@ -1517,9 +1581,9 @@ function playParentRecordedVoice() {
           btnCreate.style.background = "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)";
         }
         const playerSubtitle = document.getElementById('player-subtitle');
-        if (playerSubtitle) playerSubtitle.innerText = "🎙 Озвучивание записанным голосом родителя!";
+        if (playerSubtitle) playerSubtitle.innerText = "🎙 Воспроизведение сгенерированной сказки-медитации!";
       }).catch(err => {
-        console.warn("Parent recorded audio play error:", err);
+        console.warn("Parent audio play error:", err);
         playMP3AudioTrack(true);
       });
 
@@ -1534,8 +1598,7 @@ function playParentRecordedVoice() {
       };
     }
   } else {
-    alert("🎙 Вы еще не записали свой голос! Нажмите микрофон слева для записи отрывка вашего голоса.");
-    playMP3AudioTrack(true);
+    alert("✨ Сначала нажмите «Создать рассказ-медитацию» для выполнения генерации.");
   }
 }
 
