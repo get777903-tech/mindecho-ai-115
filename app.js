@@ -912,11 +912,11 @@ async function toggleVoiceRecord() {
         const btnCreate = document.getElementById('btn-create-meditation');
         if (btnCreate) {
           btnCreate.disabled = false;
-          btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+          btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
           btnCreate.style.opacity = "1";
           btnCreate.style.cursor = "pointer";
-          btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-          btnCreate.onclick = playParentRecordedVoice;
+          // Кнопка остаётся кнопкой ГЕНЕРАЦИИ — НЕ меняем на воспроизведение
+          btnCreate.onclick = generatePersonalMeditation;
         }
       }
 
@@ -1049,11 +1049,11 @@ function handleParentAudioUpload(event) {
     const btnCreate = document.getElementById('btn-create-meditation');
     if (btnCreate) {
       btnCreate.disabled = false;
-      btnCreate.innerText = "🎧 Слушать сказку-медиацию сгенерированую Заданным голосом";
+      btnCreate.innerText = "✨ Создать рассказ-медитацию с голосом мамы, папы или бабушки";
       btnCreate.style.opacity = "1";
       btnCreate.style.cursor = "pointer";
-      btnCreate.style.background = "linear-gradient(135deg, #10B981 0%, #059669 100%)";
-      btnCreate.onclick = playParentRecordedVoice;
+      // Кнопка остаётся кнопкой ГЕНЕРАЦИИ — НЕ меняем на воспроизведение
+      btnCreate.onclick = generatePersonalMeditation;
     }
 
     const childName = document.getElementById('child-name')?.value || 'Ребенок';
@@ -1592,11 +1592,9 @@ function togglePlayAudio() {
     appState.isPlayingAudio = false;
     document.getElementById('play-btn').innerText = "▶";
   } else {
-    if (appState.audioTrack && appState.audioTrack.currentTime > 0) {
-      playMP3AudioTrack(false);
-    } else {
-      generatePersonalMeditation();
-    }
+    // Круглая кнопка ВСЕГДА играет meditation1.mp3 — с начала или с паузы
+    const isAtStart = !appState.audioTrack || appState.audioTrack.currentTime === 0;
+    playMP3AudioTrack(isAtStart);
   }
 }
 
