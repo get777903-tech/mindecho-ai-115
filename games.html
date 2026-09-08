@@ -69,15 +69,20 @@
       </a>
 
       <nav class="nav-links">
-        <a href="index.html#missions">Миссия</a>
-        <a href="index.html#modes">Эмоциональная помощь</a>
-        <a href="index.html#generator">Студия</a>
-        <a href="index.html#pricing">Тарифы</a>
-        <a href="games.html" style="color: var(--color-cyan); font-weight: 700;">🎮 Развивающие игры</a>
+        <a href="index.html#missions" data-i18n="nav_mission">Миссия</a>
+        <a href="index.html#modes" data-i18n="nav_modes">Эмоциональная помощь</a>
+        <a href="index.html#generator" data-i18n="nav_generator">Студия</a>
+        <a href="index.html#pricing" data-i18n="nav_pricing">Тарифы</a>
+        <a href="games.html" style="color: var(--color-cyan); font-weight: 700;" data-i18n="nav_games">🎮 Развивающие игры</a>
       </nav>
 
-      <div class="nav-controls">
-        <a href="index.html#generator" class="btn btn-primary btn-orange btn-sm">✨ Создание медитации</a>
+      <div class="nav-controls" style="display: flex; align-items: center; gap: 10px;">
+        <div class="lang-switcher" style="display: flex; gap: 4px; background: rgba(255,255,255,0.08); padding: 4px; border-radius: 20px;">
+          <button class="lang-btn active" onclick="switchGamesLanguage('ru', this)" style="border: none; background: #FF6B00; color: #fff; padding: 4px 10px; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 12px;">RU</button>
+          <button class="lang-btn" onclick="switchGamesLanguage('en', this)" style="border: none; background: transparent; color: #cbd5e1; padding: 4px 10px; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 12px;">EN</button>
+          <button class="lang-btn" onclick="switchGamesLanguage('he', this)" style="border: none; background: transparent; color: #cbd5e1; padding: 4px 10px; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 12px;">HE (עברית)</button>
+        </div>
+        <a href="index.html#generator" class="btn btn-primary btn-orange btn-sm" data-i18n="btn_create_med">✨ Создание медитации</a>
       </div>
     </div>
   </header>
@@ -87,20 +92,20 @@
     <div class="container text-center">
       <div class="badge-pill" style="margin-bottom: 10px;">
         <span class="pulse-dot"></span>
-        <span>Ролевые Игры и Развитие Эмоционального Интеллекта</span>
+        <span data-i18n="games_badge">Ролевые Игры и Развитие Эмоционального Интеллекта</span>
       </div>
-      <h1 class="hero-title" style="font-size: 42px; margin-bottom: 10px;">
+      <h1 class="hero-title" style="font-size: 42px; margin-bottom: 10px;" data-i18n="games_hero_title">
         Развивающие Игры для <span class="text-gradient">Эмоционального Интеллекта</span>
       </h1>
-      <p class="hero-subtitle" style="max-width: 750px; margin: 0 auto 20px; font-size: 16px;">
+      <p class="hero-subtitle" style="max-width: 750px; margin: 0 auto 20px; font-size: 16px;" data-i18n="games_hero_sub">
         Интерактивные психологические и командные игры, которые развивают мышление, уверенность в себе и умение находить решения в сложных ситуациях.
       </p>
 
       <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-        <a href="index.html#generator" class="btn btn-primary btn-orange btn-md">
+        <a href="index.html#generator" class="btn btn-primary btn-orange btn-md" data-i18n="btn_go_med">
           ✨ Перейти к Рассказу-Медитации
         </a>
-        <a href="index.html" class="btn btn-secondary btn-md">
+        <a href="index.html" class="btn btn-secondary btn-md" data-i18n="btn_go_home">
           🏠 На главную
         </a>
       </div>
@@ -113,13 +118,13 @@
       
       <!-- Game 1: Alias -->
       <div class="game-card">
-        <span class="game-badge">🎲 Игра 1</span>
-        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;">1. Игра «Alias» (Скажи иначе)</h2>
-        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;">
+        <span class="game-badge" data-i18n="g1_badge">🎲 Игра 1</span>
+        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;" data-i18n="g1_title">1. Игра «Alias» (Скажи иначе)</h2>
+        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="g1_desc">
           <strong>Описание:</strong> Командная игра на скорость и сообразительность. Задача игрока — за ограниченное время (по песочным часам) объяснить своей команде как можно больше слов из карточки, не используя однокоренные слова, прямые переводы и сам загаданный термин.
         </p>
 
-        <div class="example-box">
+        <div class="example-box" data-i18n="g1_ex">
           <strong>Пример объяснения слова («Микроскоп»):</strong><br>
           «Это такой прибор для ученых и биологов! Он стоит на столе в лаборатории, и в него смотрят одним глазом, чтобы разглядеть очень-очень маленькие клетки, бактерии или капельку воды в сильном увеличении!»
         </div>
@@ -127,13 +132,13 @@
 
       <!-- Game 2: Rescue Bureau -->
       <div class="game-card">
-        <span class="game-badge" style="background: rgba(168, 85, 247, 0.2); color: var(--color-purple); border-color: rgba(168, 85, 247, 0.4);">🚨 Игра 2</span>
-        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;">2. Игра «Спасательное (Экспертное) бюро»</h2>
-        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;">
+        <span class="game-badge" style="background: rgba(168, 85, 247, 0.2); color: var(--color-purple); border-color: rgba(168, 85, 247, 0.4);" data-i18n="g2_badge">🚨 Игра 2</span>
+        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;" data-i18n="g2_title">2. Игра «Спасательное (Экспертное) бюро»</h2>
+        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="g2_desc">
           <strong>Описание:</strong> Ролевая игра для развития эмоционального интеллекта и навыков самопомощи. Участники выступают в роли экспертов-психологов, которые разбирают письма от людей, попавших в сложную эмоциональную ситуацию, и составляют для них пошаговую инструкцию по решению проблемы.
         </p>
 
-        <div class="example-box" style="border-left-color: var(--color-purple);">
+        <div class="example-box" style="border-left-color: var(--color-purple);" data-i18n="g2_ex">
           <strong style="color: var(--color-purple);">Пример ситуации и разбора:</strong><br><br>
           <em>Ситуация:</em> «Я набрала слишком много кружков и секций, ничего не успеваю, жутко устаю и вчера расплакалась из-за пустяка. Мне кажется, что я ни с чем не справляюсь. Как мне вернуть силы?»<br><br>
           <strong>План экспертов:</strong>
@@ -148,13 +153,13 @@
 
       <!-- Game 3: Interview from Future -->
       <div class="game-card">
-        <span class="game-badge" style="background: rgba(236, 72, 153, 0.2); color: var(--color-pink); border-color: rgba(236, 72, 153, 0.4);">⭐ Игра 3</span>
-        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;">3. Игра «Интервью из будущего»</h2>
-        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;">
+        <span class="game-badge" style="background: rgba(236, 72, 153, 0.2); color: var(--color-pink); border-color: rgba(236, 72, 153, 0.4);" data-i18n="g3_badge">⭐ Игра 3</span>
+        <h2 style="font-size: 26px; margin-bottom: 10px; color: #FFF;" data-i18n="g3_title">3. Игра «Интервью из будущего»</h2>
+        <p style="font-size: 15.5px; color: var(--text-muted); margin-bottom: 14px;" data-i18n="g3_desc">
           <strong>Описание:</strong> Терапевтическая ролевая игра, развивающая уверенность и поддерживающий внутренний голос. Игра проходит в формате ТВ-шоу: участницы выступают в роли самих себя в возрасте 25 лет — успешных, мудрых и счастливых. Ведущий берет у них интервью о том, как они преодолевали трудности своего 10-летнего возраста.
         </p>
 
-        <div class="example-box" style="border-left-color: var(--color-pink);">
+        <div class="example-box" style="border-left-color: var(--color-pink);" data-i18n="g3_ex">
           <strong style="color: var(--color-pink);">Пример ситуации и разбора:</strong><br><br>
           <em>Ситуация (вопрос интервьюера):</em> «София, сейчас вы успешный профессионал и лидер. Но вспомните, когда вам было 10 лет, вы очень переживали из-за ссоры с близкой подругой. Что помогло вам тогда справиться и какой совет вы дали бы себе маленькой из сегодняшнего дня?»<br><br>
           <em>Ответ из будущего:</em><br>
@@ -164,9 +169,9 @@
 
       <!-- Bottom Action Banner -->
       <div class="glass-card text-center" style="margin-top: 30px; padding: 24px;">
-        <h3 style="font-size: 20px; margin-bottom: 8px;">Хотите сгенерировать персонализированную практику под ваше состояние?</h3>
-        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Перейдите к Генератору Студии Медитации для выбора тембра голоса и сюжета.</p>
-        <a href="index.html#generator" class="btn btn-primary btn-orange btn-lg">
+        <h3 style="font-size: 20px; margin-bottom: 8px;" data-i18n="games_bottom_cta_title">Хотите сгенерировать персонализированную практику под ваше состояние?</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;" data-i18n="games_bottom_cta_sub">Перейдите к Генератору Студии Медитации для выбора тембра голоса и сюжета.</p>
+        <a href="index.html#generator" class="btn btn-primary btn-orange btn-lg" data-i18n="btn_go_med">
           ✨ Перейти к Рассказу-Медитации
         </a>
       </div>
@@ -177,9 +182,131 @@
   <!-- Footer -->
   <footer style="padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 13px; color: var(--text-muted);">
     <div class="container">
-      <p>© 2026 ActiMind AI. Все права защищены.</p>
+      <p data-i18n="games_copyright">© 2026 ActiMind AI. Все права защищены.</p>
     </div>
   </footer>
 
+  <script>
+    const gamesTranslations = {
+      ru: {
+        nav_mission: "Миссия",
+        nav_modes: "Эмоциональная помощь",
+        nav_generator: "Студия",
+        nav_pricing: "Тарифы",
+        nav_games: "🎮 Развивающие игры",
+        btn_create_med: "✨ Создание медитации",
+        games_badge: "Ролевые Игры и Развитие Эмоционального Интеллекта",
+        games_hero_title: "Развивающие Игры для <span class=\"text-gradient\">Эмоционального Интеллекта</span>",
+        games_hero_sub: "Интерактивные психологические и командные игры, которые развивают мышление, уверенность в себе и умение находить решения в сложных ситуациях.",
+        btn_go_med: "✨ Перейти к Рассказу-Медитации",
+        btn_go_home: "🏠 На главную",
+        g1_badge: "🎲 Игра 1",
+        g1_title: "1. Игра «Alias» (Скажи иначе)",
+        g1_desc: "<strong>Описание:</strong> Командная игра на скорость и сообразительность. Задача игрока — за ограниченное время (по песочным часам) объяснить своей команде как можно больше слов из карточки, не используя однокоренные слова, прямые переводы и сам загаданный термин.",
+        g1_ex: "<strong>Пример объяснения слова («Микроскоп»):</strong><br>«Это такой прибор для ученых и биологов! Он стоит на столе в лаборатории, и в него смотрят одним глазом, чтобы разглядеть очень-очень маленькие клетки, бактерии или капельку воды в сильном увеличении!»",
+        g2_badge: "🚨 Игра 2",
+        g2_title: "2. Игра «Спасательное (Экспертное) бюро»",
+        g2_desc: "<strong>Описание:</strong> Ролевая игра для развития эмоционального интеллекта и навыков самопомощи. Участники выступают в роли экспертов-психологов, которые разбирают письма от людей, попавших в сложную эмоциональную ситуацию, и составляют для них пошаговую инструкцию по решению проблемы.",
+        g2_ex: "<strong style=\"color: var(--color-purple);\">Пример ситуации и разбора:</strong><br><br><em>Ситуация:</em> «Я набрала слишком много кружков и секций, ничего не успеваю, жутко устаю и вчера расплакалась из-за пустяка. Мне кажется, что я ни с чем не справляюсь. Как мне вернуть силы?»<br><br><strong>План экспертов:</strong><ol class=\"step-list\"><li>Сделать паузу и дать себе один полный день отдыха без учебы и гаджетов.</li><li>Выписать все свои занятия на лист бумаги и честно отметить те, которые вызывают стресс, а не радость.</li><li>Поговорить с родителями и временно отказаться или поставить на паузу 1–2 самых тяжелых кружка.</li><li>Ввести правило: каждый день делать 30 минут «времени для себя» (чтение, прогулка, рисование).</li></ol>",
+        g3_badge: "⭐ Игра 3",
+        g3_title: "3. Игра «Интервью из будущего»",
+        g3_desc: "<strong>Описание:</strong> Терапевтическая ролевая игра, развивающая уверенность и поддерживающий внутренний голос. Игра проходит в формате ТВ-шоу: участницы выступают в роли самих себя в возрасте 25 лет — успешных, мудрых и счастливых. Ведущий берет у них интервью о том, как они преодолевали трудности своего 10-летнего возраста.",
+        g3_ex: "<strong style=\"color: var(--color-pink);\">Пример ситуации и разбора:</strong><br><br><em>Ситуация (вопрос интервьюера):</em> «София, сейчас вы успешный профессионал и лидер. Но вспомните, когда вам было 10 лет, вы очень переживали из-за ссоры с близкой подругой. Что помогло вам тогда справиться и какой совет вы дали бы себе маленькой из сегодняшнего дня?»<br><br><em>Ответ из будущего:</em><br>«Тогда мне казалось, что это конец света. Но я сделала шаг первой — просто подошла и честно сказала: \"Мне жаль, что мы поссорились, ты мне дорога\". Это научило меня разговаривать открыто. Своей 10-летней версии я бы сказала: \"Не бойся сделать первый шаг и не переживай — истинные друзья всегда поймут тебя, а эта ссора сделает твою мудрость только сильнее\"».",
+        games_bottom_cta_title: "Хотите сгенерировать персонализированную практику под ваше состояние?",
+        games_bottom_cta_sub: "Перейдите к Генератору Студии Медитации для выбора тембра голоса и сюжета.",
+        games_copyright: "© 2026 ActiMind AI. Все права защищены."
+      },
+      en: {
+        nav_mission: "Mission",
+        nav_modes: "Emotional Support",
+        nav_generator: "Studio",
+        nav_pricing: "Pricing",
+        nav_games: "🎮 Educational Games",
+        btn_create_med: "✨ Create Meditation",
+        games_badge: "Role-Playing Games & EQ Development",
+        games_hero_title: "Educational Games for <span class=\"text-gradient\">Emotional Intelligence</span>",
+        games_hero_sub: "Interactive psychological and team games that develop creative thinking, self-confidence, and proactive problem-solving.",
+        btn_go_med: "✨ Go to Meditation Story",
+        btn_go_home: "🏠 Home",
+        g1_badge: "🎲 Game 1",
+        g1_title: "1. \"Alias\" (Say it Differently)",
+        g1_desc: "<strong>Description:</strong> A dynamic team game of wit and quick thinking. Players explain target words on cards without using root words, direct translations, or the word itself within a sand-timer countdown.",
+        g1_ex: "<strong>Example explanation (\"Microscope\"):</strong><br>\"A scientific instrument in biology labs! You look through an eyepiece with one eye to inspect super tiny cells, bacteria, or a drop of pond water under immense magnification!\"",
+        g2_badge: "🚨 Game 2",
+        g2_title: "2. \"Rescue & Psychological Expert Bureau\"",
+        g2_desc: "<strong>Description:</strong> A role-play game cultivating empathy and self-regulation. Participants act as expert psychologists analyzing letters from children facing emotional difficulties to craft actionable resolution guides.",
+        g2_ex: "<strong style=\"color: var(--color-purple);\">Case Example:</strong><br><br><em>Situation:</em> \"I took too many after-school clubs, feel exhausted, and cried over nothing yesterday. How do I regain my strength?\"<br><br><strong>Expert Plan:</strong><ol class=\"step-list\"><li>Take a full day of screen-free restorative rest.</li><li>Write down all commitments and highlight those causing distress.</li><li>Consult parents to pause 1-2 demanding activities.</li><li>Adopt daily 30-minute self-care windows (reading, walking, drawing).</li></ol>",
+        g3_badge: "⭐ Game 3",
+        g3_title: "3. \"Interview from the Future\"",
+        g3_desc: "<strong>Description:</strong> A therapeutic role-playing game building self-confidence and a nurturing inner voice. In a TV-show format, participants portray their 25-year-old wise, fulfilled selves mentoring their 10-year-old childhood self.",
+        g3_ex: "<strong style=\"color: var(--color-pink);\">Interview Transcript:</strong><br><br><em>Interviewer:</em> \"Sophia, as a thriving leader today, what wisdom would you give your 10-year-old self who felt devastated after a friendship quarrel?\"<br><br><em>Future Self:</em> \"It felt like the end of the world back then, but taking the initiative to say 'I value our friendship' taught me open communication. Never fear making the first step—true friends will understand, and every challenge only deepens your wisdom.\"",
+        games_bottom_cta_title: "Ready to generate a tailored meditation for your child?",
+        games_bottom_cta_sub: "Explore the Meditation Studio Generator to customize voice timbre and soothing storylines.",
+        games_copyright: "© 2026 ActiMind AI. All rights reserved."
+      },
+      he: {
+        nav_mission: "משימה",
+        nav_modes: "תמיכה רגשית",
+        nav_generator: "סטודיו",
+        nav_pricing: "מחירון",
+        nav_games: "🎮 משחקים מפתחים",
+        btn_create_med: "✨ יצירת מדיטציה",
+        games_badge: "משחקי תפקידים ופיתוח אינטליגנציה רגשית",
+        games_hero_title: "משחקים מפתחים עבור <span class=\"text-gradient\">אינטליגנציה רגשית</span>",
+        games_hero_sub: "משחקים פסיכולוגיים וקבוצתיים אינטראקטיביים המפתחים חשיבה גמישה, ביטחון עצמי ומציאת פתרונות במצבים מורכבים.",
+        btn_go_med: "✨ מעבר לסיפור המדיטציה",
+        btn_go_home: "🏠 לדף הבית",
+        g1_badge: "🎲 משחק 1",
+        g1_title: "1. משחק «Alias» (תאר במילים אחרות)",
+        g1_desc: "<strong>תיאור:</strong> משחק קבוצתי מהיר לפיתוח מהירות מחשבה ושפה. המטרה היא להסביר כמה שיותר מילים מהכרטיסייה בזמן מוגבל, מבלי להשתמש במילה עצמה או בשרשיה.",
+        g1_ex: "<strong>דוגמה להסבר מילה (״מיקרוסקופ״):</strong><br>״זה מכשיר שמשמש מדענים וביולוגים במעבדה! מביטים בו בעין אחת כדי לראות תאים זעירים מאוד, חיידקים או טיפת מים בהגדלה ענקית!״",
+        g2_badge: "🚨 משחק 2",
+        g2_title: "2. משחק «לשכת המומחים וההצלה»",
+        g2_desc: "<strong>תיאור:</strong> משחק תפקידים לפיתוח אמפתיה ועזרה עצמית. המשתתפים פועלים כמומחים פסיכולוגים המנתחים מכתבים מילדים שנקלעו למצוקה רגשית ובונים עבורם תוכנית פעולה מעשית.",
+        g2_ex: "<strong style=\"color: var(--color-purple);\">דוגמה למקרה וניתוח:</strong><br><br><em>המקרה:</em> ״נרשמתי ליותר מדי חוגים, אני לא עומדת בעומס ובכיתי אתמול משטות. איך להחזיר לעצמי כוחות?״<br><br><strong>תוכנית המומחים:</strong><ol class=\"step-list\"><li>לקחת יום שלם של מנוחה ללא לימודים ומסכים.</li><li>לרשום את כל הפעילויות ולסמן מה גורם ללחץ ולא להנאה.</li><li>לשוחח עם ההורים ולהקפיא זמנית 1-2 חוגים עמוסים.</li><li>להקדיש 30 דקות ביום לפעילות אישית מרגיעה (קריאה, טיול, ציור).</li></ol>",
+        g3_badge: "⭐ משחק 3",
+        g3_title: "3. משחק «ראיון מהעתיד»",
+        g3_desc: "<strong>תיאור:</strong> משחק תפקידים טיפולי לפיתוח קול פנימי תומך וביטחון עצמי. בפורמט של תוכנית טלוויזיה, המשתתפות מגלמות את עצמן בגיל 25 — חכמות ומאושרות — ומספרות כיצד התגברו על משברים בגיל 10.",
+        g3_ex: "<strong style=\"color: var(--color-pink);\">תמליל ראיון:</strong><br><br><em>המראיין:</em> ״סופיה, כמובילה מצליחה כיום, איזה טיעון היית נותנת לעצמך בגיל 10 כשהיית במשבר מריבה עם חברה?״<br><br><em>העצמי מהעתיד:</em> ״אז זה נראה כמו סוף העולם, אך עשיתי את הצעד הראשון ואמרתי בכנות שחשוב לי הקשר שלנו. אל תפחדי ליזום — חברים אמיתיים תמיד יבינו, וכל קושי רק מחזק את החוכמה שלך.״",
+        games_bottom_cta_title: "רוצים ליצור תרגול מדיטציה מותאם אישית למצבכם?",
+        games_bottom_cta_sub: "עברו לסטודיו מחולל המדיטציות לבחירת גוון הקול והעלילה המרגיעה.",
+        games_copyright: "© 2026 ActiMind AI. כל הזכויות שמורות."
+      }
+    };
+
+    function switchGamesLanguage(langKey, btnEl) {
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.color = '#cbd5e1';
+        btn.classList.remove('active');
+      });
+
+      if (btnEl) {
+        btnEl.style.background = '#FF6B00';
+        btnEl.style.color = '#fff';
+        btnEl.classList.add('active');
+      }
+
+      if (langKey === 'he') {
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.documentElement.setAttribute('lang', 'he');
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+        document.documentElement.setAttribute('lang', langKey);
+      }
+
+      const dict = gamesTranslations[langKey];
+      if (dict) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key]) {
+            el.innerHTML = dict[key];
+          }
+        });
+      }
+    }
+
+    window.switchGamesLanguage = switchGamesLanguage;
+  </script>
 </body>
 </html>
