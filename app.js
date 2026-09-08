@@ -244,7 +244,7 @@ const translations = {
     label_voice_consent: "Даю согласие на обработку записи голоса для клонирования ИИ",
     btn_edu_tutoring: "📚 ИИ репетиторство и Внешкольное образование",
     btn_edu_school: "🚀 Удалённая система образования",
-    btn_child_coach: "👧 Мия - Развивающая подружка для ребенка",
+    btn_child_coach: "🎁 БЕСПЛАТНО МЕСЯЦ !! 👧 Мия - Развивающая подружка для ребенка",
     btn_mother_advisor: "👩‍👦 Советница-подружка для МАМЫ",
     btn_preview_voice: "▶️ Прослушать записанный/загруженный голос",
     edu_tag_header: "🎓 Специализированные Тарифы Обучения",
@@ -1786,6 +1786,11 @@ function closeNDAModal() {
   if (modal) modal.classList.add('hidden');
 }
 
+function openMiaDisclaimerFlow() {
+  appState.pendingMiaRedirect = true;
+  openNDAModal();
+}
+
 async function submitNDASignature() {
   const name = document.getElementById('nda-user-name').value || 'Анонимный Подписант';
   const contact = document.getElementById('nda-user-contact')?.value.trim() || '';
@@ -1818,7 +1823,10 @@ async function submitNDASignature() {
     phone: contact
   });
 
-  if (appState.pendingCheckout && appState.selectedPrice > 0 && appState.selectedPlan !== 'Free') {
+  if (appState.pendingMiaRedirect) {
+    appState.pendingMiaRedirect = false;
+    window.open('mia.html', '_blank');
+  } else if (appState.pendingCheckout && appState.selectedPrice > 0 && appState.selectedPlan !== 'Free') {
     appState.pendingCheckout = false;
     document.getElementById('checkout-plan-name').innerText = appState.selectedPlan;
     document.getElementById('checkout-plan-price').innerText = `$${appState.selectedPrice}`;
@@ -2365,6 +2373,22 @@ function sendMotherAdvisorMessage() {
   logClickAnalytics('MotherAdvisor_ChatMessage', userText.substring(0, 50), 0);
 }
 
+function openMiaRegistrationModal() {
+  const m = document.getElementById('mia-registration-modal');
+  if (m) m.classList.remove('hidden');
+  logClickAnalytics('Modal_Opened', 'MiaRegistrationModal', 0);
+}
+
+function closeMiaRegistrationModal() {
+  const m = document.getElementById('mia-registration-modal');
+  if (m) m.classList.add('hidden');
+}
+
+function openMiaPageDirectly() {
+  window.open('https://share.gemini.google/0cgBh4lKXPoX', '_blank');
+  window.open('mia.html', '_blank');
+}
+
 window.openChildCoachModal = openChildCoachModal;
 window.closeChildCoachModal = closeChildCoachModal;
 window.sendChildCoachMessage = sendChildCoachMessage;
@@ -2372,5 +2396,9 @@ window.openMotherAdvisorModal = openMotherAdvisorModal;
 window.closeMotherAdvisorModal = closeMotherAdvisorModal;
 window.sendMotherAdvisorMessage = sendMotherAdvisorMessage;
 window.togglePlayParentVoicePreview = togglePlayParentVoicePreview;
+window.openMiaRegistrationModal = openMiaRegistrationModal;
+window.closeMiaRegistrationModal = closeMiaRegistrationModal;
+window.openMiaPageDirectly = openMiaPageDirectly;
+window.openMiaDisclaimerFlow = openMiaDisclaimerFlow;
 
 

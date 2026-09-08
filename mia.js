@@ -87,7 +87,7 @@ function toggleMicrophone() {
   }
 }
 
-// 1. Таймер 10 секунд тишины после речи: отправка в Gemini
+// 1. Таймер 3 секунды тишины после речи: автоматическая отправка в LLM Gemini
 function resetSilence10sTimer(currentText) {
   clearTimeout(silence10sTimer);
   clearTimeout(inactivity20sTimer);
@@ -98,11 +98,30 @@ function resetSilence10sTimer(currentText) {
       processSpeechWithGemini(currentText);
       accumulatedTranscript = "";
     }
-  }, 10000);
+  }, 3000); // Строго 3 секунды после окончания речи
+}
+
+// Зеленая кнопка «Отправить» — ручная немедленная отправка сообщения без отключения микрофона
+function sendActiveVoiceMessage() {
+  const userTranscriptEl = document.getElementById('user-transcript');
+  let textToSend = accumulatedTranscript.trim();
+  
+  if (!textToSend && userTranscriptEl) {
+    const raw = userTranscriptEl.innerText.replace('👤 Услышано:', '').replace(/[«»]/g, '').trim();
+    if (raw) textToSend = raw;
+  }
+
+  if (textToSend) {
+    clearTimeout(silence10sTimer);
+    processSpeechWithGemini(textToSend);
+    accumulatedTranscript = "";
+  } else {
+    document.getElementById('mia-status-text').innerText = "🎙️ Говорите в микрофон, затем нажмите Отправить...";
+  }
 }
 
 async function processSpeechWithGemini(userText) {
-  document.getElementById('mia-status-text').innerText = "🌸 Мия думает...";
+  document.getElementById('mia-status-text').innerText = "🌸 Мия думает над ответом...";
   
   if (recognition) {
     try { recognition.stop(); } catch(e) {}
@@ -126,6 +145,7 @@ function displayAndSpeakMiaResponse(text) {
   });
 }
 
+// Озвучка стандартным приятным женским голосом (стиль Vega / Google русский женский)
 function speakVoiceResponse(text, onEndCallback) {
   if (!('speechSynthesis' in window)) {
     if (onEndCallback) onEndCallback();
@@ -135,12 +155,29 @@ function speakVoiceResponse(text, onEndCallback) {
   window.speechSynthesis.cancel();
   isSpeaking = true;
 
-  // Очищаем markdown звездочки для чистого голоса
+  // Очищаем markdown звездочки и эмодзи для идеального произношения
   const cleanSpeechText = text.replace(/\*\*/g, '').replace(/[\u{1F300}-\u{1F9FF}]/gu, '');
   const utterance = new SpeechSynthesisUtterance(cleanSpeechText);
   utterance.lang = 'ru-RU';
-  utterance.rate = 0.95; // Мягкий и размеренный темп
-  utterance.pitch = 1.2; // Дружелюбный тембр
+  utterance.rate = 0.95; // Спокойный, мягкий и размеренный темп
+  utterance.pitch = 1.08; // Приятный женский дружелюбный тембр (стиль Vega)
+
+  // Подбор лучшего женского голоса системы (Google русский, Svetlana, Irina, Tatyana, Vega)
+  const voices = window.speechSynthesis.getVoices();
+  const femaleRussianVoice = voices.find(v => 
+    v.lang.startsWith('ru') && (
+      v.name.includes('Vega') ||
+      v.name.includes('Female') || 
+      v.name.includes('Google') || 
+      v.name.includes('Svetlana') || 
+      v.name.includes('Irina') || 
+      v.name.includes('Tatyana')
+    )
+  ) || voices.find(v => v.lang.startsWith('ru'));
+
+  if (femaleRussianVoice) {
+    utterance.voice = femaleRussianVoice;
+  }
 
   utterance.onend = () => {
     isSpeaking = false;
@@ -191,5 +228,6 @@ function triggerExpressDialog() {
 
 window.sendQuickTopic = sendQuickTopic;
 window.toggleMicrophone = toggleMicrophone;
+window.sendActiveVoiceMessage = sendActiveVoiceMessage;
 window.triggerExpressEmergency = triggerExpressEmergency;
 window.triggerExpressDialog = triggerExpressDialog;
