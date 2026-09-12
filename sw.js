@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mindecho-v20260912_v1';
+const CACHE_NAME = 'mindecho-v20260912_v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
