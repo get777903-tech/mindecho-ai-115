@@ -287,7 +287,9 @@ const translations = {
     edu_pf_school_3: "✅ ИИ-коуч состояний и защиты от выгорания",
     edu_pf_school_4: "✅ Развитие мышления Создателя (Creator Mindset)",
     edu_pf_school_5: "✅ Прозрачный дашборд для родителей в 1 клик",
-    edu_btn_order_school: "🚀 Активировать Школьное Обучение ($340 / $4,900)"
+    edu_btn_order_school: "🚀 Активировать Школьное Обучение ($340 / $4,900)",
+    player_title_default: "Рассказ-Медитация",
+    player_placeholder: "🌙 Медитация «Сияние доверия и внутренней силы»"
   },
   en: {
     nav_mission: "Mission",
@@ -501,7 +503,9 @@ const translations = {
     edu_pf_school_3: "✅ AI State & Burnout Protection Coach",
     edu_pf_school_4: "✅ Fostering Creator Mindset",
     edu_pf_school_5: "✅ Transparent parent dashboard in 1 click",
-    edu_btn_order_school: "🚀 Activate Remote School ($340 / $4,900)"
+    edu_btn_order_school: "🚀 Activate Remote School ($340 / $4,900)",
+    player_title_default: "Story-Meditation",
+    player_placeholder: "🌙 Meditation 'Radiance of Trust & Inner Strength'"
   },
   he: {
     nav_mission: "משימה",
@@ -714,7 +718,9 @@ const translations = {
     edu_pf_school_3: "✅ מאמן AI למניעת שחיקה ואיזון רגשי",
     edu_pf_school_4: "✅ פיתוח חשיבת יוצר (Creator Mindset)",
     edu_pf_school_5: "✅ לוח בקרה שקוף להורים בלחיצה אחת",
-    edu_btn_order_school: "🚀 הפעילו בית ספר מרחוק ($340 / $4,900)"
+    edu_btn_order_school: "🚀 הפעילו בית ספר מרחוק ($340 / $4,900)",
+    player_title_default: "סיפור-מדיטציה",
+    player_placeholder: "🌙 מדיטציה «זוהר של אמון ועוצמה פנימית»"
   }
 };
 
@@ -1626,12 +1632,8 @@ function playMP3AudioTrack(forceStart = false) {
 }
 
 function playQuickTestAudio() {
-  const playerCard = document.querySelector('.player-card') || document.getElementById('generator');
-  if (playerCard) {
-    playerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  playMP3AudioTrack(true);
   logClickAnalytics('QuickTestAudio_Clicked', 'Hero Quick Test Button', 0);
+  window.location.href = 'meditation.html';
 }
 
 function togglePlayAudio() {
